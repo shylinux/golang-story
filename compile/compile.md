@@ -1,4 +1,4 @@
-# {{title "golang-study"}}
+# {{title "golang-compile"}}
 golang是一门简洁高效的编程语言。
 
 - 官网: https://golang.google.cn
