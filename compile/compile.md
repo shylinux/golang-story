@@ -1,47 +1,39 @@
-# {{title "golang-compile"}}
-golang是一门简洁高效的编程语言。
+{{title "golang-compile"}}
+{{brief "语言简介" `golang是一门简洁高效的编程语言。`}}
 
-- 官网: https://golang.google.cn
-- 源码: https://dl.google.com/go/go1.13.5.src.tar.gz
-- 开源: https://github.com/golang/go.
+{{refer "官方网站" `
+官网: https://golang.google.cn
+源码: https://dl.google.com/go/go1.13.5.src.tar.gz
+开源: https://github.com/golang/go.
+`}}
 
-## {{chapter "源码解析"}}
-下载源码
-{{shell "下载源码" "-demo" `wget https://dl.google.com/go/go1.13.5.src.tar.gz`}}
+{{order "官方包" `
+src/cmd
+src/go
+src/reflect
+src/runtime
+src/syscall
+src/unsafe
+src/plugin
+src/debug
+`}}
 
-解压源码
-{{shell "解压源码" "-demo" `tar xvf go1.13.5.src.tar.gz`}}
+{{chapter "下载源码"}}
+{{shell "下载源码" "usr" "install" `wget https://dl.google.com/go/go1.13.5.src.tar.gz`}}
+{{shell "解压源码" "usr" "install" `tar xvf go1.13.5.src.tar.gz`}}
 
-项目结构
-{{shell "项目结构" "./" `dir go`}}
+{{shell "项目结构" "usr" `dir go`}}
+{{shell "源码结构" "usr" `dir go/src`}}
+{{shell "编译源码" "usr" "compile" `cd go/src && ./all.bash`}}
 
-源码结构
-{{shell "源码结构" "./" `dir go/src`}}
+{{chapter "命令入口"}}
+{{shell "命令入口" "usr/go" `sed src/cmd/go/main.go -n -e "1,42p" -e "42a...\n" -e "82,104p" -e "104a...\n"`}}
+{{shell "构建入口" "usr/go" `sed src/cmd/go/internal/work/build.go -n -e "1,42p" -e "42a...\n" -e "82,104p" -e "104a...\n"`}}
+{{shell "编译入口" "usr/go" `sed src/cmd/compile/internal/gc/main.go -n -e "1,42p" -e "42a...\n" -e "132,763p"`}}
 
-编译源码
+{{chapter "闭包"}}
+cmd/compile/internal/gc/closure.go
 
-{{shell "编译源码" "-demo" `cd go/src && ./all.bash`}}
-
-cmd
-go
-reflect
-runtime
-syscall
-
-flag
-log
-
-命令入口
-
-{{shell "go编译命令" "./go" `sed src/cmd/go/main.go -n -e "1,42p" -e "42a...\n" -e "82,104p" -e "104a...\n"`}}
-
-编译入口
-
-{{shell "go编译命令" "./go" `sed src/cmd/go/internal/work/build.go -n -e "1,42p" -e "42a...\n" -e "82,104p" -e "104a...\n"`}}
-
-编译流程
-
-{{shell "go编译流程" "./go" `sed src/cmd/compile/internal/gc/main.go -n -e "1,42p" -e "42a...\n" -e "132,763p"`}}
-
-
+{{chapter "遍历"}}
+cmd/compile/internal/gc/range.go
 

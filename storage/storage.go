@@ -1,4 +1,4 @@
-package runtime
+package storage
 
 import (
 	"github.com/shylinux/icebergs"
@@ -6,16 +6,16 @@ import (
 	"github.com/shylinux/toolkits"
 )
 
-var Index = &ice.Context{Name: "runtime", Help: "虚拟机",
+var Index = &ice.Context{Name: "storage", Help: "序列化",
 	Caches: map[string]*ice.Cache{},
 	Configs: map[string]*ice.Config{
-		"runtime": {Name: "runtime", Help: "runtime", Value: kit.Data(kit.MDB_SHORT, "name")},
+		"storage": {Name: "storage", Help: "storage", Value: kit.Data(kit.MDB_SHORT, "name")},
 	},
 	Commands: map[string]*ice.Command{
 		ice.ICE_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
 		ice.ICE_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
 
-		"runtime": {Name: "runtime", Help: "runtime", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		"storage": {Name: "storage", Help: "storage", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 			m.Echo("hello world")
 		}},
 	},

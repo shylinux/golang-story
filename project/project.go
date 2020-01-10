@@ -1,4 +1,4 @@
-package runtime
+package project
 
 import (
 	"github.com/shylinux/icebergs"
@@ -6,16 +6,16 @@ import (
 	"github.com/shylinux/toolkits"
 )
 
-var Index = &ice.Context{Name: "runtime", Help: "虚拟机",
+var Index = &ice.Context{Name: "project", Help: "工程化",
 	Caches: map[string]*ice.Cache{},
 	Configs: map[string]*ice.Config{
-		"runtime": {Name: "runtime", Help: "runtime", Value: kit.Data(kit.MDB_SHORT, "name")},
+		"project": {Name: "project", Help: "project", Value: kit.Data(kit.MDB_SHORT, "name")},
 	},
 	Commands: map[string]*ice.Command{
 		ice.ICE_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
 		ice.ICE_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
 
-		"runtime": {Name: "runtime", Help: "runtime", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		"project": {Name: "project", Help: "project", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 			m.Echo("hello world")
 		}},
 	},
