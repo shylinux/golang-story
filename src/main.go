@@ -7,6 +7,7 @@ import (
 	_ "github.com/shylinux/icebergs/misc"
 
 	_ "github.com/shylinux/golang-story/compile"
+	_ "github.com/shylinux/golang-story/project"
 	_ "github.com/shylinux/golang-story/runtime"
 )
 

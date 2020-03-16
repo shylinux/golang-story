@@ -1,2 +1,1 @@
-# golang-story
-study golang
+hello ice world

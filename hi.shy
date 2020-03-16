@@ -1,0 +1,21 @@
+title "golang"
+
+field "自动化" favor
+
+field "官网" favor args `官网`
+
+field "安装" favor args `install`
+
+chapter "project"
+field "project" ctx.project.project
+
+chapter "compile"
+field "project" ctx.compile.compile
+
+chapter "runtime"
+field "project" ctx.runtime.runtime
+
+spark "" `
+runtime.GOMAXPROCS(num)
+`
+
