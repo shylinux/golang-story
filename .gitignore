@@ -17,3 +17,6 @@
 *.swo
 *.swn
 .*
+var
+usr
+bin
