@@ -2,7 +2,7 @@ package runtime
 
 import (
 	"github.com/shylinux/icebergs"
-	"github.com/shylinux/icebergs/base/ctx"
+	"github.com/shylinux/icebergs/core/code"
 	"github.com/shylinux/toolkits"
 )
 
@@ -22,4 +22,4 @@ var Index = &ice.Context{Name: "runtime", Help: "虚拟机",
 	},
 }
 
-func init() { ctx.Index.Register(Index, nil) }
+func init() { code.Index.Register(Index, nil) }
