@@ -2,6 +2,8 @@
 [ "$ISH_CONF_PRE" != "" ] || source ./.ish/plug.sh || source ~/.ish/plug.sh
 # declare -f ish_help_repos &>/dev/null || require conf.sh
 
+ISH_CONF_TASK=$ISH_CONF_WORK/20200108-golang_story
+
 require help.sh
 require miss.sh
 
