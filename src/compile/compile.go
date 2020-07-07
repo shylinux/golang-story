@@ -1,22 +1,28 @@
 package compile
 
 import (
-	"github.com/shylinux/icebergs"
+	ice "github.com/shylinux/icebergs"
+	"github.com/shylinux/icebergs/base/cli"
 	"github.com/shylinux/icebergs/core/code"
-	"github.com/shylinux/toolkits"
+	kit "github.com/shylinux/toolkits"
 )
 
-var Index = &ice.Context{Name: "compile", Help: "compile",
+const (
+	COMPILE = "compile"
+)
+
+var Index = &ice.Context{Name: COMPILE, Help: "编译器",
 	Caches: map[string]*ice.Cache{},
 	Configs: map[string]*ice.Config{
-		"compile": {Name: "compile", Help: "compile", Value: kit.Data()},
+		COMPILE: {Name: COMPILE, Help: "编译器", Value: kit.Data()},
 	},
 	Commands: map[string]*ice.Command{
-		ice.ICE_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
-		ice.ICE_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
+		ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
+		ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
 
-		"compile": {Name: "compile", Help: "compile", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-			m.Echo("hello compile world")
+		COMPILE: {Name: "compile", Help: "编译器", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+			m.Cmdy(cli.SYSTEM, "go", arg)
+			m.Set(ice.MSG_APPEND)
 		}},
 	},
 }

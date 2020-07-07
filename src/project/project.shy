@@ -12,8 +12,6 @@ refer "官网" `
 源码 https://github.com/protocolbuffers/protobuf
 插件 https://github.com/golang/protobuf
 `
-field "安装" web.code.project.protobuf args `install`
-
 section "viper"
 refer "官网" `
 源码 https://github.com/spf13/viper
@@ -26,3 +24,5 @@ refer "官网" `
 
 section "sync"
 shell "sync" "go doc sync"
+
+field "project" web.code.project.project
