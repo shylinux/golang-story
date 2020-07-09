@@ -6,7 +6,3 @@ require (
 	github.com/shylinux/icebergs v0.1.18
 	github.com/shylinux/toolkits v0.1.5
 )
-
-replace github.com/shylinux/icebergs => ../../icebergs
-
-replace github.com/shylinux/toolkits => ../../toolkits
