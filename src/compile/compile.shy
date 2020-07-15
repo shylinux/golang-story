@@ -2,4 +2,6 @@ chapter "compile"
 
 field "compile" web.code.compile.compile
 
+field "源代码" web.code.inner args `[ usr/install/go/src/cmd go/main.go ]`
+
 

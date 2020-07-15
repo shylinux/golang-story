@@ -26,3 +26,5 @@ section "sync"
 shell "sync" "go doc sync"
 
 field "project" web.code.project.project
+
+field "源代码" web.code.inner args `[ usr/install/go/src/ strings/strings.go ]`

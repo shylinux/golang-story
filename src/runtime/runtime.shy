@@ -2,3 +2,5 @@ chapter "runtime"
 
 field "runtime" web.code.runtime.runtime
 
+field "源代码" web.code.inner args `[ usr/install/go/src/runtime map.go ]`
+
