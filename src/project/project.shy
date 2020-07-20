@@ -1,5 +1,9 @@
 chapter "project"
 
+section "golang"
+field "project" web.code._install
+field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
+
 section "ledisdb"
 refer "官网" `
 源码 https://github.com/ledisdb/ledisdb
@@ -24,7 +28,3 @@ refer "官网" `
 
 section "sync"
 shell "sync" "go doc sync"
-
-field "project" web.code.project.project
-
-field "源代码" web.code.inner args `[ usr/install/go/src/ strings/strings.go ]`
