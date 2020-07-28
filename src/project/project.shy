@@ -1,30 +1,35 @@
 chapter "project"
 
-section "golang"
-field "project" web.code._install
-field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
+section "viper 配置"
+refer "官网" `
+源码 https://github.com/spf13/viper
+`
 
-section "ledisdb"
+section "zap 日志"
+refer "官网" `
+源码 https://github.com/uber-go/zap
+`
+section "gin 框架"
+refer "官网" `
+源码 https://github.com/gin-gonic/gin
+`
+
+section "ledisdb 缓存"
 refer "官网" `
 源码 https://github.com/ledisdb/ledisdb
 `
 
-section "protobuf"
-
+section "protobuf 协议"
 refer "官网" `
 文档 https://developers.google.cn/protocol-buffers/
 源码 https://github.com/protocolbuffers/protobuf
 插件 https://github.com/golang/protobuf
 `
-section "viper"
-refer "官网" `
-源码 https://github.com/spf13/viper
-`
 
-section "gin"
-refer "官网" `
-源码 https://github.com/gin-gonic/gin
-`
-
-section "sync"
+section "sync 同步"
 shell "sync" "go doc sync"
+
+section "golang"
+field "project" web.code._install
+field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
+
