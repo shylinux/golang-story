@@ -20,8 +20,8 @@ codis https://github.com/CodisLabs/codis
 ledisdb https://github.com/ledisdb/ledisdb
 dragonboat https://github.com/lni/dragonboat
 redis https://github.com/gomodule/redigo/redis
-leveldb github.com/syndtr/goleveldb
 rocksdb github.com/tecbot/gorocksdb
+leveldb github.com/syndtr/goleveldb
 `
 
 section "protobuf 协议"
