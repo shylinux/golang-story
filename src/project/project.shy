@@ -31,9 +31,6 @@ refer "官网" `
 插件 https://github.com/golang/protobuf
 `
 
-section "sync 同步"
-shell "sync" "go doc sync"
-
 section "golang"
 field "project" web.code._install
 field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
