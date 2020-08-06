@@ -1,12 +1,16 @@
-title "20200108-golang_story"
+title "golang-story"
 
 refer "官网" `
 官网 https://golang.google.cn
 文档 https://golang.google.cn/doc/
 源码 https://github.com/golang/go
+
+社区 https://studygolang.com/
+教程 https://studygolang.com/
+贴吧 https://www.golangtc.com/
 `
 
+source compile/compile.shy
 source project/project.shy
 source runtime/runtime.shy
-source compile/compile.shy
 

@@ -10,7 +10,6 @@ import (
 const RUNTIME = "runtime"
 
 var Index = &ice.Context{Name: RUNTIME, Help: "虚拟机",
-	Caches: map[string]*ice.Cache{},
 	Configs: map[string]*ice.Config{
 		RUNTIME: {Name: RUNTIME, Help: "虚拟机", Value: kit.Data(kit.MDB_SHORT, "name")},
 	},

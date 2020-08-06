@@ -1,8 +1,6 @@
 package project
 
 import (
-	"net/http"
-
 	ice "github.com/shylinux/icebergs"
 	"github.com/shylinux/icebergs/base/cli"
 	"github.com/shylinux/icebergs/base/nfs"
@@ -10,6 +8,7 @@ import (
 	"github.com/shylinux/icebergs/core/code"
 	kit "github.com/shylinux/toolkits"
 
+	"net/http"
 	"path"
 )
 
@@ -23,14 +22,7 @@ const (
 var Index = &ice.Context{Name: PROJECT, Help: "官方库",
 	Caches: map[string]*ice.Cache{},
 	Configs: map[string]*ice.Config{
-		PROJECT: {Name: PROJECT, Help: "官方库", Value: kit.Data(
-			"source", "https://dl.google.com/go/go1.14.1.src.tar.gz",
-			"target", kit.Dict(
-				"linux", "https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz",
-				"darwin", "https://dl.google.com/go/go1.14.2.darwin-amd64.pkg",
-				"windows", "https://dl.google.com/go/go1.14.2.windows-amd64.msi",
-			),
-		)},
+		PROJECT: {Name: PROJECT, Help: "官方库", Value: kit.Data()},
 
 		PROTOBUF: {Name: PROTOBUF, Help: "protobuf", Value: kit.Data(
 			"protoc", "https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip",

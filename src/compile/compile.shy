@@ -1,6 +1,12 @@
 chapter "compile"
 
-field "compile" web.code.compile.compile
+section "语法入门"
+field "源码" web.code.inner args `[ usr/golang-story/src/compile tutor/hi.go ]`
+
+field "脚本" web.code.vimer args `[ usr/golang-story/src/compile tutor/hi.sh ]`
+
+return
+field "编译器" web.code.compile.compile
 
 field "源代码" web.code.inner args `[ usr/local/go/src/cmd go/main.go ]`
 
