@@ -1,5 +1,4 @@
 chapter "project"
-return
 
 section "viper 配置"
 refer "官网" `
@@ -10,6 +9,7 @@ section "zap 日志"
 refer "官网" `
 源码 https://github.com/uber-go/zap
 `
+
 section "gin 框架"
 refer "官网" `
 源码 https://github.com/gin-gonic/gin
@@ -32,7 +32,6 @@ refer "官网" `
 插件 https://github.com/golang/protobuf
 `
 
-section "golang"
-field "project" web.code._install
+section "strings"
 field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
 

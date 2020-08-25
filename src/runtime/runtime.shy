@@ -1,11 +1,8 @@
 chapter "runtime"
 
 section "数据结构"
+field "源代码" web.code.inner args `[ usr/local/go/src/runtime map.go ]`
+
 section "协程调度"
 section "协程通信"
-return
-
-field "runtime" web.code.runtime.runtime
-
-field "源代码" web.code.inner args `[ usr/local/go/src/runtime map.go ]`
 
