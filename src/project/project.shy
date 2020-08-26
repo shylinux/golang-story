@@ -32,6 +32,12 @@ refer "官网" `
 插件 https://github.com/golang/protobuf
 `
 
+section "gorm 数据库"
+refer `
+源码 https://github.com/jinzhu/gorm
+文档 http://gorm.book.jasperxu.com/
+`
+
 section "strings"
 field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
 
