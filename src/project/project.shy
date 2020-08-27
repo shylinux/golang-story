@@ -15,14 +15,19 @@ refer "官网" `
 源码 https://github.com/gin-gonic/gin
 `
 
+section "raft 协议"
+refer `
+官网 https://raft.github.io/
+源码 https://github.com/lni/dragonboat
+`
+
 section "ledisdb 缓存"
 refer "官网" `
 codis https://github.com/CodisLabs/codis
 ledisdb https://github.com/ledisdb/ledisdb
-dragonboat https://github.com/lni/dragonboat
 redis https://github.com/gomodule/redigo/redis
-rocksdb github.com/tecbot/gorocksdb
-leveldb github.com/syndtr/goleveldb
+rocksdb https://github.com/tecbot/gorocksdb
+leveldb https://github.com/syndtr/goleveldb
 `
 
 section "protobuf 协议"
