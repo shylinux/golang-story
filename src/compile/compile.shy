@@ -11,6 +11,19 @@ GO语言中文网 https://studygolang.com/
 CSDN https://www.csdn.net/
 `
 
-section "语法入门"
-field "源代码" web.code.vimer args `[ usr/golang-story/src/compile tutor/hi.go ]`
+field "安装" web.code.golang.compile
+field "源码" web.code.inner args `[ usr/install/go/ src/os/path.go 1 ]`
+
+section "编译安装"
+spark shell `
+wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
+tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
+GOBIN=$PWD/../install/bin GOROOT_FINAL=$PWD/.. ./all.bash --no-clean
+`
+
+section "使用体验"
+spark shell `
+cd ../install
+./bin/go
+`
 
