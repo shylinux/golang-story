@@ -36,7 +36,7 @@ var Index = &ice.Context{Name: GOLANG, Help: "golang",
 				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(COMPILE, kit.META_SOURCE))
 			}},
 			gdb.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
-				if cli.Follow(m) {
+				if cli.Follow(m, gdb.BUILD) {
 					return
 				}
 
