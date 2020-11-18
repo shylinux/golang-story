@@ -1,5 +1,37 @@
 chapter "compile"
-refer "官网" `
+field "安装" web.code.golang.compile
+field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 1`
+
+section "编译安装"
+spark shell `
+yum install -y wget make gcc
+yum install -y diffutils.x86_64
+
+mkdir bootstrap\; cd bootstrap
+export PATH=$PWD/go/bin:$PATH GOROOT_BOOTSTRAP=$PWD/go
+
+wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
+tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
+
+export CGO_ENABLED=0 
+./all.bash
+`
+spark shell `
+cd ~
+wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
+tar xvf go1.15.5.src.tar.gz && cd go/src
+
+./all.bash
+`
+
+section "使用体验"
+spark shell `
+cd ../
+bin/go version
+`
+
+return
+refer `
 C语言中文网 http://c.biancheng.net/
 GO语言中文网 https://studygolang.com/
 入门教程 https://www.runoob.com/go/go-tutorial.html
@@ -9,21 +41,5 @@ GO语言中文网 https://studygolang.com/
 贴吧 https://www.golangtc.com/
 刷题 https://leetcode.com/
 CSDN https://www.csdn.net/
-`
-
-field "安装" web.code.golang.compile
-field "源码" web.code.inner args `[ usr/install/go/ src/os/path.go 1 ]`
-
-section "编译安装"
-spark shell `
-wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
-tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
-GOBIN=$PWD/../install/bin GOROOT_FINAL=$PWD/.. ./all.bash --no-clean
-`
-
-section "使用体验"
-spark shell `
-cd ../install
-./bin/go
 `
 
