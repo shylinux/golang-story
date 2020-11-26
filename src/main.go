@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "github.com/shylinux/golang-story/src/grafana"
+
 	"github.com/shylinux/icebergs"
 	_ "github.com/shylinux/icebergs/base"
 	_ "github.com/shylinux/icebergs/core"

@@ -5,6 +5,8 @@ refer `
 源码 https://github.com/golang/go
 `
 
+source grafana/grafana.shy
+
 source compile/compile.shy
 source runtime/runtime.shy
 source project/project.shy

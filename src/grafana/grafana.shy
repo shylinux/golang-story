@@ -1,0 +1,9 @@
+
+chapter "grafana"
+refer `
+官网 https://grafana.com/
+文档 https://grafana.com/docs/grafana/latest/installation/rpm/
+源码 https://github.com/grafana/grafana
+`
+
+field "grafana" web.code.grafana.grafana

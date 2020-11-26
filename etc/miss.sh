@@ -7,8 +7,6 @@ require miss.sh
 ish_miss_prepare_compile
 ish_miss_prepare_install
 
-# ish_miss_prepare_volcanos
-# ish_miss_prepare_learning
-# ish_miss_prepare_icebergs
-# ish_miss_prepare_toolkits
+ish_miss_prepare_icebergs
+ish_miss_prepare_toolkits
 
