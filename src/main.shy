@@ -4,8 +4,16 @@ refer `
 文档 https://golang.google.cn/doc/
 源码 https://github.com/golang/go
 `
+premenu
+
+source gogs/gogs.shy
+source tcmalloc/tcmalloc.shy
+
+source leveldb/leveldb.shy
+source rocksdb/rocksdb.shy
 
 source grafana/grafana.shy
+source prometheus/prometheus.shy
 
 source compile/compile.shy
 source runtime/runtime.shy
