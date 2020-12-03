@@ -7,8 +7,8 @@ refer `
 premenu
 
 source gogs/gogs.shy
-source tcmalloc/tcmalloc.shy
 
+source tcmalloc/tcmalloc.shy
 source leveldb/leveldb.shy
 source rocksdb/rocksdb.shy
 

@@ -18,4 +18,4 @@ import (
 	_ "github.com/shylinux/golang-story/src/tcmalloc"
 )
 
-func main() { println(ice.Run()) }
+func main() { print(ice.Run()) }
