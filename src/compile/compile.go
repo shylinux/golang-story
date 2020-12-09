@@ -41,13 +41,11 @@ var Index = &ice.Context{Name: GOLANG, Help: "golang",
 				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(COMPILE, "meta.bootstrap"))
 			}},
 			gdb.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
-				if cli.Follow(m, gdb.BUILD) {
-					return
-				}
-
-				m.Option(cli.CMD_DIR, path.Join(m.Conf(code.INSTALL, kit.META_PATH), "go/src"))
-				m.Option(cli.CMD_ENV, "CGO_ENABLE", "0", "PATH", os.Getenv("PATH"))
-				m.Go(func() { m.Cmdy(cli.SYSTEM, "./all.bash") })
+				cli.Follow(m, gdb.BUILD, func() {
+					m.Option(cli.CMD_DIR, path.Join(m.Conf(code.INSTALL, kit.META_PATH), "go/src"))
+					m.Option(cli.CMD_ENV, "CGO_ENABLE", "0", "PATH", os.Getenv("PATH"))
+					m.Cmdy(cli.SYSTEM, "./all.bash")
+				})
 			}},
 
 			"source": {Name: "source", Help: "源码", Hand: func(m *ice.Message, arg ...string) {
@@ -61,13 +59,12 @@ var Index = &ice.Context{Name: GOLANG, Help: "golang",
 				m.Cmd(cli.SYSTEM, "tar", "xvf", path.Base(name))
 			}},
 			"compile": {Name: "compile", Help: "编译", Hand: func(m *ice.Message, arg ...string) {
-				if cli.Follow(m, "compile") {
-					return
-				}
+				cli.Follow(m, "compile", func() {
+					m.Option(cli.CMD_DIR, path.Join("usr/golang", "go/src"))
+					m.Option(cli.CMD_ENV, "CGO_ENABLE", "0", "PATH", kit.Path("usr/install/go/bin")+":"+os.Getenv("PATH"), "GOROOT_BOOTSTRAP", kit.Path("usr/install/go"))
+					m.Cmdy(cli.SYSTEM, "./all.bash")
+				})
 
-				m.Option(cli.CMD_DIR, path.Join("usr/golang", "go/src"))
-				m.Option(cli.CMD_ENV, "CGO_ENABLE", "0", "PATH", kit.Path("usr/install/go/bin")+":"+os.Getenv("PATH"), "GOROOT_BOOTSTRAP", kit.Path("usr/install/go"))
-				m.Go(func() { m.Cmdy(cli.SYSTEM, "./all.bash") })
 			}},
 			"install": {Name: "install", Help: "安装", Hand: func(m *ice.Message, arg ...string) {
 				link := m.Conf(COMPILE, "meta."+runtime.GOOS)
