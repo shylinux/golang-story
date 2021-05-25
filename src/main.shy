@@ -1,3 +1,5 @@
+premenu
+
 title "golang"
 refer `
 官网 https://golang.google.cn
@@ -6,6 +8,6 @@ refer `
 `
 
 source compile/compile.shy
-source runtime/runtime.shy
 source project/project.shy
+source runtime/runtime.shy
 

@@ -1,9 +1,9 @@
 package project
 
 import (
+	"github.com/shylinux/golang-story/src/compile"
 	ice "github.com/shylinux/icebergs"
 	"github.com/shylinux/icebergs/base/cli"
-	"github.com/shylinux/icebergs/core/code"
 	kit "github.com/shylinux/toolkits"
 )
 
@@ -14,9 +14,6 @@ var Index = &ice.Context{Name: PROJECT, Help: "官方库",
 		PROJECT: {Name: PROJECT, Help: "官方库", Value: kit.Data()},
 	},
 	Commands: map[string]*ice.Command{
-		ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
-		ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {}},
-
 		PROJECT: {Name: "project", Help: "官方库", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 			if len(arg) == 0 {
 				m.Cmdy(cli.SYSTEM, "go", "list", "std")
@@ -28,4 +25,4 @@ var Index = &ice.Context{Name: PROJECT, Help: "官方库",
 	},
 }
 
-func init() { code.Index.Register(Index, nil) }
+func init() { compile.Index.Merge(Index) }
