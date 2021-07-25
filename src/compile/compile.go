@@ -23,12 +23,12 @@ const COMPILE = "compile"
 var Index = &ice.Context{Name: GOLANG, Help: "golang",
 	Configs: map[string]*ice.Config{
 		COMPILE: {Name: COMPILE, Help: "编译器", Value: kit.Data(
+			BOOTSTRAP, "https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz",
+			cli.SOURCE, "https://golang.google.cn/dl/go1.15.5.src.tar.gz",
+
 			cli.LINUX, "https://golang.google.cn/dl/go1.15.5.linux-amd64.tar.gz",
 			cli.DARWIN, "https://golang.google.cn/dl/go1.15.5.darwin-amd64.tar.gz",
 			cli.WINDOWS, "https://golang.google.cn/dl/go1.15.5.windows-amd64.zip",
-
-			cli.SOURCE, "https://golang.google.cn/dl/go1.15.5.src.tar.gz",
-			BOOTSTRAP, "https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz",
 		)},
 	},
 	Commands: map[string]*ice.Command{
@@ -43,11 +43,11 @@ var Index = &ice.Context{Name: GOLANG, Help: "golang",
 				m.Cmd(cli.SYSTEM, "./all.bash")
 				m.ProcessHold()
 			}},
-
-			"source": {Name: "source", Help: "源码", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(COMPILE, kit.META_SOURCE))
+			cli.SOURCE: {Name: "source", Help: "源码", Hand: func(m *ice.Message, arg ...string) {
+				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(COMPILE, kit.Keym(cli.SOURCE)))
 			}},
-			"compile": {Name: "compile", Help: "编译", Hand: func(m *ice.Message, arg ...string) {
+
+			COMPILE: {Name: "compile", Help: "编译", Hand: func(m *ice.Message, arg ...string) {
 				web.PushStream(m)
 				m.Option(cli.CMD_DIR, path.Join(m.Conf(code.INSTALL, kit.META_PATH), "go/src"))
 				m.Option(cli.CMD_ENV, cli.HOME, os.Getenv(cli.HOME), "CGO_ENABLE", "0",
@@ -58,7 +58,7 @@ var Index = &ice.Context{Name: GOLANG, Help: "golang",
 				m.Cmd(cli.SYSTEM, "./all.bash")
 				m.ProcessHold()
 			}},
-			"install": {Name: "install", Help: "安装", Hand: func(m *ice.Message, arg ...string) {
+			code.INSTALL: {Name: "install", Help: "安装", Hand: func(m *ice.Message, arg ...string) {
 				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(COMPILE, kit.Keym(runtime.GOOS)), ice.USR_LOCAL)
 			}},
 		}, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
