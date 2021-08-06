@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	GOLANG    = "golang"
 	BOOTSTRAP = "bootstrap"
+	GOLANG    = "golang"
 )
 const COMPILE = "compile"
 

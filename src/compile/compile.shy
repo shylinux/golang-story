@@ -1,6 +1,6 @@
 chapter "compile"
 field "安装" web.code.golang.compile
-field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 1`
+field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`
 
 section "编译安装"
 spark shell `
