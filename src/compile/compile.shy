@@ -20,11 +20,9 @@ spark shell `
 cd ~
 wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
 tar xvf go1.15.5.src.tar.gz && cd go/src
-
 ./all.bash
 `
 
-section "使用体验"
 spark shell `
 cd ../
 bin/go version
@@ -42,4 +40,3 @@ GO语言中文网 https://studygolang.com/
 刷题 https://leetcode.com/
 CSDN https://www.csdn.net/
 `
-

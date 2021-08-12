@@ -1,23 +1,40 @@
 chapter "project"
 
+section "标准库"
+spark `
+io net bytes bufio database
+fmt unicode strings strconv regexp
+math sort hash crypto container index
+mime text html image encoding compress archive
+os path time flag sync expvar plugin context errors log
+cmd go unsafe internal reflect builtin runtime syscall testing debug
+`
+
 section "toml 配置"
 refer `
 源码 https://github.com/toml-lang/toml
 `
 
 section "viper 配置"
-refer "官网" `
+refer `
 源码 https://github.com/spf13/viper
 `
 
 section "zap 日志"
-refer "官网" `
+refer `
 源码 https://github.com/uber-go/zap
 `
 
 section "gin 框架"
-refer "官网" `
+refer `
 源码 https://github.com/gin-gonic/gin
+`
+
+section "protobuf 协议"
+refer `
+文档 https://developers.google.cn/protocol-buffers/
+源码 https://github.com/protocolbuffers/protobuf
+插件 https://github.com/golang/protobuf
 `
 
 section "raft 协议"
@@ -27,7 +44,7 @@ refer `
 `
 
 section "ledisdb 缓存"
-refer "官网" `
+refer `
 codis https://github.com/CodisLabs/codis
 ledisdb https://github.com/ledisdb/ledisdb
 redis https://github.com/gomodule/redigo/redis
@@ -35,19 +52,9 @@ rocksdb https://github.com/tecbot/gorocksdb
 leveldb https://github.com/syndtr/goleveldb
 `
 
-section "protobuf 协议"
-refer "官网" `
-文档 https://developers.google.cn/protocol-buffers/
-源码 https://github.com/protocolbuffers/protobuf
-插件 https://github.com/golang/protobuf
-`
-
 section "gorm 数据库"
 refer `
 源码 https://github.com/jinzhu/gorm
 文档 http://gorm.book.jasperxu.com/
 `
-
-section "strings"
-field "源代码" web.code.inner args `[ usr/local/go/src strings/strings.go ]`
 
