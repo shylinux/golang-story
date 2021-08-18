@@ -1,11 +1,11 @@
 package gogs
 
 import (
-	ice "github.com/shylinux/icebergs"
-	"github.com/shylinux/icebergs/base/gdb"
-	"github.com/shylinux/icebergs/base/web"
-	"github.com/shylinux/icebergs/core/code"
-	kit "github.com/shylinux/toolkits"
+	ice "shylinux.com/x/icebergs"
+	"shylinux.com/x/icebergs/base/gdb"
+	"shylinux.com/x/icebergs/base/web"
+	"shylinux.com/x/icebergs/core/code"
+	kit "shylinux.com/x/toolkits"
 
 	"path"
 )
