@@ -28,15 +28,3 @@ cd ../
 bin/go version
 `
 
-return
-refer `
-C语言中文网 http://c.biancheng.net/
-GO语言中文网 https://studygolang.com/
-入门教程 https://www.runoob.com/go/go-tutorial.html
-脚本之家 https://www.jb51.net/books/
-实验楼 https://www.shiyanlou.com/
-慕课网 https://coding.imooc.com/
-贴吧 https://www.golangtc.com/
-刷题 https://leetcode.com/
-CSDN https://www.csdn.net/
-`

@@ -1,8 +1,9 @@
 module shylinux.com/x/golang-story
 
-go 1.13
+go 1.11
 
 require (
-	shylinux.com/x/icebergs v0.4.4
-	shylinux.com/x/toolkits v0.3.1
+	shylinux.com/x/ice v0.2.0
+	shylinux.com/x/icebergs v0.4.8
+	shylinux.com/x/toolkits v0.3.2
 )

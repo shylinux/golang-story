@@ -1,13 +1,13 @@
 package tcmalloc
 
 import (
+	"path"
+
 	ice "shylinux.com/x/icebergs"
-	"shylinux.com/x/icebergs/base/gdb"
+	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
-
-	"path"
 )
 
 const TCMALLOC = "tcmalloc"
@@ -26,11 +26,11 @@ var Index = &ice.Context{Name: TCMALLOC, Help: "命令行",
 			web.DOWNLOAD: {Name: "download", Help: "下载", Hand: func(m *ice.Message, arg ...string) {
 				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(TCMALLOC, kit.META_SOURCE))
 			}},
-			gdb.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, gdb.BUILD, m.Conf(TCMALLOC, kit.META_SOURCE))
+			cli.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
+				m.Cmdy(code.INSTALL, cli.BUILD, m.Conf(TCMALLOC, kit.META_SOURCE))
 			}},
-			gdb.START: {Name: "start", Help: "启动", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, gdb.START, m.Conf(TCMALLOC, kit.META_SOURCE), "bin/tcmalloc")
+			cli.START: {Name: "start", Help: "启动", Hand: func(m *ice.Message, arg ...string) {
+				m.Cmdy(code.INSTALL, cli.START, m.Conf(TCMALLOC, kit.META_SOURCE), "bin/tcmalloc")
 			}},
 		}, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 			m.Cmdy(code.INSTALL, path.Base(m.Conf(TCMALLOC, kit.META_SOURCE)), arg)

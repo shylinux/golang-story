@@ -10,24 +10,19 @@ os path time flag sync expvar plugin context errors log
 cmd go unsafe internal reflect builtin runtime syscall testing debug
 `
 
-section "toml 配置"
+section "服务器"
 refer `
-源码 https://github.com/toml-lang/toml
+配置 https://github.com/spf13/viper
+配置 https://github.com/toml-lang/toml
+日志 https://github.com/uber-go/zap
+框架 https://github.com/gin-gonic/gin
+存储 https://github.com/jinzhu/gorm
 `
 
-section "viper 配置"
+section "raft 协议"
 refer `
-源码 https://github.com/spf13/viper
-`
-
-section "zap 日志"
-refer `
-源码 https://github.com/uber-go/zap
-`
-
-section "gin 框架"
-refer `
-源码 https://github.com/gin-gonic/gin
+官网 https://raft.github.io/
+源码 https://github.com/lni/dragonboat
 `
 
 section "protobuf 协议"
@@ -35,12 +30,6 @@ refer `
 文档 https://developers.google.cn/protocol-buffers/
 源码 https://github.com/protocolbuffers/protobuf
 插件 https://github.com/golang/protobuf
-`
-
-section "raft 协议"
-refer `
-官网 https://raft.github.io/
-源码 https://github.com/lni/dragonboat
 `
 
 section "ledisdb 缓存"

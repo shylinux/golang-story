@@ -2,7 +2,7 @@ package leveldb
 
 import (
 	ice "shylinux.com/x/icebergs"
-	"shylinux.com/x/icebergs/base/gdb"
+	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
@@ -26,11 +26,11 @@ var Index = &ice.Context{Name: LEVELDB, Help: "命令行",
 			web.DOWNLOAD: {Name: "download", Help: "下载", Hand: func(m *ice.Message, arg ...string) {
 				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(LEVELDB, kit.META_SOURCE))
 			}},
-			gdb.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, gdb.BUILD, m.Conf(LEVELDB, kit.META_SOURCE))
+			cli.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
+				m.Cmdy(code.INSTALL, cli.BUILD, m.Conf(LEVELDB, kit.META_SOURCE))
 			}},
-			gdb.START: {Name: "start", Help: "启动", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, gdb.START, m.Conf(LEVELDB, kit.META_SOURCE), "bin/leveldb")
+			cli.START: {Name: "start", Help: "启动", Hand: func(m *ice.Message, arg ...string) {
+				m.Cmdy(code.INSTALL, cli.START, m.Conf(LEVELDB, kit.META_SOURCE), "bin/leveldb")
 			}},
 		}, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 			m.Cmdy(code.INSTALL, path.Base(m.Conf(LEVELDB, kit.META_SOURCE)), arg)
