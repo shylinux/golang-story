@@ -1,8 +1,8 @@
 title "golang"
 refer `
 官网 https://golang.google.cn
-文档 https://golang.google.cn/doc/
 源码 https://github.com/golang/go
+文档 https://golang.google.cn/doc/
 `
 
 source compile/compile.shy

@@ -30,7 +30,7 @@ type Compile struct {
 	c       string `name:"c" help:"源码"`
 	compile string `name:"compile" help:"编译"`
 	install string `name:"install" help:"安装"`
-	list    string `name:"list path auto install build download compile c" help:"编译器"`
+	list    string `name:"list path auto install order build download compile c" help:"编译器"`
 }
 
 func (c Compile) C(m *ice.Message, arg ...string) {
@@ -48,6 +48,9 @@ func (c Compile) Build(m *ice.Message, arg ...string) {
 		cli.PATH, strings.Join([]string{_path(m, BOOTSTRAP, "go/bin"), os.Getenv(cli.PATH)}, ":"),
 	)
 	c.Code.Stream(m, _path(m, "go/src"), "./all.bash")
+}
+func (c Compile) Order(m *ice.Message, arg ...string) {
+	c.Code.Order(m, "go", "bin")
 }
 func (c Compile) Install(m *ice.Message, arg ...string) {
 	c.Code.Download(m, m.Config(runtime.GOOS), "usr/local")
