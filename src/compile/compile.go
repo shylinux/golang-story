@@ -56,8 +56,8 @@ func (c Compile) Install(m *ice.Message, arg ...string) {
 	c.Code.Download(m, m.Config(runtime.GOOS), "usr/local")
 }
 func (c Compile) List(m *ice.Message, arg ...string) {
-	m.Option(nfs.DIR_ROOT, "usr/local/go")
-	m.Cmdy(nfs.CAT, arg)
+	m.Option(nfs.DIR_ROOT, "usr/local/go/bin")
+	m.Cmdy(nfs.DIR, arg)
 }
 
 func init() { ice.Cmd("web.code.golang.compile", Compile{}) }
