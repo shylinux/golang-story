@@ -23,11 +23,11 @@ func (p protobuf) Install(m *ice.Message, arg ...string) {
 	if !cli.IsSuccess(m.Cmd("protoc")) {
 		// 下载
 		msg := m.Cmd(web.SPIDE, "dev", web.CACHE, http.MethodGet, m.Conf(m.PrefixKey(), "meta.protoc"))
-		p := path.Join(m.Conf(code.INSTALL, kit.META_PATH), "protoc.zip")
+		p := path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protoc.zip")
 		m.Cmd(web.CACHE, web.WATCH, msg.Append(web.DATA), p)
 
 		// 解压
-		m.Option(cli.CMD_DIR, m.Conf(code.INSTALL, kit.META_PATH))
+		m.Option(cli.CMD_DIR, m.Conf(code.INSTALL, kit.Keym(nfs.PATH)))
 		m.Cmd(cli.SYSTEM, "unzip", "protoc.zip")
 
 		// 安装
@@ -35,11 +35,11 @@ func (p protobuf) Install(m *ice.Message, arg ...string) {
 	}
 
 	// 下载
-	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.META_PATH)))
-	m.Cmd(cli.SYSTEM, "git", "clone", m.Conf(m.PrefixKey(), kit.META_SOURCE))
+	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH))))
+	m.Cmd(cli.SYSTEM, "git", "clone", m.Config(nfs.SOURCE))
 
 	// 编译
-	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.META_PATH), "protobuf/protoc-gen-go"))
+	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protobuf/protoc-gen-go"))
 	m.Cmd(cli.SYSTEM, "go", "build")
 
 	// 安装

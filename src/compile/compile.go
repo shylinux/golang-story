@@ -63,5 +63,5 @@ func (c Compile) List(m *ice.Message, arg ...string) {
 func init() { ice.Cmd("web.code.golang.compile", Compile{}) }
 
 func _path(m *ice.Message, arg ...string) string {
-	return path.Join(m.Conf(code.INSTALL, kit.META_PATH), path.Join(arg...))
+	return path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), path.Join(arg...))
 }
