@@ -20,7 +20,7 @@ type protobuf struct {
 }
 
 func (p protobuf) Install(m *ice.Message, arg ...string) {
-	if !cli.IsSuccess(m.Cmd("protoc")) {
+	if !cli.IsSuccess(m.Cmd("protoc").Message) {
 		// 下载
 		msg := m.Cmd(web.SPIDE, "dev", web.CACHE, http.MethodGet, m.Conf(m.PrefixKey(), "meta.protoc"))
 		p := path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protoc.zip")
