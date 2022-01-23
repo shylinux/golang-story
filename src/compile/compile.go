@@ -50,6 +50,7 @@ func (c Compile) Build(m *ice.Message, arg ...string) {
 	c.Code.Stream(m, _path(m, "go/src"), "./all.bash")
 }
 func (c Compile) Order(m *ice.Message, arg ...string) {
+	m.Cmd(nfs.PUSH, ice.ETC_PATH, "usr/local/go/bin"+ice.NL)
 	c.Code.Order(m, "go", "bin")
 }
 func (c Compile) Install(m *ice.Message, arg ...string) {
