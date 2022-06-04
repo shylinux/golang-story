@@ -41,7 +41,7 @@ func (c Compile) Compile(m *ice.Message, arg ...string) {
 	c.Code.Stream(m, _path(m, BOOTSTRAP, "go/src"), "./all.bash")
 }
 func (c Compile) Download(m *ice.Message, arg ...string) {
-	c.Code.Download(m, m.Config(nfs.SOURCE), arg...)
+	c.Code.Download(m, m.Config(nfs.SOURCE))
 }
 func (c Compile) Build(m *ice.Message, arg ...string) {
 	m.Option(cli.CMD_ENV, cli.HOME, os.Getenv(cli.HOME), "CGO_ENABLE", "0", "GOROOT_BOOTSTRAP", _path(m, BOOTSTRAP),
