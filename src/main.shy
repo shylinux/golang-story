@@ -5,6 +5,8 @@ refer `
 文档 https://golang.google.cn/doc/
 `
 
+field "安装" web.code.golang.compile
+
 source compile/compile.shy
 source project/project.shy
 source runtime/runtime.shy

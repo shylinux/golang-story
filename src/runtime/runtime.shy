@@ -1,7 +1,16 @@
 chapter "runtime"
+label `
+os flag path time sync expvar context errors plugin
+io log fmt net bufio bytes
+math sort hash index container database vendor
+unicode strings strconv regexp mime text html image encoding crypto archive compress
+go debug testing reflect runtime internal unsafe syscall
+` compact true
+
+field "源代码" web.code.inner args `usr/local/go/src/ runtime/map.go`
+return
 
 section "数据结构"
-field "源代码" web.code.inner args `usr/local/go/src/runtime map.go`
 
 section "协程调度"
 field "源代码" web.code.inner args `usr/local/go/src/runtime runtime2.go`

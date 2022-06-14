@@ -1,6 +1,13 @@
 chapter "compile"
-field "安装" web.code.golang.compile
+label `
+env run test build clean
+fmt fix generate tool
+doc get mod install list
+bug vet help version
+` compact true
+
 field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`
+return
 
 section "编译安装"
 spark shell `
@@ -16,6 +23,7 @@ tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
 export CGO_ENABLED=0 
 ./all.bash
 `
+
 spark shell `
 cd ~
 wget https://golang.google.cn/dl/go1.15.5.src.tar.gz

@@ -1,35 +1,61 @@
 chapter "project"
-
-section "命令行"
-spark `
-run test env version mod get doc list
-fmt vet fix generate install build clean tool bug
-`
-
-section "标准库"
-spark `
-math hash crypto index container database
-fmt sort regexp strconv strings unicode bytes bufio
-io log net mime text html image encoding archive compress
-os flag path time sync expvar errors context runtime testing
-go internal reflect unsafe syscall plugin debug vendor
-`
-
-section "流行库"
 refer `
-https://github.com/gin-gonic/gin
-https://github.com/pion/webrtc
+https://github.com/spf13/cobra
+https://github.com/fyne-io/fyne
 https://github.com/webview/webview
+https://github.com/gin-gonic/gin
+
+https://github.com/golang/protobuf
 https://github.com/gorilla/websocket
+https://github.com/pion/webrtc
+https://github.com/tidwall/gjson
+
+https://github.com/golang/oauth2
+https://github.com/ouqiang/gocron
+https://github.com/stretchr/testify
+https://github.com/golang/mock
+https://github.com/google/uuid
+https://github.com/fsnotify/fsnotify
+https://github.com/go-swagger/go-swagger
+
+https://github.com/segmentio/kafka-go
+https://github.com/apache/pulsar-client-go
+https://github.com/elastic/go-elasticsearch
 https://github.com/go-redis/redis
 https://github.com/go-gorm/gorm
+https://github.com/spf13/viper
 https://github.com/uber-go/zap
-https://github.com/spf13/cobra
-https://github.com/fatih/vim-go
-https://github.com/fyne-io/fyne
-https://github.com/golang/protobuf
-https://github.com/elastic/go-elasticsearch
 `
+
+refer `
+https://github.com/go-git/go-git
+https://github.com/go-gitea/gitea
+https://github.com/lni/dragonboat
+https://github.com/CodisLabs/codis
+https://github.com/kubernetes/kubernetes
+https://github.com/docker/engine
+
+https://github.com/go-delve/delve
+https://github.com/fatih/vim-go
+https://github.com/google/gops
+`
+
+refer `
+https://github.com/talkgo/read
+https://github.com/avelino/awesome-go
+https://github.com/Alikhll/golang-developer-roadmap
+
+https://github.com/chai2010/advanced-go-programming-book
+https://github.com/chai2010/go-ast-book
+https://github.com/tmrts/go-patterns
+https://github.com/dariubs/GoBooks
+
+https://github.com/halfrost/LeetCode-Go
+https://github.com/doocs/leetcode
+`
+return
+
+section "流行库"
 
 section "raft 协议"
 refer `
@@ -51,11 +77,5 @@ ledisdb https://github.com/ledisdb/ledisdb
 redis https://github.com/gomodule/redigo/redis
 rocksdb https://github.com/tecbot/gorocksdb
 leveldb https://github.com/syndtr/goleveldb
-`
-
-section "gorm 数据库"
-refer `
-源码 https://github.com/jinzhu/gorm
-文档 http://gorm.book.jasperxu.com/
 `
 

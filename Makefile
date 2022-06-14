@@ -1,8 +1,12 @@
-export GOPROXY=https://goproxy.cn,direct
-export GOPRIVATE=shylinux.com,github.com
 export CGO_ENABLED=0
 
-all:
+binarys = bin/ice.bin
+
+all: def
 	@echo && date
-	[ -f src/version.go ] || echo "package main" > src/version.go
-	go build -v -o bin/ice.bin src/main.go src/version.go && chmod u+x bin/ice.bin && ./bin/ice.sh restart
+	go build -v -o ${binarys} src/main.go src/version.go src/binpack.go && ./${binarys} forever restart &>/dev/null
+
+def:
+	@ [ -f src/version.go ] || echo "package main" > src/version.go
+	@ [ -f src/binpack.go ] || echo "package main" > src/binpack.go
+
