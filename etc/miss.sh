@@ -15,5 +15,7 @@ ish_miss_prepare_contexts
 ish_miss_prepare_intshell
 ish_miss_prepare_icebergs
 ish_miss_prepare_toolkits
+ish_miss_prepare_volcanos
+ish_miss_prepare_learning
 
 ish_miss_make; if [ -n "$*" ]; then ./bin/ice.bin forever serve "$@"; fi
