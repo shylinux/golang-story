@@ -17,6 +17,7 @@ https://github.com/golang/mock
 https://github.com/google/uuid
 https://github.com/fsnotify/fsnotify
 https://github.com/go-swagger/go-swagger
+https://github.com/go-admin-team/go-admin
 
 https://github.com/segmentio/kafka-go
 https://github.com/apache/pulsar-client-go
@@ -32,7 +33,6 @@ https://github.com/go-git/go-git
 https://github.com/go-gitea/gitea
 https://github.com/lni/dragonboat
 https://github.com/CodisLabs/codis
-https://github.com/kubernetes/kubernetes
 https://github.com/docker/engine
 
 https://github.com/go-delve/delve

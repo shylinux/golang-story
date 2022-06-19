@@ -1,9 +1,9 @@
-
-chapter "grafana"
+section "grafana"
 refer `
 官网 https://grafana.com/
-文档 https://grafana.com/docs/grafana/latest/installation/rpm/
+文档 https://grafana.com/docs/
 源码 https://github.com/grafana/grafana
+下载 https://grafana.com/grafana/download
 `
 
-field "grafana" web.code.grafana.grafana
+field "grafana" web.code.golang.grafana

@@ -1,41 +1,28 @@
 package prometheus
 
 import (
-	ice "shylinux.com/x/icebergs"
-	"shylinux.com/x/icebergs/base/cli"
-	"shylinux.com/x/icebergs/base/web"
-	"shylinux.com/x/icebergs/core/code"
-	kit "shylinux.com/x/toolkits"
-
+	"os"
 	"path"
+
+	"shylinux.com/x/ice"
+	kit "shylinux.com/x/toolkits"
 )
 
-const PROMETHEUS = "prometheus"
-
-var Index = &ice.Context{Name: PROMETHEUS, Help: "命令行",
-	Configs: map[string]*ice.Config{
-		PROMETHEUS: {Name: PROMETHEUS, Help: "命令行", Value: kit.Data(
-			"source", "http://mirrors.aliyun.com/gnu/prometheus/prometheus-4.2.53.tar.gz",
-		)},
-	},
-	Commands: map[string]*ice.Command{
-		ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { m.Load() }},
-		ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { m.Save() }},
-
-		PROMETHEUS: {Name: "prometheus port path auto start build download", Help: "命令行", Action: map[string]*ice.Action{
-			web.DOWNLOAD: {Name: "download", Help: "下载", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(PROMETHEUS, kit.META_SOURCE))
-			}},
-			cli.BUILD: {Name: "build", Help: "构建", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, cli.BUILD, m.Conf(PROMETHEUS, kit.META_SOURCE))
-			}},
-			cli.START: {Name: "start", Help: "启动", Hand: func(m *ice.Message, arg ...string) {
-				m.Cmdy(code.INSTALL, cli.START, m.Conf(PROMETHEUS, kit.META_SOURCE), "bin/prometheus")
-			}},
-		}, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-			m.Cmdy(code.INSTALL, path.Base(m.Conf(PROMETHEUS, kit.META_SOURCE)), arg)
-		}},
-	},
+type prometheus struct {
+	ice.Code
+	linux string `data:"https://github.com/prometheus/prometheus/releases/download/v2.36.1/prometheus-2.36.1.linux-amd64.tar.gz"`
+	list  string `name:"list port path auto start install" help:"可视化"`
 }
 
-func init() { code.Index.Register(Index, &web.Frame{}) }
+func (s prometheus) Start(m *ice.Message, arg ...string) {
+	s.Code.Start(m, "", "bin/prometheus", func(p string) []string {
+		os.MkdirAll(path.Join(p, ice.BIN), ice.MOD_DIR)
+		os.Rename(path.Join(p, "prometheus"), path.Join(p, "bin/prometheus"))
+		return []string{kit.Format("--web.listen-address=:%s", path.Base(p))}
+	})
+}
+func (s prometheus) List(m *ice.Message, arg ...string) {
+	s.Code.List(m, "", arg...)
+}
+
+func init() { ice.CodeModCmd(prometheus{}) }

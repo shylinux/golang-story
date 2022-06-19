@@ -2,27 +2,71 @@ package grafana
 
 import (
 	"path"
-	"runtime"
+	"strings"
 
 	"shylinux.com/x/ice"
-	"shylinux.com/x/icebergs/base/cli"
-	"shylinux.com/x/icebergs/base/web"
-	"shylinux.com/x/icebergs/core/code"
+	"shylinux.com/x/icebergs/base/mdb"
 	kit "shylinux.com/x/toolkits"
 )
 
 type grafana struct {
+	ice.Code
 	linux string `data:"https://dl.grafana.com/oss/release/grafana-7.3.4.linux-amd64.tar.gz"`
+	list  string `name:"list port path auto start install" help:"可视化"`
 }
 
-func (g grafana) Install(m *ice.Message, arg ...string) {
-	m.Cmdy(code.INSTALL, web.DOWNLOAD, m.Conf(m.PrefixKey(), kit.Keym(runtime.GOOS)))
+func (s grafana) Start(m *ice.Message, arg ...string) {
+	s.Code.Start(m, "", "bin/grafana-server", func(p string) {
+		port := path.Base(p)
+		web := m.Option(ice.MSG_USERWEB)
+		hostname := m.OptionUserWeb().Hostname()
+		client_id := m.Cmdx("web.chat.oauth.authorize", mdb.CREATE, "redirect_uri", kit.Format("http://%s:%s/login/generic_oauth", hostname, port))
+		value := kit.KeyValue(nil, "", kit.Dict(
+			"server", kit.Dict(
+				"domain", hostname,
+				"http_addr", hostname,
+				"http_port", port,
+			),
+			"security", kit.Dict(
+				"admin_user", m.Option(ice.MSG_USERNAME),
+			),
+			"auth", kit.Dict(
+				"oauth_auto_login", "true",
+				"disable_login_form", "true",
+				"disable_signout_menu", "true",
+				"generic_oauth", kit.Dict(
+					"enabled", "true",
+					"client_id", client_id,
+					"scopes", "openid profile email",
+					"auth_url", kit.MergeURL2(web, "/chat/oauth/authorize"),
+					"token_url", kit.MergeURL2(web, "/chat/oauth/token"),
+					"api_url", kit.MergeURL2(web, "/chat/oauth/userinfo"),
+				),
+			),
+		))
+
+		section := ""
+		kit.Rewrite(path.Join(p, "conf/defaults.ini"), func(p string) string {
+			if strings.TrimSpace(p) == "" {
+				return p
+			}
+			if strings.HasPrefix(p, "#") {
+				return p
+			}
+			if strings.HasPrefix(p, "[") {
+				section = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(p), "["), "]"))
+				return p
+			}
+			ls := kit.Split(p, " =", " =", " =")
+			if v, ok := value[kit.Keys(section, ls[0])]; ok {
+				return kit.Format("%s = %s", ls[0], v)
+			}
+			return p
+		})
+	})
 }
-func (g grafana) Start(m *ice.Message, arg ...string) {
-	m.Cmdy(code.INSTALL, cli.START, m.Conf(m.PrefixKey(), kit.META_SOURCE), "bin/grafana")
-}
-func (p grafana) List(m *ice.Message, arg ...string) {
-	m.Cmdy(code.INSTALL, path.Base(m.Conf(m.PrefixKey(), kit.META_SOURCE)), arg)
+func (s grafana) List(m *ice.Message, arg ...string) {
+	s.Code.List(m, "", arg...)
 }
 
-func init() { ice.Cmd("web.code.golang.project", grafana{}) }
+func init() { ice.CodeModCmd(grafana{}) }
