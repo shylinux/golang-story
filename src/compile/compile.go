@@ -3,13 +3,11 @@ package compile
 import (
 	"os"
 	"path"
-	"runtime"
 	"strings"
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/nfs"
-	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -29,7 +27,6 @@ type Compile struct {
 
 	c       string `name:"c" help:"源码"`
 	compile string `name:"compile" help:"编译"`
-	install string `name:"install" help:"安装"`
 	list    string `name:"list path auto install order build download compile c" help:"编译器"`
 }
 
@@ -40,29 +37,26 @@ func (c Compile) Compile(m *ice.Message, arg ...string) {
 	m.Option(cli.CMD_ENV, cli.PATH, os.Getenv(cli.PATH), "CGO_ENABLE", "0")
 	c.Code.Stream(m, _path(m, BOOTSTRAP, "go/src"), "./all.bash")
 }
-func (c Compile) Download(m *ice.Message, arg ...string) {
-	c.Code.Download(m, m.Config(nfs.SOURCE))
-}
 func (c Compile) Build(m *ice.Message, arg ...string) {
-	m.Option(cli.CMD_ENV, cli.HOME, os.Getenv(cli.HOME), "CGO_ENABLE", "0", "GOROOT_BOOTSTRAP", _path(m, BOOTSTRAP),
-		cli.PATH, strings.Join([]string{_path(m, BOOTSTRAP, "go/bin"), os.Getenv(cli.PATH)}, ":"),
+	m.Option(cli.CMD_ENV, cli.HOME, os.Getenv(cli.HOME), "CGO_ENABLE", "0", "GOROOT_BOOTSTRAP", kit.Path(_path(m, BOOTSTRAP)),
+		cli.PATH, strings.Join([]string{kit.Path(_path(m, BOOTSTRAP, "go/bin")), os.Getenv(cli.PATH)}, ice.DF),
 	)
 	c.Code.Stream(m, _path(m, "go/src"), "./all.bash")
 }
 func (c Compile) Order(m *ice.Message, arg ...string) {
-	m.Cmd(nfs.PUSH, ice.ETC_PATH, "usr/local/go/bin"+ice.NL)
-	c.Code.Order(m, "go", "bin")
+	c.Code.Order(m, _path(m, "go"), ice.BIN)
 }
 func (c Compile) Install(m *ice.Message, arg ...string) {
-	c.Code.Download(m, m.Config(runtime.GOOS), "usr/local")
+	c.Code.Install(m, "", ice.USR_LOCAL)
+	m.Cmd(cli.SYSTEM, nfs.PUSH, ice.USR_LOCAL_GO_BIN)
 }
 func (c Compile) List(m *ice.Message, arg ...string) {
-	m.Option(nfs.DIR_ROOT, "usr/local/go/bin")
+	m.Option(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN)
 	m.Cmdy(nfs.DIR, arg)
 }
 
-func init() { ice.Cmd("web.code.golang.compile", Compile{}) }
+func init() { ice.CodeModCmd(Compile{}) }
 
 func _path(m *ice.Message, arg ...string) string {
-	return path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), path.Join(arg...))
+	return path.Join(ice.USR_INSTALL, path.Join(arg...))
 }

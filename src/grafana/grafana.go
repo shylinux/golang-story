@@ -6,6 +6,7 @@ import (
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/mdb"
+	"shylinux.com/x/icebergs/core/chat/oauth"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -20,24 +21,18 @@ func (s grafana) Start(m *ice.Message, arg ...string) {
 		port := path.Base(p)
 		web := m.Option(ice.MSG_USERWEB)
 		hostname := m.OptionUserWeb().Hostname()
-		client_id := m.Cmdx("web.chat.oauth.authorize", mdb.CREATE, "redirect_uri", kit.Format("http://%s:%s/login/generic_oauth", hostname, port))
+		client_id := m.Cmdx(oauth.Prefix(oauth.AUTHORIZE), mdb.CREATE, oauth.REDIRECT_URI, kit.Format("http://%s:%s/login/generic_oauth", hostname, port))
 		value := kit.KeyValue(nil, "", kit.Dict(
-			"server", kit.Dict(
-				"domain", hostname,
-				"http_addr", hostname,
-				"http_port", port,
-			),
+			"server", kit.Dict("domain", hostname, "http_addr", hostname, "http_port", port),
 			"security", kit.Dict(
-				"admin_user", m.Option(ice.MSG_USERNAME),
+			// "admin_user", m.Option(ice.MSG_USERNAME),
 			),
 			"auth", kit.Dict(
-				"oauth_auto_login", "true",
-				"disable_login_form", "true",
-				"disable_signout_menu", "true",
+				// "oauth_auto_login", "true",
+				// "disable_login_form", "true",
+				// "disable_signout_menu", "true",
 				"generic_oauth", kit.Dict(
-					"enabled", "true",
-					"client_id", client_id,
-					"scopes", "openid profile email",
+					"enabled", "true", "client_id", client_id, "scopes", "openid profile email",
 					"auth_url", kit.MergeURL2(web, "/chat/oauth/authorize"),
 					"token_url", kit.MergeURL2(web, "/chat/oauth/token"),
 					"api_url", kit.MergeURL2(web, "/chat/oauth/userinfo"),

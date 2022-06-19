@@ -27,4 +27,4 @@ func (p gogs) List(m *ice.Message, arg ...string) {
 	m.Cmdy(code.INSTALL, path.Base(m.Conf(m.PrefixKey(), kit.META_SOURCE)), arg)
 }
 
-func init() { ice.Cmd("web.code.golang.project", gogs{}) }
+func init() { ice.CodeModCmd(gogs{}) }

@@ -1,4 +1,4 @@
-chapter "prometheus"
+section "prometheus"
 refer `
 官网 https://prometheus.io/
 文档 https://prometheus.io/docs/introduction/overview/
