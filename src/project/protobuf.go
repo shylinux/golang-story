@@ -6,6 +6,7 @@ import (
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
+	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
@@ -24,7 +25,7 @@ func (p protobuf) Install(m *ice.Message, arg ...string) {
 		// 下载
 		msg := m.Cmd(web.SPIDE, "dev", web.CACHE, http.MethodGet, m.Conf(m.PrefixKey(), "meta.protoc"))
 		p := path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protoc.zip")
-		m.Cmd(web.CACHE, web.WATCH, msg.Append(web.DATA), p)
+		m.Cmd(web.CACHE, web.WATCH, msg.Append(mdb.DATA), p)
 
 		// 解压
 		m.Option(cli.CMD_DIR, m.Conf(code.INSTALL, kit.Keym(nfs.PATH)))
