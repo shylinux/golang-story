@@ -8,16 +8,3 @@ go debug testing reflect runtime internal unsafe syscall
 ` compact true
 
 field "源代码" web.code.inner args `usr/local/go/src/ runtime/map.go`
-return
-
-section "数据结构"
-
-section "协程调度"
-field "源代码" web.code.inner args `usr/local/go/src/runtime runtime2.go`
-
-section "协程通信"
-field "源代码" web.code.inner args `usr/local/go/src/runtime chan.go`
-
-section "垃圾回收"
-field "源代码" web.code.inner args `usr/local/go/src/runtime mgc.go`
-

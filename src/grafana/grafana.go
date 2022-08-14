@@ -2,6 +2,7 @@ package grafana
 
 import (
 	"path"
+	"runtime"
 	"strings"
 
 	"shylinux.com/x/ice"
@@ -63,6 +64,7 @@ func (s grafana) Start(m *ice.Message, arg ...string) {
 }
 func (s grafana) List(m *ice.Message, arg ...string) {
 	s.Code.List(m, "", arg...)
+	m.EchoScript(kit.Format(`wget %s`, m.Config(runtime.GOOS)))
 }
 
 func init() { ice.CodeModCmd(grafana{}) }

@@ -1,9 +1,9 @@
 chapter "compile"
 label `
 env run test build clean
-fmt fix generate tool
 doc get mod install list
-bug vet help version
+fmt vet generate tool
+bug fix help version
 ` compact true
 
 field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`

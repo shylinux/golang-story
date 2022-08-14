@@ -3,6 +3,7 @@ package prometheus
 import (
 	"os"
 	"path"
+	"runtime"
 
 	"shylinux.com/x/ice"
 	kit "shylinux.com/x/toolkits"
@@ -23,6 +24,7 @@ func (s prometheus) Start(m *ice.Message, arg ...string) {
 }
 func (s prometheus) List(m *ice.Message, arg ...string) {
 	s.Code.List(m, "", arg...)
+	m.EchoScript(kit.Format(`wget %s`, m.Config(runtime.GOOS)))
 }
 
 func init() { ice.CodeModCmd(prometheus{}) }

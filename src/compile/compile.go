@@ -25,15 +25,15 @@ type Compile struct {
 	darwin    string `data:"https://golang.google.cn/dl/go1.15.5.darwin-amd64.tar.gz"`
 	windows   string `data:"https://golang.google.cn/dl/go1.15.5.windows-amd64.zip"`
 
-	c       string `name:"c" help:"源码"`
-	compile string `name:"compile" help:"编译"`
-	list    string `name:"list path auto install order build download compile c" help:"编译器"`
+	c    string `name:"c" help:"源码"`
+	gcc  string `name:"gcc" help:"编译"`
+	list string `name:"list path auto install order build download gcc c" help:"编译器"`
 }
 
 func (c Compile) C(m *ice.Message, arg ...string) {
 	c.Code.Download(m, m.Config(BOOTSTRAP), _path(m, BOOTSTRAP))
 }
-func (c Compile) Compile(m *ice.Message, arg ...string) {
+func (c Compile) Gcc(m *ice.Message, arg ...string) {
 	m.Option(cli.CMD_ENV, cli.PATH, os.Getenv(cli.PATH), "CGO_ENABLE", "0")
 	c.Code.Stream(m, _path(m, BOOTSTRAP, "go/src"), "./all.bash")
 }
