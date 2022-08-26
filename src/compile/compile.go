@@ -18,12 +18,11 @@ const (
 
 type Compile struct {
 	ice.Code
-
-	bootstrap string `data:"https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz"`
-	source    string `data:"https://golang.google.cn/dl/go1.15.5.src.tar.gz"`
 	linux     string `data:"https://golang.google.cn/dl/go1.15.5.linux-amd64.tar.gz"`
 	darwin    string `data:"https://golang.google.cn/dl/go1.15.5.darwin-amd64.tar.gz"`
 	windows   string `data:"https://golang.google.cn/dl/go1.15.5.windows-amd64.zip"`
+	bootstrap string `data:"https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz"`
+	source    string `data:"https://golang.google.cn/dl/go1.15.5.src.tar.gz"`
 
 	c    string `name:"c" help:"源码"`
 	gcc  string `name:"gcc" help:"编译"`
@@ -51,8 +50,7 @@ func (c Compile) Install(m *ice.Message, arg ...string) {
 	m.Cmd(cli.SYSTEM, nfs.PUSH, ice.USR_LOCAL_GO_BIN)
 }
 func (c Compile) List(m *ice.Message, arg ...string) {
-	m.Option(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN)
-	m.Cmdy(nfs.DIR, arg)
+	m.Cmdy(nfs.DIR, arg, kit.Dict(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN))
 }
 
 func init() { ice.CodeModCmd(Compile{}) }
