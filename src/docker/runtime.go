@@ -5,6 +5,7 @@ import (
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
+	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
 )
@@ -30,7 +31,7 @@ const (
 	CONTAINER_ID = "CONTAINER_ID"
 )
 
-type display struct {
+type runtime struct {
 	ice.Code
 	pull    string `name:"pull image=alpine" help:"下载"`
 	start   string `name:"start cmd=/bin/sh" help:"启动"`
@@ -41,42 +42,44 @@ type display struct {
 	list    string `name:"list IMAGE_ID CONTAINER_ID cmd auto" help:"容器"`
 }
 
-func (s display) host(m *ice.Message) string {
+func (s runtime) host(m *ice.Message) string {
 	return "unix://" + kit.Path("usr/install/docker/docker.sock")
 }
-func (s display) docker(m *ice.Message, arg ...string) string {
-	m.Option(cli.CMD_ENV, "DOCKER_HOST", s.host(m))
+func (s runtime) docker(m *ice.Message, arg ...string) string {
+	if nfs.ExistsFile(m.Message, s.host(m)) {
+		m.Option(cli.CMD_ENV, "DOCKER_HOST", s.host(m))
+	}
 	return m.Cmdx(cli.SYSTEM, DOCKER, arg)
 }
-func (s display) image(m *ice.Message, arg ...string) string {
+func (s runtime) image(m *ice.Message, arg ...string) string {
 	return s.docker(m, kit.Simple(IMAGE, arg)...)
 }
-func (s display) container(m *ice.Message, arg ...string) string {
+func (s runtime) container(m *ice.Message, arg ...string) string {
 	return s.docker(m, kit.Simple(CONTAINER, arg)...)
 }
 
-func (s display) Inputs(m *ice.Message, arg ...string) {
+func (s runtime) Inputs(m *ice.Message, arg ...string) {
 	switch arg[0] {
 	case IMAGE:
 		m.Push(arg[0], "busybox", "alpine", "centos", "ubuntu")
 	}
 }
-func (s display) Pull(m *ice.Message, arg ...string) {
+func (s runtime) Pull(m *ice.Message, arg ...string) {
 	s.image(m, PULL, m.Option(IMAGE))
 }
-func (s display) Start(m *ice.Message, arg ...string) {
+func (s runtime) Start(m *ice.Message, arg ...string) {
 	m.Option(CONTAINER_ID, s.container(m, RUN, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD)))
 	s.Serve(m)
 }
-func (s display) Serve(m *ice.Message, arg ...string) {
+func (s runtime) Serve(m *ice.Message, arg ...string) {
 	s.container(m, EXEC, m.Option(CONTAINER_ID), "wget", "-O", "/root/index.sh", web.MergeLink(m.Message, ice.PS))
 	s.container(m, EXEC, "-w", "/root", "-dt", m.Option(CONTAINER_ID), "sh", "/root/index.sh", "app", "dev", web.MergeLink(m.Message, ice.PS))
 }
-func (s display) Restart(m *ice.Message, arg ...string) {
+func (s runtime) Restart(m *ice.Message, arg ...string) {
 	s.container(m, RESTART, m.Option(CONTAINER_ID))
 	s.Serve(m)
 }
-func (s display) Stop(m *ice.Message, arg ...string) {
+func (s runtime) Stop(m *ice.Message, arg ...string) {
 	web.PushNoticeToast(m.Message, "process")
 	defer web.PushNoticeToast(m.Message, "success")
 	if m.Option("PID") != "" { // 结束进程
@@ -85,30 +88,30 @@ func (s display) Stop(m *ice.Message, arg ...string) {
 		s.container(m, STOP, m.Option(CONTAINER_ID))
 	}
 }
-func (s display) Open(m *ice.Message, arg ...string) {
+func (s runtime) Open(m *ice.Message, arg ...string) {
 	m.ProcessOpen(web.MergePod(m, m.Option(CONTAINER_ID)))
 }
-func (s display) Drop(m *ice.Message, arg ...string) {
+func (s runtime) Drop(m *ice.Message, arg ...string) {
 	if m.Option(CONTAINER_ID) != "" { // 删除容器
 		s.container(m, RM, m.Option(CONTAINER_ID))
 	} else if m.Option(IMAGE_ID) != "" { // 删除镜像
 		s.image(m, RM, m.Option(IMAGE_ID))
 	}
 }
-func (s display) Prune(m *ice.Message, arg ...string) {
+func (s runtime) Prune(m *ice.Message, arg ...string) {
 	if len(arg) > 0 { // 清理容器
 		m.Echo(s.container(m, PRUNE, "-f"))
 	} else { // 清理镜像
 		m.Echo(s.image(m, PRUNE, "-f"))
 	}
 }
-func (s display) Modify(m *ice.Message, arg ...string) {
+func (s runtime) Modify(m *ice.Message, arg ...string) {
 	switch arg[0] {
 	case "NAMES":
 		s.container(m, RENAME, m.Option(CONTAINER_ID), arg[1])
 	}
 }
-func (s display) List(m *ice.Message, arg ...string) {
+func (s runtime) List(m *ice.Message, arg ...string) {
 	if len(arg) < 1 || arg[0] == "" { // 镜像列表
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
 		m.Cut("CREATED,IMAGE_ID,SIZE,REPOSITORY,TAG")
@@ -127,15 +130,23 @@ func (s display) List(m *ice.Message, arg ...string) {
 
 	} else if len(arg) < 3 || arg[2] == "" { // 进程列表
 		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Xterm, s.Serve)
-		m.EchoScript(kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), arg[1]))
+		if nfs.ExistsFile(m.Message, s.host(m)) {
+			m.EchoScript(kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), arg[1]))
+		} else {
+			m.EchoScript(kit.Format("docker exec -w /root -it %s sh", arg[1]))
+		}
 
 	} else { // 执行命令
 		m.Echo(s.container(m, kit.Simple(EXEC, arg[1], kit.Split(arg[2], " ", " "))...))
 	}
 	m.StatusTimeCount()
 }
-func (s display) Xterm(m *ice.Message, arg ...string) {
-	s.Code.Xterm(m, kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), m.Option(CONTAINER_ID)), arg...)
+func (s runtime) Xterm(m *ice.Message, arg ...string) {
+	if nfs.ExistsFile(m.Message, s.host(m)) {
+		s.Code.Xterm(m, kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), m.Option(CONTAINER_ID)), arg...)
+	} else {
+		s.Code.Xterm(m, kit.Format("docker exec -w /root -it %s sh", m.Option(CONTAINER_ID)), arg...)
+	}
 }
 
-func init() { ice.CodeCtxCmd(display{}) }
+func init() { ice.CodeCtxCmd(runtime{}) }
