@@ -2,7 +2,6 @@ package grafana
 
 import (
 	"path"
-	"runtime"
 	"strings"
 
 	"shylinux.com/x/ice"
@@ -12,13 +11,13 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
-type grafana struct {
+type server struct {
 	ice.Code
 	linux string `data:"https://dl.grafana.com/oss/release/grafana-7.3.4.linux-amd64.tar.gz"`
 	list  string `name:"list port path auto start install" help:"可视化"`
 }
 
-func (s grafana) Start(m *ice.Message, arg ...string) {
+func (s server) Start(m *ice.Message, arg ...string) {
 	s.Code.Start(m, "", "bin/grafana-server", func(p string) {
 		port := path.Base(p)
 		url := m.Option(ice.MSG_USERWEB)
@@ -62,9 +61,8 @@ func (s grafana) Start(m *ice.Message, arg ...string) {
 		})
 	})
 }
-func (s grafana) List(m *ice.Message, arg ...string) {
+func (s server) List(m *ice.Message, arg ...string) {
 	s.Code.List(m, "", arg...)
-	m.EchoScript(kit.Format(`wget %s`, m.Config(runtime.GOOS)))
 }
 
-func init() { ice.CodeModCmd(grafana{}) }
+func init() { ice.CodeCtxCmd(server{}) }

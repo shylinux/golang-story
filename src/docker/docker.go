@@ -1,10 +1,11 @@
-package kubernetes
+package docker
 
 import "shylinux.com/x/ice"
 
 type runtime struct {
 	ice.Code
-	linux string `data:"https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-linux-x64.tar.xz"`
+	linux string `data:"https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz"`
+	list  string `name:"list path auto order install" help:"容器"`
 }
 
 func (s runtime) List(m *ice.Message, arg ...string) {

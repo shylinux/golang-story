@@ -1,0 +1,25 @@
+chapter "docker"
+refer `
+官网 https://www.docker.com/
+文档 https://docs.docker.com/
+源码 https://github.com/docker/docker-ce
+启动 https://docs.docker.com/engine/reference/commandline/dockerd/
+`
+field web.code.docker.runtime
+
+shell `
+wget https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz
+tar xvf docker-19.03.9.tgz && cd docker/
+
+cp * /usr/local/sbin
+sudo vi /etc/sudoers
+
+sudo dockerd --host unix://$PWD/docker.sock --pidfile $PWD/docker.pid --exec-root=$PWD/exec --data-root=$PWD/data --registry-mirror http://hub-mirror.c.163.com
+sudo chmod 0666 $PWD/docker.sock
+
+export DOCKER_HOST=unix://$PWD/docker.sock
+docker run -w /root -it alpine
+docker ps
+`
+
+field web.code.docker.display

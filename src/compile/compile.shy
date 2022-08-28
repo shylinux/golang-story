@@ -6,11 +6,10 @@ fmt vet generate tool
 bug fix help version
 ` compact true
 
-field "源码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`
-return
+field "源代码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`
 
 section "编译安装"
-spark shell `
+shell `
 yum install -y wget make gcc
 yum install -y diffutils.x86_64
 
@@ -24,15 +23,14 @@ export CGO_ENABLED=0
 ./all.bash
 `
 
-spark shell `
+shell `
 cd ~
 wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
 tar xvf go1.15.5.src.tar.gz && cd go/src
 ./all.bash
 `
 
-spark shell `
+shell `
 cd ../
 bin/go version
 `
-

@@ -8,9 +8,14 @@ refer `
 field web.code.golang.compile
 
 source compile/compile.shy
-source project/project.shy
-source grafana/grafana.shy
-source prometheus/prometheus.shy
-source kubernetes/kubernetes.shy
 source runtime/runtime.shy
+source project/project.shy
 
+source tcmalloc/tcmalloc.shy
+source leveldb/leveldb.shy
+source rocksdb/rocksdb.shy
+
+source docker/docker.shy
+source kubernetes/kubernetes.shy
+source prometheus/prometheus.shy
+source grafana/grafana.shy

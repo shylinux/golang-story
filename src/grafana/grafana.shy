@@ -1,14 +1,13 @@
-section "grafana"
+chapter "grafana"
 refer `
 官网 https://grafana.com/
 文档 https://grafana.com/docs/
 源码 https://github.com/grafana/grafana
-下载 https://grafana.com/grafana/download
 `
 
-field "grafana" web.code.golang.grafana
+field web.code.grafana.server
 
-spark shell `
-wget https://dl.grafana.com/oss/release/grafana-7.3.4.linux-amd64.tar.gz
+shell `
 wget https://mirrors.tencent.com/macports/distfiles/grafana/grafana-7.3.4.tar.gz
+tar xvf grafana-7.3.4.tar.gz && cd grafana-7.3.4
 `
