@@ -115,7 +115,7 @@ func (s display) List(m *ice.Message, arg ...string) {
 		m.EchoScript(kit.Format("docker --host %s exec -it %s sh", s.host(m), arg[1]))
 
 	} else { // 执行命令
-		m.Echo(s.container(m, EXEC, arg[1], arg[2]))
+		m.Echo(s.container(m, kit.Simple(EXEC, arg[1], kit.Split(arg[2], " ", " "))...))
 	}
 	m.StatusTimeCount()
 }
