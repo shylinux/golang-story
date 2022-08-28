@@ -14,16 +14,17 @@ const (
 	IMAGE     = "image"
 	CONTAINER = "container"
 
-	PULL   = "pull"
-	EXEC   = "exec"
-	STOP   = "stop"
-	RUN    = "run"
-	LS     = "ls"
-	PS     = "ps"
-	RM     = "rm"
-	KILL   = "kill"
-	PRUNE  = "prune"
-	RENAME = "rename"
+	PULL    = "pull"
+	EXEC    = "exec"
+	STOP    = "stop"
+	RUN     = "run"
+	LS      = "ls"
+	PS      = "ps"
+	RM      = "rm"
+	KILL    = "kill"
+	PRUNE   = "prune"
+	RENAME  = "rename"
+	RESTART = "restart"
 
 	IMAGE_ID     = "IMAGE_ID"
 	CONTAINER_ID = "CONTAINER_ID"
@@ -31,11 +32,13 @@ const (
 
 type display struct {
 	ice.Code
-	pull  string `name:"pull image=alpine" help:"下载"`
-	start string `name:"start cmd=/bin/sh" help:"启动"`
-	drop  string `name:"drop" help:"删除"`
-	prune string `name:"prune" help:"清理"`
-	list  string `name:"list IMAGE_ID CONTAINER_ID cmd auto" help:"容器"`
+	pull    string `name:"pull image=alpine" help:"下载"`
+	start   string `name:"start cmd=/bin/sh" help:"启动"`
+	serve   string `name:"serve arg" help:"服务"`
+	restart string `name:"restart" help:"重启"`
+	drop    string `name:"drop" help:"删除"`
+	prune   string `name:"prune" help:"清理"`
+	list    string `name:"list IMAGE_ID CONTAINER_ID cmd auto" help:"容器"`
 }
 
 func (s display) host(m *ice.Message) string {
@@ -62,7 +65,16 @@ func (s display) Pull(m *ice.Message, arg ...string) {
 	s.image(m, PULL, m.Option(IMAGE))
 }
 func (s display) Start(m *ice.Message, arg ...string) {
-	s.container(m, RUN, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD))
+	m.Option(CONTAINER_ID, s.container(m, RUN, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD)))
+	s.Serve(m)
+}
+func (s display) Serve(m *ice.Message, arg ...string) {
+	s.container(m, EXEC, m.Option(CONTAINER_ID), "wget", "-O", "/root/index.sh", web.MergeLink(m.Message, ice.PS))
+	s.container(m, EXEC, "-w", "/root", "-dt", m.Option(CONTAINER_ID), "sh", "/root/index.sh", "app", "dev", web.MergeLink(m.Message, ice.PS))
+}
+func (s display) Restart(m *ice.Message, arg ...string) {
+	s.container(m, RESTART, m.Option(CONTAINER_ID))
+	s.Serve(m)
 }
 func (s display) Stop(m *ice.Message, arg ...string) {
 	web.PushNoticeToast(m.Message, "process")
@@ -72,6 +84,9 @@ func (s display) Stop(m *ice.Message, arg ...string) {
 	} else { // 结束容器
 		s.container(m, STOP, m.Option(CONTAINER_ID))
 	}
+}
+func (s display) Open(m *ice.Message, arg ...string) {
+	m.ProcessOpen(web.MergePod(m, m.Option(CONTAINER_ID)))
 }
 func (s display) Drop(m *ice.Message, arg ...string) {
 	if m.Option(CONTAINER_ID) != "" { // 删除容器
@@ -104,15 +119,15 @@ func (s display) List(m *ice.Message, arg ...string) {
 		m.Cut("CREATED,CONTAINER_ID,REPOSITORY,COMMAND,PORTS,STATUS,NAMES")
 		m.Tables(func(value ice.Maps) {
 			if strings.HasPrefix(value["STATUS"], "Up") {
-				m.PushButton(s.Stop)
+				m.PushButton(s.Open, s.Stop)
 			} else {
-				m.PushButton(s.Drop)
+				m.PushButton(s.Restart, s.Drop)
 			}
 		}).Action(s.Start, s.Prune)
 
 	} else if len(arg) < 3 || arg[2] == "" { // 进程列表
-		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Xterm)
-		m.EchoScript(kit.Format("docker --host %s exec -it %s sh", s.host(m), arg[1]))
+		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Xterm, s.Serve)
+		m.EchoScript(kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), arg[1]))
 
 	} else { // 执行命令
 		m.Echo(s.container(m, kit.Simple(EXEC, arg[1], kit.Split(arg[2], " ", " "))...))
@@ -120,7 +135,7 @@ func (s display) List(m *ice.Message, arg ...string) {
 	m.StatusTimeCount()
 }
 func (s display) Xterm(m *ice.Message, arg ...string) {
-	s.Code.Xterm(m, kit.Format("docker --host %s exec -w /root -it %s %s", s.host(m), m.Option(CONTAINER_ID), "/bin/sh"), arg...)
+	s.Code.Xterm(m, kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), m.Option(CONTAINER_ID)), arg...)
 }
 
 func init() { ice.CodeCtxCmd(display{}) }
