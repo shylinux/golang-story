@@ -7,4 +7,3 @@ unicode strings strconv regexp mime text html image encoding crypto archive comp
 go debug testing reflect runtime internal unsafe syscall
 ` compact true
 
-field "源代码" web.code.inner args `usr/local/go/src/ runtime/map.go`
