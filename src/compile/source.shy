@@ -2,7 +2,7 @@ chapter "源码解析"
 field "计数" web.code.git.count args usr/install/go/src/
 
 section "目录文件"
-web.code.ctags.chain `
+web.code.gotags.chain `
 go/src/
 	数据
 		unicode
@@ -55,7 +55,7 @@ go/src/
 		vendor
 ` path "usr/install/go/src/"
 
-web.code.ctags.chain `
+web.code.gotags.chain `
 go/src/runtime/
 	数据类型
 		float.go
