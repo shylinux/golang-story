@@ -46,7 +46,7 @@ func (s runtime) host(m *ice.Message) string {
 	return "unix://" + kit.Path("usr/install/docker/docker.sock")
 }
 func (s runtime) docker(m *ice.Message, arg ...string) string {
-	if nfs.ExistsFile(m.Message, s.host(m)) {
+	if nfs.ExistsFile(m.Message, strings.TrimPrefix(s.host(m), "unix://")) {
 		m.Option(cli.CMD_ENV, "DOCKER_HOST", s.host(m))
 	}
 	return m.Cmdx(cli.SYSTEM, DOCKER, arg)

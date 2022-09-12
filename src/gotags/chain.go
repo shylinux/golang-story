@@ -24,18 +24,18 @@ func (s chain) Find(m *ice.Message, arg ...string) {
 	}
 
 	if msg := m.Cmd(code.INNER, nfs.TAGS, arg[0]); msg.Append(nfs.FILE) != "" {
-		m.ProcessStory(m.PrefixKey(), msg.Append(nfs.PATH), msg.Append(nfs.FILE), msg.Append(nfs.LINE))
+		ctx.ProcessFloat(m.Message, m.PrefixKey(), msg.Append(nfs.PATH), msg.Append(nfs.FILE), msg.Append(nfs.LINE))
 		return
 	}
 
 	if !strings.HasSuffix(arg[0], ".go") {
 		if msg := m.Cmd(cli.SYSTEM, "go", "doc", arg[0]); cli.IsSuccess(msg) {
-			m.ProcessStory(m.PrefixKey(), "doc", arg[0])
+			ctx.ProcessFloat(m.Message, m.PrefixKey(), "doc", arg[0])
 			return
 		}
 	}
 	if nfs.ExistsFile(m, path.Join(m.Option(nfs.PATH), arg[0])) {
-		m.ProcessStory(m.PrefixKey(), m.Option(nfs.PATH), arg[0], "1")
+		ctx.ProcessFloat(m.Message, m.PrefixKey(), m.Option(nfs.PATH), arg[0], "1")
 		return
 	}
 }
