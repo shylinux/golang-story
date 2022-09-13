@@ -2,6 +2,7 @@ package docker
 
 import (
 	"os"
+	"path"
 	"strings"
 
 	"shylinux.com/x/ice"
@@ -9,6 +10,7 @@ import (
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
+	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -36,7 +38,7 @@ const (
 
 type client struct {
 	ice.Code
-	build   string `name:"build name=contexts dir=bin/" help:"构建"`
+	build   string `name:"build name=contexts dir=usr/publish/" help:"构建"`
 	pull    string `name:"pull image=alpine" help:"下载"`
 	start   string `name:"start cmd dev" help:"启动"`
 	serve   string `name:"serve arg" help:"服务"`
@@ -80,6 +82,14 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 }
 func (s client) Build(m *ice.Message, arg ...string) {
 	s.Code.ToastLong(m, "构建中")
+	s.Code.Module(m, path.Join(m.Option(nfs.DIR), "Dockerfile"), `
+FROM alpine
+
+WORKDIR /root/contexts
+COPY ice.linux.amd64 bin/ice.bin
+
+CMD ./bin/ice.bin forever start dev shy
+`)
 	s.image(m, BUILD, "-t", m.Option(mdb.NAME), m.Option(nfs.DIR))
 	s.Code.ToastSuccess(m)
 }
@@ -159,6 +169,8 @@ func (s client) List(m *ice.Message, arg ...string) {
 				m.PushButton(s.Restart, s.Drop)
 			}
 		}).Action(s.Start, s.Prune)
+		m.EchoScript(strings.Replace(s.cmd(m, arg[0]), "exec", "run", 1))
+		m.EchoScript(m.Cmdx(code.PUBLISH, ice.CONTEXTS, code.INSTALL))
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Appendv("SIZE")[1])
 		return
 
