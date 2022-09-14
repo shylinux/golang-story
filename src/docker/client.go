@@ -184,7 +184,7 @@ func (s client) List(m *ice.Message, arg ...string) {
 	m.StatusTimeCount()
 }
 func (s client) Xterm(m *ice.Message, arg ...string) {
-	s.Code.Xterm(m, []string{mdb.TYPE, s.cmd(m, m.Option(CONTAINER_ID)), mdb.NAME, m.Option(CONTAINER_ID)}, arg...)
+	s.Code.Xterm(m, []string{mdb.TYPE, s.cmd(m, kit.Select(m.Option(CONTAINER_ID), arg, 1)), mdb.NAME, m.Option(CONTAINER_ID)}, arg...)
 }
 
 func init() { ice.CodeCtxCmd(client{}) }
