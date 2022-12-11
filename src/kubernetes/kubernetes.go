@@ -11,4 +11,4 @@ func (s runtime) List(m *ice.Message, arg ...string) {
 	s.Code.Source(m, "", arg...)
 }
 
-func init() { ice.CodeCtxCmd(runtime{}) }
+func init() { ice.Cmd("web.code.kubernets.runtime", runtime{}) }

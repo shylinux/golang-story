@@ -53,7 +53,7 @@ func (c Compile) List(m *ice.Message, arg ...string) {
 	m.Cmdy(nfs.DIR, arg, kit.Dict(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN))
 }
 
-func init() { ice.CodeModCmd(Compile{}) }
+func init() { ice.Cmd("web.code.golang.compile", Compile{}) }
 
 func _path(m *ice.Message, arg ...string) string {
 	return path.Join(ice.USR_INSTALL, path.Join(arg...))

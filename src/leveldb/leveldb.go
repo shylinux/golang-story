@@ -16,4 +16,4 @@ func (s project) List(m *ice.Message, arg ...string) {
 	s.Code.Source(m, "", arg...)
 }
 
-func init() { ice.CodeCtxCmd(project{}) }
+func init() { ice.Cmd("web.code.leveldb.project", project{}) }
