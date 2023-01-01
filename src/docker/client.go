@@ -100,6 +100,10 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 			}
 			return value
 		})
+	case "dev":
+		u := web.OptionUserWeb(m)
+		m.Push(arg[0], tcp.PublishLocalhost(m.Message, u.Scheme+"://"+u.Hostname()+ice.DF+u.Port()))
+		m.Cmd("spide").Tables(func(value ice.Maps) { m.Push(arg[0], value["client.url"]) })
 	}
 }
 func (s client) Build(m *ice.Message, arg ...string) {
@@ -150,7 +154,7 @@ func (s client) Stop(m *ice.Message, arg ...string) {
 	}
 }
 func (s client) Open(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, web.MergePod(m, m.Option(CONTAINER_ID), "river", "", "storm", ""), arg...)
+	s.Code.Iframe(m, "系统页", web.MergePod(m, kit.Select(m.Option(CONTAINER_ID), arg, 1), "river", "", "storm", ""), arg...)
 }
 func (s client) Drop(m *ice.Message, arg ...string) {
 	if m.Option(CONTAINER_ID) != "" { // 删除容器
@@ -160,7 +164,7 @@ func (s client) Drop(m *ice.Message, arg ...string) {
 	}
 }
 func (s client) Df(m *ice.Message, arg ...string) *ice.Message {
-	m.SplitIndex(s.docker(m, "system", "df"))
+	m.SplitIndex(s.docker(m, cli.SYSTEM, "df"))
 	return m
 }
 func (s client) Prune(m *ice.Message, arg ...string) {
@@ -188,7 +192,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 		m.Cut("CREATED,CONTAINER_ID,REPOSITORY,COMMAND,PORTS,STATUS,NAMES")
 		m.Tables(func(value ice.Maps) {
 			if strings.HasPrefix(value["STATUS"], "Up") {
-				m.PushButton(s.Open, s.Xterm, s.Vimer, s.Stop)
+				m.PushButton(s.Open, s.Vimer, s.Xterm, s.Stop)
 			} else {
 				m.PushButton(s.Restart, s.Drop)
 			}
@@ -212,7 +216,7 @@ func (s client) Xterm(m *ice.Message, arg ...string) {
 	s.Code.Xterm(m, []string{mdb.TYPE, s.cmd(m, kit.Select(m.Option(CONTAINER_ID), arg, 1)), mdb.NAME, m.Option(CONTAINER_ID)}, arg...)
 }
 func (s client) Vimer(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, web.MergePodCmd(m, m.Option(CONTAINER_ID), "web.code.vimer"), arg...)
+	s.Code.Iframe(m, "编辑器", web.MergePodCmd(m, m.Option(CONTAINER_ID), "web.code.vimer"), arg...)
 }
 
 func init() { ice.CodeCtxCmd(client{}) }
