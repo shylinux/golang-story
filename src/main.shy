@@ -4,6 +4,13 @@ Go语言第一课 https://www.imooc.com/video/6644
 https://coding.imooc.com/learningpath/route?pathId=5
 `
 
+section "Google资深工程师深度讲解Go语言"
+refer `
+视频 https://coding.imooc.com/learn/list/180.html
+源码 https://git.imooc.com/coding-180/coding-180
+docker https://www.daocloud.io/mirror
+`
+
 
 title "golang"
 refer `
