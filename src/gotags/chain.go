@@ -41,12 +41,12 @@ func (s chain) Find(m *ice.Message, arg ...string) {
 }
 func (s chain) Doc(m *ice.Message, arg ...string) {
 	m.Cmdy(cli.SYSTEM, "go", "doc", arg[0])
-	m.Display("/plugin/local/code/inner.js")
+	ctx.Display(m, "/plugin/local/code/inner.js")
 }
 func (s chain) List(m *ice.Message, arg ...string) {
 	if strings.HasSuffix(arg[0], ice.PS) && !strings.Contains(arg[0], ice.NL) {
 		m.Cmdy(code.INNER, arg)
-		m.Display("/plugin/local/code/inner.js")
+		ctx.Display(m, "/plugin/local/code/inner.js")
 		return
 	}
 	m.Cmdy(wiki.CHART, wiki.CHAIN, arg, kit.Dict(ctx.INDEX, m.PrefixKey()))
