@@ -87,7 +87,11 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 	case tcp.PORT:
 		s.List(m.Spawn(), "hi").Tables(func(value ice.Maps) {
 			ls := strings.SplitN(value["PORTS"], "->", 2)
-			m.Push(tcp.PORT, kit.Slice(strings.Split(ls[0], ice.DF), -1)[0])
+			if len(ls) > 1 {
+				m.Push(tcp.PORT, kit.Slice(strings.Split(ls[0], ice.DF), -1)[0])
+			} else {
+				m.Push(tcp.PORT, "")
+			}
 			m.Push(ice.BIN, value["COMMAND"])
 		})
 		nets := m.Cmdx(cli.SYSTEM, "netstat", "-tln")
@@ -112,10 +116,16 @@ func (s client) Pull(m *ice.Message, arg ...string) {
 func (s client) Start(m *ice.Message, arg ...string) {
 	if m.Option(ice.CMD) == "" {
 		args := []string{}
-		if m.Option(tcp.PORT) != "" {
+		if m.Option(ice.DEV) != "" && strings.Contains(m.Option(ice.DEV), ice.PT) {
+			args = append(args, "-e", "ctx_dev="+m.Option(ice.DEV))
+		} else {
+			args = append(args, "-e", "ctx_dev="+m.Option(ice.MSG_USERHOST))
+		}
+		if m.Option(tcp.PORT) != "" && strings.Contains(m.Option(tcp.PORT), ice.DF) {
 			args = append(args, "-p", m.Option(tcp.PORT))
 		}
-		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, "-e", "ctx_dev="+m.Option(ice.DEV), args, "-dt", m.Option(IMAGE_ID))...))
+		// m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, "-e", "ctx_dev="+m.Option(ice.DEV), args, "-dt", m.Option(IMAGE_ID))...))
+		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", m.Option(IMAGE_ID))...))
 	} else {
 		m.Option(CONTAINER_ID, s.container(m, RUN, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD)))
 	}
@@ -173,7 +183,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 			}
 		}).Action(s.Start, s.Prune)
 		m.EchoScript(strings.Replace(s.cmd(m, arg[0]), EXEC, RUN, 1))
-		m.EchoScript(m.Cmdx(code.PUBLISH, ice.CONTEXTS, code.INSTALL))
+		m.Cmdy(code.PUBLISH, ice.CONTEXTS, ice.MISC)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Appendv("SIZE")[1])
 	} else if len(arg) < 3 || arg[2] == "" {
 		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Open, s.Vimer, s.Xterm, s.Serve)
