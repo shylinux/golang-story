@@ -114,8 +114,8 @@ func (s client) Pull(m *ice.Message, arg ...string) {
 	s.image(m, PULL, m.Option(IMAGE))
 }
 func (s client) Start(m *ice.Message, arg ...string) {
+	args := []string{"-e", "LANG=en_US.UTF-8"}
 	if m.Option(ice.CMD) == "" {
-		args := []string{}
 		if m.Option(ice.DEV) != "" && strings.Contains(m.Option(ice.DEV), ice.PT) {
 			args = append(args, "-e", "ctx_dev="+m.Option(ice.DEV))
 		} else {
@@ -127,7 +127,7 @@ func (s client) Start(m *ice.Message, arg ...string) {
 		// m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, "-e", "ctx_dev="+m.Option(ice.DEV), args, "-dt", m.Option(IMAGE_ID))...))
 		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", m.Option(IMAGE_ID))...))
 	} else {
-		m.Option(CONTAINER_ID, s.container(m, RUN, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD)))
+		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD))...))
 	}
 }
 func (s client) Restart(m *ice.Message, arg ...string) {
