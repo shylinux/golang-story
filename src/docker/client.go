@@ -116,6 +116,7 @@ func (s client) Pull(m *ice.Message, arg ...string) {
 func (s client) Start(m *ice.Message, arg ...string) {
 	args := []string{"-e", "LANG=en_US.UTF-8"}
 	if m.Option(ice.CMD) == "" {
+		args = append(args, "-e", "ctx_log=/dev/stdout")
 		if m.Option(ice.DEV) != "" && strings.Contains(m.Option(ice.DEV), ice.PT) {
 			args = append(args, "-e", "ctx_dev="+m.Option(ice.DEV))
 		} else {
