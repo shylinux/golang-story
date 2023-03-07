@@ -103,6 +103,8 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 		m.AppendTrans(func(value string, key string, index int) string {
 			return value + kit.Select("", ":9020", index == 0 && key == "port")
 		})
+		m.Push(arg[0], "20000:9020")
+		m.Push(arg[0], "20001:9020")
 	}
 }
 func (s client) Build(m *ice.Message, arg ...string) {
