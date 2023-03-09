@@ -9,6 +9,7 @@ import (
 	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
+	"shylinux.com/x/icebergs/base/ssh"
 	"shylinux.com/x/icebergs/base/tcp"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
@@ -35,6 +36,8 @@ const (
 
 	IMAGE_ID     = "IMAGE_ID"
 	CONTAINER_ID = "CONTAINER_ID"
+	REPOSITORY   = "REPOSITORY"
+	TAG          = "TAG"
 )
 
 type client struct {
@@ -76,6 +79,14 @@ func (s client) container(m *ice.Message, arg ...string) string {
 	return s.docker(m, kit.Simple(CONTAINER, arg)...)
 }
 
+func (s client) Search(m *ice.Message, arg ...string) {
+	if arg[0] == mdb.FOREACH && arg[1] == "" {
+		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Tables(func(value ice.Maps) {
+			m.PushSearch(mdb.TYPE, ssh.SHELL, mdb.NAME, value[REPOSITORY]+ice.DF+value[TAG],
+				mdb.TEXT, "docker run -w /root -it "+value[REPOSITORY]+ice.DF+value[TAG])
+		})
+	}
+}
 func (s client) Inputs(m *ice.Message, arg ...string) {
 	switch arg[0] {
 	case IMAGE:
@@ -116,9 +127,13 @@ func (s client) Pull(m *ice.Message, arg ...string) {
 	s.image(m, PULL, m.Option(IMAGE))
 }
 func (s client) Start(m *ice.Message, arg ...string) {
+	image := m.Option(IMAGE_ID)
+	if m.Option(REPOSITORY) != "" && m.Option(TAG) != "" {
+		image = m.Option(REPOSITORY) + ice.DF + m.Option(TAG)
+		defer func() { m.ProcessRewrite(IMAGE_ID, m.Option(IMAGE_ID), CONTAINER_ID, m.Option(CONTAINER_ID)) }()
+	}
 	args := []string{"-e", "LANG=en_US.UTF-8"}
 	if m.Option(ice.CMD) == "" {
-		args = append(args, "-e", "ctx_log=/dev/stdout")
 		if m.Option(ice.DEV) != "" && strings.Contains(m.Option(ice.DEV), ice.PT) {
 			args = append(args, "-e", "ctx_dev="+m.Option(ice.DEV))
 		} else {
@@ -127,10 +142,9 @@ func (s client) Start(m *ice.Message, arg ...string) {
 		if m.Option(tcp.PORT) != "" && strings.Contains(m.Option(tcp.PORT), ice.DF) {
 			args = append(args, "-p", m.Option(tcp.PORT))
 		}
-		// m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, "-e", "ctx_dev="+m.Option(ice.DEV), args, "-dt", m.Option(IMAGE_ID))...))
-		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", m.Option(IMAGE_ID))...))
+		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image)...))
 	} else {
-		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", m.Option(IMAGE_ID), m.Option(ice.CMD))...))
+		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image, m.Option(ice.CMD))...))
 	}
 }
 func (s client) Restart(m *ice.Message, arg ...string) {
@@ -173,7 +187,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	if len(arg) < 1 || arg[0] == "" {
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
 		m.Cut("CREATED,IMAGE_ID,SIZE,REPOSITORY,TAG")
-		m.PushAction(s.Drop).Action(s.Build, s.Pull, s.Df, s.Prune)
+		m.PushAction(s.Start, s.Drop).Action(s.Build, s.Pull, s.Df, s.Prune)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Append("SIZE"))
 	} else if len(arg) < 2 || arg[1] == "" {
 		m.SplitIndex(strings.Replace(s.container(m, LS, "-a"), "CONTAINER ID", CONTAINER_ID, 1)).RenameAppend("IMAGE", "REPOSITORY")
