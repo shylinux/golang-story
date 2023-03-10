@@ -80,7 +80,7 @@ func (s client) container(m *ice.Message, arg ...string) string {
 }
 
 func (s client) Search(m *ice.Message, arg ...string) {
-	if arg[0] == mdb.FOREACH && arg[1] == "" {
+	if arg[0] == mdb.FOREACH && (arg[1] == "" || arg[1] == ssh.SHELL) {
 		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Tables(func(value ice.Maps) {
 			m.PushSearch(mdb.TYPE, ssh.SHELL, mdb.NAME, value[REPOSITORY]+ice.DF+value[TAG],
 				mdb.TEXT, "docker run -w /root -it "+value[REPOSITORY]+ice.DF+value[TAG])
