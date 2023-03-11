@@ -44,6 +44,8 @@ type client struct {
 	ice.Code
 	build   string `name:"build name=contexts dir=usr/publish/" help:"构建"`
 	pull    string `name:"pull image=alpine" help:"下载"`
+	imports string `name:"imports path*=usr/publish/alpine-dev.tar image*=alpine-dev" help:"导入"`
+	exports string `name:"exports name=alpine-dev" help:"导出"`
 	start   string `name:"start cmd dev port" help:"启动"`
 	restart string `name:"restart" help:"重启"`
 	serve   string `name:"serve arg" help:"服务"`
@@ -95,6 +97,8 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 		u := web.OptionUserWeb(m)
 		m.Push(arg[0], tcp.PublishLocalhost(m.Message, u.Scheme+"://"+u.Hostname()+ice.DF+u.Port()))
 		m.Cmd(web.SPIDE).Tables(func(value ice.Maps) { m.Push(arg[0], value[web.CLIENT_URL]) })
+	case nfs.PATH:
+		m.Cmdy(nfs.DIR, kit.Select("", arg, 1), nfs.PATH)
 	case tcp.PORT:
 		s.List(m.Spawn(), "hi").Tables(func(value ice.Maps) {
 			ls := strings.SplitN(value["PORTS"], "->", 2)
@@ -147,6 +151,12 @@ func (s client) Start(m *ice.Message, arg ...string) {
 		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image, m.Option(ice.CMD))...))
 	}
 }
+func (s client) Imports(m *ice.Message, arg ...string) {
+	s.docker(m, mdb.IMPORT, m.Option(nfs.PATH), m.Option(IMAGE))
+}
+func (s client) Exports(m *ice.Message, arg ...string) {
+	s.docker(m, mdb.EXPORT, m.Option(CONTAINER_ID), "-o", path.Join(ice.USR_PUBLISH, m.Option(mdb.NAME)+".tar"))
+}
 func (s client) Restart(m *ice.Message, arg ...string) {
 	s.container(m, RESTART, m.Option(CONTAINER_ID))
 	s.Serve(m)
@@ -187,14 +197,14 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	if len(arg) < 1 || arg[0] == "" {
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
 		m.Cut("CREATED,IMAGE_ID,SIZE,REPOSITORY,TAG")
-		m.PushAction(s.Start, s.Drop).Action(s.Build, s.Pull, s.Df, s.Prune)
+		m.PushAction(s.Start, s.Drop).Action(s.Build, s.Imports, s.Pull, s.Df, s.Prune)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Append("SIZE"))
 	} else if len(arg) < 2 || arg[1] == "" {
 		m.SplitIndex(strings.Replace(s.container(m, LS, "-a"), "CONTAINER ID", CONTAINER_ID, 1)).RenameAppend("IMAGE", "REPOSITORY")
 		m.Cut("CREATED,CONTAINER_ID,REPOSITORY,COMMAND,PORTS,STATUS,NAMES")
 		m.Tables(func(value ice.Maps) {
 			if strings.HasPrefix(value["STATUS"], "Up") {
-				m.PushButton(s.Open, s.Vimer, s.Xterm, s.Stop)
+				m.PushButton(s.Open, s.Vimer, s.Xterm, s.Exports, s.Stop)
 			} else {
 				m.PushButton(s.Restart, s.Drop)
 			}
