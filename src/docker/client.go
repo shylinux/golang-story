@@ -99,6 +99,8 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 		m.Cmd(web.SPIDE).Tables(func(value ice.Maps) { m.Push(arg[0], value[web.CLIENT_URL]) })
 	case nfs.PATH:
 		m.Cmdy(nfs.DIR, kit.Select("", arg, 1), nfs.PATH)
+	case ice.CMD:
+		m.Push(arg[0], code.BASH, code.SH)
 	case tcp.PORT:
 		s.List(m.Spawn(), "hi").Tables(func(value ice.Maps) {
 			ls := strings.SplitN(value["PORTS"], "->", 2)
