@@ -46,6 +46,7 @@ type client struct {
 	pull    string `name:"pull image=alpine" help:"下载"`
 	imports string `name:"imports path*=usr/publish/alpine-dev.tar image*=alpine-dev" help:"导入"`
 	exports string `name:"exports name=alpine-dev" help:"导出"`
+	save    string `name:"save name" help:"导出"`
 	start   string `name:"start cmd dev port" help:"启动"`
 	restart string `name:"restart" help:"重启"`
 	serve   string `name:"serve arg" help:"服务"`
@@ -159,6 +160,9 @@ func (s client) Imports(m *ice.Message, arg ...string) {
 func (s client) Exports(m *ice.Message, arg ...string) {
 	s.docker(m, mdb.EXPORT, m.Option(CONTAINER_ID), "-o", path.Join(ice.USR_PUBLISH, m.Option(mdb.NAME)+".tar"))
 }
+func (s client) Save(m *ice.Message, arg ...string) {
+	s.image(m, nfs.SAVE, m.Option(IMAGE_ID), "-o", path.Join(ice.USR_PUBLISH, kit.Select(m.Option(REPOSITORY), m.Option(mdb.NAME))+".tar"))
+}
 func (s client) Restart(m *ice.Message, arg ...string) {
 	s.container(m, RESTART, m.Option(CONTAINER_ID))
 	s.Serve(m)
@@ -199,7 +203,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	if len(arg) < 1 || arg[0] == "" {
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
 		m.Cut("CREATED,IMAGE_ID,SIZE,REPOSITORY,TAG")
-		m.PushAction(s.Start, s.Drop).Action(s.Build, s.Imports, s.Pull, s.Df, s.Prune)
+		m.PushAction(s.Start, s.Save, s.Drop).Action(s.Build, s.Imports, s.Pull, s.Df, s.Prune)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Append("SIZE"))
 	} else if len(arg) < 2 || arg[1] == "" {
 		m.SplitIndex(strings.Replace(s.container(m, LS, "-a"), "CONTAINER ID", CONTAINER_ID, 1)).RenameAppend("IMAGE", "REPOSITORY")
