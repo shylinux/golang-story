@@ -1,12 +1,13 @@
 package docker
 
 import (
-	"os"
 	"path"
+	"runtime"
 	"strings"
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
+	"shylinux.com/x/icebergs/base/ctx"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/ssh"
@@ -46,10 +47,10 @@ type client struct {
 	pull    string `name:"pull image=alpine" help:"下载"`
 	imports string `name:"imports path*=usr/publish/alpine-dev.tar image*=alpine-dev" help:"导入"`
 	exports string `name:"exports name=alpine-dev" help:"导出"`
-	save    string `name:"save name" help:"导出"`
 	start   string `name:"start cmd dev port" help:"启动"`
 	restart string `name:"restart" help:"重启"`
 	serve   string `name:"serve arg" help:"服务"`
+	save    string `name:"save name" help:"导出"`
 	drop    string `name:"drop" help:"删除"`
 	prune   string `name:"prune" help:"清理"`
 	list    string `name:"list IMAGE_ID CONTAINER_ID auto" help:"容器"`
@@ -57,23 +58,17 @@ type client struct {
 	open    string `name:"open" help:"系统"`
 }
 
-func (s client) envhost(m *ice.Message) bool {
-	return nfs.ExistsFile(m.Message, strings.TrimPrefix(s.host(m), "unix://")) && s.host(m) != os.Getenv("DOCKER_HOST")
-}
-func (s client) host(m *ice.Message) string {
-	return "unix://" + kit.Path("usr/install/docker/docker.sock")
+func (s client) host(m *ice.Message) []string {
+	if nfs.ExistsFile(m.Message, "usr/install/docker/docker.sock") {
+		return []string{"--host", "unix://" + kit.Path("usr/install/docker/docker.sock")}
+	}
+	return nil
 }
 func (s client) cmd(m *ice.Message, p string) string {
-	if s.envhost(m) {
-		return kit.Format("docker --host %s exec -w /root -it %s sh", s.host(m), p)
-	}
-	return kit.Format("docker exec -w /root -it %s sh", p)
+	return strings.Join(kit.Simple(DOCKER, s.host(m), EXEC, "-w", "/root", "-it", p, code.SH), ice.SP)
 }
 func (s client) docker(m *ice.Message, arg ...string) string {
-	if s.envhost(m) {
-		return m.Cmdx(cli.SYSTEM, DOCKER, "--host", s.host(m), arg)
-	}
-	return m.Cmdx(cli.SYSTEM, DOCKER, arg)
+	return m.Cmdx(cli.SYSTEM, DOCKER, s.host(m), arg)
 }
 func (s client) image(m *ice.Message, arg ...string) string {
 	return s.docker(m, kit.Simple(IMAGE, arg)...)
@@ -82,65 +77,62 @@ func (s client) container(m *ice.Message, arg ...string) string {
 	return s.docker(m, kit.Simple(CONTAINER, arg)...)
 }
 
-func (s client) Search(m *ice.Message, arg ...string) {
-	if arg[0] == mdb.FOREACH && (arg[1] == "" || arg[1] == ssh.SHELL) {
-		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Tables(func(value ice.Maps) {
-			m.PushSearch(mdb.TYPE, ssh.SHELL, mdb.NAME, value[REPOSITORY]+ice.DF+value[TAG],
-				mdb.TEXT, "docker run -w /root -it "+value[REPOSITORY]+ice.DF+value[TAG])
-		})
-	}
-}
 func (s client) Inputs(m *ice.Message, arg ...string) {
 	switch arg[0] {
 	case IMAGE:
 		m.Push(arg[0], cli.BUSYBOX, cli.ALPINE, cli.CENTOS, cli.UBUNTU)
 	case ice.DEV:
-		u := web.OptionUserWeb(m)
-		m.Push(arg[0], tcp.PublishLocalhost(m.Message, u.Scheme+"://"+u.Hostname()+ice.DF+u.Port()))
-		m.Cmd(web.SPIDE).Tables(func(value ice.Maps) { m.Push(arg[0], value[web.CLIENT_URL]) })
-	case nfs.PATH:
-		m.Cmdy(nfs.DIR, kit.Select("", arg, 1), nfs.PATH)
+		m.Push(arg[0], m.Option(ice.MSG_USERHOST)).Cmd(web.SPIDE, func(value ice.Maps) { m.Push(arg[0], value[web.CLIENT_URL]) })
 	case ice.CMD:
 		m.Push(arg[0], code.BASH, code.SH)
 	case tcp.PORT:
-		s.List(m.Spawn(), "hi").Tables(func(value ice.Maps) {
-			ls := strings.SplitN(value["PORTS"], "->", 2)
-			if len(ls) > 1 {
-				m.Push(tcp.PORT, kit.Slice(strings.Split(ls[0], ice.DF), -1)[0])
-			} else {
-				m.Push(tcp.PORT, "")
-			}
-			m.Push(ice.BIN, value["COMMAND"])
-		})
-		nets := m.Cmdx(cli.SYSTEM, "netstat", "-tln")
 		port := kit.Int(m.Cmdx(tcp.PORT, tcp.CURRENT)) + 1
+		nets := m.Cmdx(cli.SYSTEM, "netstat", "-ln", kit.Split(kit.Select("-t", "-p tcp", runtime.GOOS == cli.DARWIN)))
 		for strings.Contains(nets, kit.Format(":%v ", port)) {
 			port += 1
 		}
-		m.Push(tcp.PORT, port).Push(ice.BIN, "").SortIntR(arg[0])
-		m.AppendTrans(func(value string, key string, index int) string {
-			return value + kit.Select("", ":9020", index == 0 && key == "port")
+		m.Push(tcp.PORT, kit.Format("%d:9020", port)).Push(ice.BIN, "")
+		m.Push(tcp.PORT, "20000:9020").Push(ice.BIN, "")
+		m.Push(tcp.PORT, "20001:9020").Push(ice.BIN, "")
+		s.List(m.Spawn(), cli.ALPINE).Tables(func(value ice.Maps) {
+			if ls := strings.SplitN(value["PORTS"], "->", 2); len(ls) > 1 {
+				m.Push(tcp.PORT, kit.Slice(strings.Split(ls[0], ice.DF), -1)[0])
+				m.Push(ice.BIN, value["COMMAND"])
+			}
 		})
-		m.Push(arg[0], "20000:9020")
-		m.Push(arg[0], "20001:9020")
+	case nfs.PATH:
+		m.Option(nfs.DIR_REG, kit.ExtReg(nfs.TAR))
+		if p := kit.Select(ice.USR_PUBLISH, arg, 1); strings.HasSuffix(p, ice.PS) {
+			m.Cmdy(nfs.DIR, p, nfs.PATH)
+		} else {
+			m.Cmdy(nfs.DIR, path.Dir(p), nfs.PATH)
+		}
 	}
 }
 func (s client) Build(m *ice.Message, arg ...string) {
 	defer s.Code.ToastProcess(m)()
-	s.Code.Module(m, path.Join(m.Option(nfs.DIR), "Dockerfile"), _dockerfile)
+	s.Code.Module(m, path.Join(m.Option(nfs.DIR), "Dockerfile"), nfs.Template(m, "DockerFile"))
 	s.image(m, BUILD, "-t", m.Option(mdb.NAME), m.Option(nfs.DIR))
+}
+func (s client) Imports(m *ice.Message, arg ...string) {
+	s.docker(m, mdb.IMPORT, m.Option(nfs.PATH), m.Option(IMAGE))
+}
+func (s client) Exports(m *ice.Message, arg ...string) {
+	s.docker(m, mdb.EXPORT, m.Option(CONTAINER_ID), "-o", path.Join(ice.USR_PUBLISH, kit.Keys(m.Option(mdb.NAME), nfs.TAR)))
 }
 func (s client) Pull(m *ice.Message, arg ...string) {
 	s.image(m, PULL, m.Option(IMAGE))
+}
+func (s client) Save(m *ice.Message, arg ...string) {
+	s.image(m, nfs.SAVE, m.Option(IMAGE_ID), "-o", path.Join(ice.USR_PUBLISH, kit.Keys(kit.Select(m.Option(REPOSITORY), m.Option(mdb.NAME)), nfs.TAR)))
 }
 func (s client) Start(m *ice.Message, arg ...string) {
 	image := m.Option(IMAGE_ID)
 	if m.Option(REPOSITORY) != "" && m.Option(TAG) != "" {
 		image = m.Option(REPOSITORY) + ice.DF + m.Option(TAG)
-		defer func() { m.ProcessRewrite(IMAGE_ID, m.Option(IMAGE_ID), CONTAINER_ID, m.Option(CONTAINER_ID)) }()
+		defer func() { m.ProcessRewrite(IMAGE_ID, m.Option(IMAGE_ID), CONTAINER_ID, s.short(m)) }()
 	}
-	args := []string{"-e", "LANG=en_US.UTF-8"}
-	if m.Option(ice.CMD) == "" {
+	if args := kit.Simple("-e", "LANG=en_US.UTF-8"); m.Option(ice.CMD) == "" {
 		if m.Option(ice.DEV) != "" && strings.Contains(m.Option(ice.DEV), ice.PT) {
 			args = append(args, "-e", "ctx_dev="+m.Option(ice.DEV))
 		} else {
@@ -154,22 +146,8 @@ func (s client) Start(m *ice.Message, arg ...string) {
 		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image, m.Option(ice.CMD))...))
 	}
 }
-func (s client) Imports(m *ice.Message, arg ...string) {
-	s.docker(m, mdb.IMPORT, m.Option(nfs.PATH), m.Option(IMAGE))
-}
-func (s client) Exports(m *ice.Message, arg ...string) {
-	s.docker(m, mdb.EXPORT, m.Option(CONTAINER_ID), "-o", path.Join(ice.USR_PUBLISH, m.Option(mdb.NAME)+".tar"))
-}
-func (s client) Save(m *ice.Message, arg ...string) {
-	s.image(m, nfs.SAVE, m.Option(IMAGE_ID), "-o", path.Join(ice.USR_PUBLISH, kit.Select(m.Option(REPOSITORY), m.Option(mdb.NAME))+".tar"))
-}
 func (s client) Restart(m *ice.Message, arg ...string) {
 	s.container(m, RESTART, m.Option(CONTAINER_ID))
-	s.Serve(m)
-}
-func (s client) Serve(m *ice.Message, arg ...string) {
-	s.container(m, EXEC, m.Option(CONTAINER_ID), "wget", "-O", "/root/index.sh", m.Option(ice.MSG_USERHOST))
-	s.container(m, EXEC, "-w", "/root", "-e", "ctx_dev="+m.Option(ice.MSG_USERHOST), "-dt", m.Option(CONTAINER_ID), nfs.SH, "/root/index.sh", "app")
 }
 func (s client) Stop(m *ice.Message, arg ...string) {
 	defer s.Code.ToastProcess(m)()
@@ -199,6 +177,14 @@ func (s client) Modify(m *ice.Message, arg ...string) {
 		s.container(m, RENAME, m.Option(CONTAINER_ID), arg[1])
 	}
 }
+func (s client) Search(m *ice.Message, arg ...string) {
+	if arg[0] == mdb.FOREACH && (arg[1] == "" || arg[1] == ssh.SHELL) {
+		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Tables(func(value ice.Maps) {
+			m.PushSearch(mdb.TYPE, ssh.SHELL, mdb.NAME, value[REPOSITORY]+ice.DF+value[TAG],
+				mdb.TEXT, "docker run -w /root -it "+value[REPOSITORY]+ice.DF+value[TAG]+" sh")
+		})
+	}
+}
 func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	if len(arg) < 1 || arg[0] == "" {
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
@@ -215,12 +201,11 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 				m.PushButton(s.Restart, s.Drop)
 			}
 		}).Action(s.Start, s.Prune)
-		m.EchoScript(strings.Replace(s.cmd(m, arg[0]), EXEC, RUN, 1))
-		m.Cmdy(code.PUBLISH, ice.CONTEXTS, ice.MISC)
+		m.EchoScript(strings.Replace(s.cmd(m, arg[0]), EXEC, RUN, 1)).Cmdy(code.PUBLISH, ice.CONTEXTS, ice.MISC)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Appendv("SIZE")[1])
 	} else if len(arg) < 3 || arg[2] == "" {
-		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Open, s.Vimer, s.Xterm, s.Serve)
-		m.EchoScript(s.cmd(m, arg[1]))
+		m.SplitIndex(s.container(m, EXEC, arg[1], PS)).PushAction(s.Stop).Action(s.Open, s.Vimer, s.Xterm)
+		m.EchoScript(s.cmd(m, arg[1])).Cmdy(code.PUBLISH, ice.CONTEXTS, ice.MISC)
 		m.StatusTimeCount()
 	} else {
 		m.Echo(s.container(m, kit.Simple(EXEC, arg[1], kit.Split(arg[2], ice.SP, ice.SP))...))
@@ -233,22 +218,19 @@ func (s client) Df(m *ice.Message, arg ...string) *ice.Message {
 	return m
 }
 func (s client) Open(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, "系统页", web.MergePod(m, kit.Select(m.Option(CONTAINER_ID), arg, 1)), arg...)
+	s.Code.Iframe(m, "系统页", web.MergePod(m, s.short(m, arg...)), arg...)
 }
 func (s client) Vimer(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, "编辑器", web.MergePodCmd(m, m.Option(CONTAINER_ID), web.CODE_VIMER), arg...)
+	s.Code.Iframe(m, "编辑器", web.MergePodCmd(m, s.short(m, arg...), web.CODE_VIMER), arg...)
 }
 func (s client) Xterm(m *ice.Message, arg ...string) {
-	s.Code.Xterm(m, []string{mdb.TYPE, s.cmd(m, kit.Select(m.Option(CONTAINER_ID), arg, 1)), mdb.NAME, m.Option(CONTAINER_ID)}, arg...)
+	ctx.ProcessField(m.Message, web.CODE_XTERM, func() []string {
+		name := s.short(m, arg...)
+		return []string{s.cmd(m, name), name}
+	}, arg...)
+}
+func (s client) short(m *ice.Message, arg ...string) string {
+	return kit.Select(m.Option(CONTAINER_ID), arg, 1)[:12]
 }
 
 func init() { ice.CodeCtxCmd(client{}) }
-
-const _dockerfile = `
-FROM alpine
-
-WORKDIR /root/contexts
-COPY ice.linux.amd64 bin/ice.bin
-
-CMD ./bin/ice.bin forever start dev dev
-`
