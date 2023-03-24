@@ -94,7 +94,7 @@ func (s client) Inputs(m *ice.Message, arg ...string) {
 		m.Push(tcp.PORT, kit.Format("%d:9020", port)).Push(ice.BIN, "")
 		m.Push(tcp.PORT, "20000:9020").Push(ice.BIN, "")
 		m.Push(tcp.PORT, "20001:9020").Push(ice.BIN, "")
-		s.List(m.Spawn(), cli.ALPINE).Tables(func(value ice.Maps) {
+		s.List(m.Spawn(), cli.ALPINE).Table(func(value ice.Maps) {
 			if ls := strings.SplitN(value["PORTS"], "->", 2); len(ls) > 1 {
 				m.Push(tcp.PORT, kit.Slice(strings.Split(ls[0], ice.DF), -1)[0])
 				m.Push(ice.BIN, value["COMMAND"])
@@ -179,7 +179,7 @@ func (s client) Modify(m *ice.Message, arg ...string) {
 }
 func (s client) Search(m *ice.Message, arg ...string) {
 	if arg[0] == mdb.FOREACH && (arg[1] == "" || arg[1] == ssh.SHELL) {
-		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Tables(func(value ice.Maps) {
+		s.List(m.Spawn(ice.Maps{ice.MSG_FIELDS: ""})).Table(func(value ice.Maps) {
 			m.PushSearch(mdb.TYPE, ssh.SHELL, mdb.NAME, value[REPOSITORY]+ice.DF+value[TAG],
 				mdb.TEXT, "docker run -w /root -it "+value[REPOSITORY]+ice.DF+value[TAG]+" sh")
 		})
@@ -194,7 +194,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	} else if len(arg) < 2 || arg[1] == "" {
 		m.SplitIndex(strings.Replace(s.container(m, LS, "-a"), "CONTAINER ID", CONTAINER_ID, 1)).RenameAppend("IMAGE", "REPOSITORY")
 		m.Cut("CREATED,CONTAINER_ID,REPOSITORY,COMMAND,PORTS,STATUS,NAMES")
-		m.Tables(func(value ice.Maps) {
+		m.Table(func(value ice.Maps) {
 			if strings.HasPrefix(value["STATUS"], "Up") {
 				m.PushButton(s.Open, s.Vimer, s.Xterm, s.Exports, s.Stop)
 			} else {
