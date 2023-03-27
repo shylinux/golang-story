@@ -218,10 +218,10 @@ func (s client) Df(m *ice.Message, arg ...string) *ice.Message {
 	return m
 }
 func (s client) Open(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, "系统页", web.MergePod(m, s.short(m, arg...)), arg...)
+	s.Code.Iframe(m, "系统页", m.MergePod(s.short(m, arg...)), arg...)
 }
 func (s client) Vimer(m *ice.Message, arg ...string) {
-	s.Code.Iframe(m, "编辑器", web.MergePodCmd(m, s.short(m, arg...), web.CODE_VIMER), arg...)
+	s.Code.Iframe(m, "编辑器", m.MergePodCmd(s.short(m, arg...), web.CODE_VIMER), arg...)
 }
 func (s client) Xterm(m *ice.Message, arg ...string) {
 	ctx.ProcessField(m.Message, web.CODE_XTERM, func() []string {
