@@ -19,7 +19,7 @@ type chain struct {
 }
 
 func (s chain) Find(m *ice.Message, arg ...string) {
-	if !nfs.ExistsFile(m, path.Join(m.Option(nfs.PATH), nfs.TAGS)) {
+	if !nfs.Exists(m, path.Join(m.Option(nfs.PATH), nfs.TAGS)) {
 		m.Cmd(cli.SYSTEM, "gotags", "-R", kit.Dict(cli.CMD_DIR, m.Option(nfs.PATH)))
 	}
 
@@ -34,7 +34,7 @@ func (s chain) Find(m *ice.Message, arg ...string) {
 			return
 		}
 	}
-	if nfs.ExistsFile(m, path.Join(m.Option(nfs.PATH), arg[0])) {
+	if nfs.Exists(m, path.Join(m.Option(nfs.PATH), arg[0])) {
 		ctx.ProcessFloat(m.Message, m.PrefixKey(), m.Option(nfs.PATH), arg[0], "1")
 		return
 	}

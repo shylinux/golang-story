@@ -59,7 +59,7 @@ type client struct {
 }
 
 func (s client) host(m *ice.Message) []string {
-	if nfs.ExistsFile(m.Message, "usr/install/docker/docker.sock") {
+	if nfs.Exists(m.Message, "usr/install/docker/docker.sock") {
 		return []string{"--host", "unix://" + kit.Path("usr/install/docker/docker.sock")}
 	}
 	return nil
