@@ -6,6 +6,7 @@ import (
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/mdb"
+	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/chat/oauth"
 	kit "shylinux.com/x/toolkits"
@@ -42,7 +43,7 @@ func (s server) Start(m *ice.Message, arg ...string) {
 		))
 
 		section := ""
-		kit.Rewrite(path.Join(p, "conf/defaults.ini"), func(p string) string {
+		nfs.Rewrite(m.Message, path.Join(p, "conf/defaults.ini"), func(p string) string {
 			if strings.TrimSpace(p) == "" {
 				return p
 			}

@@ -29,7 +29,7 @@ func (s chain) Find(m *ice.Message, arg ...string) {
 	}
 
 	if !strings.HasSuffix(arg[0], ".go") {
-		if msg := m.Cmd(cli.SYSTEM, "go", "doc", arg[0]); cli.IsSuccess(msg) {
+		if msg := m.Cmd(cli.SYSTEM, "go", "doc", arg[0]); cli.IsSuccess(msg.Message) {
 			ctx.ProcessFloat(m.Message, m.PrefixKey(), "doc", arg[0])
 			return
 		}
