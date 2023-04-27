@@ -190,7 +190,7 @@ func (s client) List(m *ice.Message, arg ...string) *ice.Message {
 	if len(arg) < 1 || arg[0] == "" {
 		m.SplitIndex(strings.Replace(s.image(m, LS), "IMAGE ID", IMAGE_ID, 1))
 		m.Cut("CREATED,IMAGE_ID,SIZE,REPOSITORY,TAG")
-		m.PushAction(s.Start, s.Save, s.Drop).Action(s.Build, s.Imports, s.Pull, s.Df, s.Prune)
+		m.PushAction(s.Start, s.Drop).Action(s.Build, s.Imports, s.Pull, s.Df, s.Prune)
 		m.StatusTimeCount("SIZE", s.Df(m.Spawn()).Append("SIZE"))
 	} else if len(arg) < 2 || arg[1] == "" {
 		m.SplitIndex(strings.Replace(s.container(m, LS, "-a"), "CONTAINER ID", CONTAINER_ID, 1)).RenameAppend("IMAGE", "REPOSITORY")
