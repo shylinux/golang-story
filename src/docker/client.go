@@ -143,6 +143,9 @@ func (s client) Start(m *ice.Message, arg ...string) {
 		}
 		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image)...))
 	} else {
+		if m.Option(tcp.PORT) != "" && strings.Contains(m.Option(tcp.PORT), ice.DF) {
+			args = append(args, "-p", m.Option(tcp.PORT))
+		}
 		m.Option(CONTAINER_ID, s.container(m, kit.Simple(RUN, args, "-dt", image, m.Option(ice.CMD))...))
 	}
 }
