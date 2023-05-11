@@ -12,5 +12,6 @@ ish_miss_prepare_operate
 ish_miss_prepare release
 ish_miss_prepare_icebergs
 ish_miss_prepare_toolkits
+ish_miss_prepare icons
 
 ish_miss_make; if [ -n "$*" ]; then ish_miss_serve "$@"; fi

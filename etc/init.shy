@@ -1,6 +1,6 @@
-~aaa
-
 ~web
+	config serve meta.main /chat/cmd/desktop
+	config space meta.main desktop
 
-~ssh
-
+~web.chat.macos
+	applications install docker web.code.docker.client icon usr/icons/Docker.png

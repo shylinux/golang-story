@@ -8,8 +8,6 @@ type server struct {
 	list  string `name:"list path auto order install" help:"容器"`
 }
 
-func (s server) List(m *ice.Message, arg ...string) {
-	s.Code.Source(m, "", arg...)
-}
+func (s server) List(m *ice.Message, arg ...string) { s.Code.Source(m, "", arg...) }
 
 func init() { ice.CodeCtxCmd(server{}) }
