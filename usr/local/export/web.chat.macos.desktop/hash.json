@@ -1,0 +1,43 @@
+{
+  "4472a4": {
+    "meta": {
+      "args": "month",
+      "icon": "usr/icons/Calendar.png",
+      "index": "web.team.plan",
+      "name": "Calendar",
+      "time": "2023-05-11 16:24:22.813"
+    }
+  },
+  "58bd81": {
+    "meta": {
+      "icon": "usr/icons/Books.png",
+      "index": "web.wiki.word",
+      "name": "Books",
+      "time": "2023-05-11 16:24:22.813"
+    }
+  },
+  "92ddbf": {
+    "meta": {
+      "icon": "usr/icons/Photos.png",
+      "index": "web.wiki.feel",
+      "name": "Photos",
+      "time": "2023-05-11 16:24:22.813"
+    }
+  },
+  "afdc02": {
+    "meta": {
+      "icon": "usr/icons/Grapher.png",
+      "index": "web.wiki.draw",
+      "name": "Grapher",
+      "time": "2023-05-11 16:24:22.813"
+    }
+  },
+  "d5ed5b": {
+    "meta": {
+      "icon": "/require/usr/icons/Docker.png",
+      "index": "web.code.docker.client",
+      "name": "docker",
+      "time": "2023-05-11 16:26:57.887"
+    }
+  }
+}

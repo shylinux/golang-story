@@ -1,9 +1,10 @@
 chapter "runtime"
 label `
-os flag path time sync expvar context errors plugin
-io log fmt net bufio bytes
-math sort hash index container database vendor
-unicode strings strconv regexp mime text html image encoding crypto archive compress
-go debug testing reflect runtime internal unsafe syscall
-` compact true
+fmt unicode strings strconv regexp sort mime text html image
+math hash crypto archive compress encoding container index bytes bufio
+testing database net context sync errors expvar flag time path log io os
+internal builtin reflect runtime syscall unsafe plugin vendor debug cmd go
+` compact true index "web.code.godoc"
 
+field "runtime" web.code.inner args "usr/local/go/src/runtime/ malloc.go"
+field "compile" web.code.inner args "usr/local/go/src/cmd/ go/main.go"

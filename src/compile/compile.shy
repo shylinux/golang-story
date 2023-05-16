@@ -1,8 +1,35 @@
 chapter "compile"
-label `
-env run test build clean
-doc get mod install list
-fmt vet generate tool
-bug fix help version
-` compact true
+refer `
+官网 https://golang.google.cn
+文档 https://golang.google.cn/doc
+源码 https://github.com/golang/go
+`
 
+field "编译器" web.code.golang.compile
+
+section "编译安装"
+shell `
+yum install -y wget make gcc
+yum install -y diffutils.x86_64
+
+mkdir bootstrap\; cd bootstrap
+export PATH=$PWD/go/bin:$PATH GOROOT_BOOTSTRAP=$PWD/go
+
+wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
+tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
+
+export CGO_ENABLED=0 
+./all.bash
+`
+
+shell `
+cd ../../../
+wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
+tar xvf go1.15.5.src.tar.gz && cd go/src
+./all.bash
+`
+
+shell `
+cd ../
+bin/go version
+`

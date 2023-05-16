@@ -1,0 +1,56 @@
+{
+  "03a0b6": {
+    "meta": {
+      "_target": {},
+      "daemon": "127_0_0_1_57907.8",
+      "time": "2023-05-16 09:18:07.383",
+      "type": "ish"
+    }
+  },
+  "9b3fde": {
+    "meta": {
+      "_target": {
+        "Path": "/bin/bash",
+        "Args": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "ctx_ops=http://localhost:9020",
+          "ctx_log=var/log/boot.log",
+          "ctx_pid=var/log/ice.pid",
+          "PATH=/Users/shy/contexts/usr/local/work/20230511-golang-story/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/publish:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/go/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/install/go/bin:/Users/shy/contexts/bin:/Users/shy/contexts/usr/publish:/Users/shy/contexts/usr/local/bin:/Users/shy/contexts/usr/local/go/bin:/Users/shy/contexts/usr/install/docker:/Users/shy/contexts/usr/install/jdk-18/bin:/Users/shy/contexts/usr/install/node-v16.15.1-linux-x64/bin:/Users/shy/contexts/usr/install/node-v16.15.1-darwin-x64/bin:/Users/shy/contexts/usr/install/ffmpeg-4.2.1/_install/bin:/Users/shy/contexts/usr/install/qemu-3.1.0/_install/bin:/Users/shy/contexts/usr/install/gdb-7.6.1/_install/bin:/Users/shy/contexts/usr/install/gcc-4.8.4/_install/bin:/Users/shy/contexts/usr/install/ctags-5.8/_install/bin:/Users/shy/contexts/usr/install/vim-vim-12be734/_install/bin:/Users/shy/contexts/usr/install/git-2.31.1/_install/libexec/git-core:/Users/shy/contexts/usr/install/git-2.31.1/_install/bin:/Users/shy/contexts/usr/install/tmux-3.2/_install/bin:/Users/shy/contexts/usr/install/bash-5.1/_install/bin:/Users/shy/contexts/usr/local/work/20221205-sshd/usr/publish:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/go/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+          "USER=shylinux",
+          "HOME=/Users/shy",
+          "TERM=screen",
+          "SHELL=/bin/zsh",
+          "USERPROFILE=",
+          "TERM=xterm"
+        ],
+        "Dir": "/Users/shy/contexts/usr/local/work/20230511-golang-story",
+        "Stdin": {},
+        "Stdout": {},
+        "Stderr": {},
+        "ExtraFiles": null,
+        "SysProcAttr": {
+          "Chroot": "",
+          "Credential": null,
+          "Ptrace": false,
+          "Setsid": true,
+          "Setpgid": false,
+          "Setctty": true,
+          "Noctty": false,
+          "Ctty": 0,
+          "Foreground": false,
+          "Pgid": 0
+        },
+        "Process": {
+          "Pid": 64716
+        },
+        "ProcessState": null
+      },
+      "daemon": "127_0_0_1_60029.8",
+      "time": "2023-05-16 08:22:28.145",
+      "type": "bash"
+    }
+  }
+}

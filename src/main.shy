@@ -1,63 +1,6 @@
-refer `
-免费列表 https://www.imooc.com/course/list?c=go
-Go语言第一课 https://www.imooc.com/video/6644
-https://coding.imooc.com/learningpath/route?pathId=5
-`
-
-section "Google资深工程师深度讲解Go语言"
-refer `
-视频 https://coding.imooc.com/learn/list/180.html
-源码 https://git.imooc.com/coding-180/coding-180
-docker https://www.daocloud.io/mirror
-`
-
-
 title "golang"
-refer `
-官网 https://golang.google.cn
-文档 https://golang.google.cn/doc
-源码 https://github.com/golang/go
-`
-
-field "编译器" web.code.golang.compile
-field "源代码" web.code.inner args `usr/local/go/src/cmd/ go/main.go 83`
-
-section "编译安装"
-shell `
-yum install -y wget make gcc
-yum install -y diffutils.x86_64
-
-mkdir bootstrap\; cd bootstrap
-export PATH=$PWD/go/bin:$PATH GOROOT_BOOTSTRAP=$PWD/go
-
-wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
-tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
-
-export CGO_ENABLED=0 
-./all.bash
-`
-
-shell `
-cd ../../../
-wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
-tar xvf go1.15.5.src.tar.gz && cd go/src
-./all.bash
-`
-
-shell `
-cd ../
-bin/go version
-`
-source compile/source.shy
-source compile/compile.shy
-source runtime/runtime.shy
-source project/project.shy
-
-source tcmalloc/tcmalloc.shy
-source leveldb/leveldb.shy
-source rocksdb/rocksdb.shy
 
 source docker/docker.shy
-source kubernetes/kubernetes.shy
-source prometheus/prometheus.shy
-source grafana/grafana.shy
+source project/project.shy
+source runtime/runtime.shy
+source compile/compile.shy
