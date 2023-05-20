@@ -1,0 +1,50 @@
+syntax = "proto3";
+option go_package ="./pb";
+import "idl/common.proto";
+package idl;
+
+service UserService {
+    rpc Create (UserCreateRequest) returns (UserCreateReply);
+    rpc Remove (UserRemoveRequest) returns (UserRemoveReply);
+    rpc Info (UserInfoRequest) returns (UserInfoReply);
+    rpc List (UserListRequest) returns (UserListReply);
+}
+
+message UserCreateRequest {
+    string name = 1;
+}
+message UserCreateReply {
+    BaseReply baseResp = 1;
+    User data = 2;
+}
+
+message UserRemoveRequest {
+    int64 id = 1;
+}
+message UserRemoveReply {
+    BaseReply baseResp = 1;
+}
+
+message UserInfoRequest {
+    int64 id = 1;
+}
+message UserInfoReply {
+    BaseReply baseResp = 1;
+    User data = 2;
+}
+
+message UserListRequest {
+    int64 page = 1;
+    int64 count = 2;
+}
+message UserListReply {
+    BaseReply baseResp = 1;
+    repeated User data = 2;
+}
+
+message User {
+    int64 id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+}

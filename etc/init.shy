@@ -2,5 +2,7 @@
 	config serve meta.main /chat/cmd/desktop
 	config space meta.main desktop
 
+~web
+	spide create test "http://localhost:8082"
 ~web.chat.macos
 	applications install docker web.code.docker.client icon usr/icons/Docker.png

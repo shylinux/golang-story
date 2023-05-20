@@ -1,22 +1,51 @@
 chapter "project"
+section "后端框架"
+refer `
+prometheus https://github.com/prometheus/client_golang
+https://github.com/stretchr/testify
+https://pkg.go.dev/go.uber.org/zap
+https://pkg.go.dev/go.uber.org/dig
+https://github.com/gin-gonic/gin
+https://github.com/go-redis/redis
+https://github.com/go-gorm/gorm
+https://github.com/spf13/viper
+https://google.golang.org/grpc
+`
+field web.code.golang.project
+section "protobuf 协议"
+refer `
+文档 https://developers.google.cn/protocol-buffers/
+源码 https://github.com/protocolbuffers/protobuf
+插件 https://github.com/golang/protobuf
+https://grpc.io/docs/languages/go/quickstart/
+yaml https://yaml.org/spec/1.2.2/
+`
+field web.code.golang.protobuf
+shell `
+wget https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-linux-x86_64.zip
+go install google.golang.org/protobuf/cmd/protoc-gen-go
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+`
+return
+section "Google资深工程师深度讲解Go语言"
 refer `
 免费列表 https://www.imooc.com/course/list?c=go
 Go语言第一课 https://www.imooc.com/video/6644
 https://coding.imooc.com/learningpath/route?pathId=5
 `
 
-section "Google资深工程师深度讲解Go语言"
 refer `
 视频 https://coding.imooc.com/learn/list/180.html
 源码 https://git.imooc.com/coding-180/coding-180
 docker https://www.daocloud.io/mirror
 `
+section "other"
+
 
 refer `
 https://github.com/spf13/cobra
 https://github.com/fyne-io/fyne
 https://github.com/webview/webview
-https://github.com/gin-gonic/gin
 
 https://github.com/golang/protobuf
 https://github.com/gorilla/websocket
@@ -35,9 +64,6 @@ https://github.com/go-admin-team/go-admin
 https://github.com/segmentio/kafka-go
 https://github.com/apache/pulsar-client-go
 https://github.com/elastic/go-elasticsearch
-https://github.com/go-redis/redis
-https://github.com/go-gorm/gorm
-https://github.com/spf13/viper
 https://github.com/uber-go/zap
 `
 
@@ -72,13 +98,6 @@ section "raft 协议"
 refer `
 官网 https://raft.github.io/
 源码 https://github.com/lni/dragonboat
-`
-
-section "protobuf 协议"
-refer `
-文档 https://developers.google.cn/protocol-buffers/
-源码 https://github.com/protocolbuffers/protobuf
-插件 https://github.com/golang/protobuf
 `
 
 section "ledisdb 缓存"

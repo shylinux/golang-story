@@ -1,0 +1,13 @@
+service:
+  addr: ":8081"
+storage:
+  cache:
+    password: root
+    host: 127.0.0.1
+    port: 10001
+  engine:
+    username: root
+    password: root
+    database: space
+    host: 127.0.0.1
+    port: 10002

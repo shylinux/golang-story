@@ -1,53 +1,28 @@
 package project
 
 import (
-	"net/http"
 	"path"
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
-	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
-	"shylinux.com/x/icebergs/base/web"
-	"shylinux.com/x/icebergs/core/code"
-	kit "shylinux.com/x/toolkits"
 )
 
 type protobuf struct {
-	protoc string `data:"https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip"`
-	source string `data"https://github.com/golang/protobuf/"`
-
-	list string `name:"list auto" help:"官方库"`
+	ice.Code
+	linux  string `data:"https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-linux-x86_64.zip"`
+	darwin string `data:"https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-osx-x86_64.zip"`
+	list   string `name:"list auto install" help:"协议"`
 }
 
-func (p protobuf) Install(m *ice.Message, arg ...string) {
-	if !cli.IsSuccess(m.Cmd("protoc").Message) {
-		// 下载
-		msg := m.Cmd(web.SPIDE, "dev", web.CACHE, http.MethodGet, m.Conf(m.PrefixKey(), "meta.protoc"))
-		p := path.Join(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protoc.zip")
-		m.Cmd(web.CACHE, web.WATCH, msg.Append(mdb.DATA), p)
-
-		// 解压
-		m.Option(cli.CMD_DIR, m.Conf(code.INSTALL, kit.Keym(nfs.PATH)))
-		m.Cmd(cli.SYSTEM, "unzip", "protoc.zip")
-
-		// 安装
-		m.Cmd(nfs.LINK, kit.Path("bin/protoc"), kit.Path(m.Option(cli.CMD_DIR), "bin/protoc"))
-	}
-
-	// 下载
-	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH))))
-	m.Cmd(cli.SYSTEM, "git", "clone", m.Config(nfs.SOURCE))
-
-	// 编译
-	m.Option(cli.CMD_DIR, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), "protobuf/protoc-gen-go"))
-	m.Cmd(cli.SYSTEM, "go", "build")
-
-	// 安装
-	m.Cmd(nfs.LINK, kit.Path("bin/protoc-gen-go"), kit.Path(m.Option(cli.CMD_DIR), "protoc-gen-go"))
+func (s protobuf) Install(m *ice.Message, arg ...string) {
+	s.Code.Install(m)
+	m.Cmdy(cli.SYSTEM, nfs.PUSH, path.Join("usr/install/protoc/bin"))
+	m.Cmdy(cli.SYSTEM, "go", "install", "google.golang.org/protobuf/cmd/protoc-gen-go")
+	m.Cmdy(cli.SYSTEM, "go", "install", "google.golang.org/grpc/cmd/protoc-gen-go-grpc")
 }
-func (p protobuf) List(m *ice.Message, arg ...string) {
-	m.Cmdy(cli.SYSTEM, "go", "doc", "runtime")
+func (s protobuf) List(m *ice.Message, arg ...string) {
+	m.Cmdy(cli.SYSTEM, "go", "doc", "google.golang.org/grpc")
 }
 
-func init() { ice.Cmd("web.code.golang.protobuf", protobuf{}) }
+func init() { ice.CodeModCmd(protobuf{}) }

@@ -1,103 +1,38 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gogather/com/log"
 	"go.uber.org/dig"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/response"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
-type MainService struct {
-	admin *AdminService
-	*gin.Engine
-}
-
-func NewMainService(admin *AdminService, engine *gin.Engine) *MainService {
-	return &MainService{admin, engine}
-}
-
 func Init(container *dig.Container) {
-	container.Provide(gin.New)
+	container.Provide(NewUserService)
 }
-
-// register 注册服务
-func register(g *gin.Engine, group string, s interface{}) {
-	grp := g.Group(group)
-
-	t := reflect.TypeOf(s)
-	v := reflect.ValueOf(s)
-	for i := 0; i < v.NumMethod(); i++ {
-		grp.POST(strings.ToLower(t.Method(i).Name), wrap(v.Method(i).Interface()))
+func CacheSet(cache repository.Cache, id int64, obj interface{}) error {
+	if buf, err := json.Marshal(obj); err == nil {
+		t := reflect.TypeOf(obj)
+		return cache.Set(fmt.Sprintf("%s:%s", t.Name(), id), string(buf))
+	} else {
+		return err
 	}
 }
-
-// wrap 包装回调函数
-func wrap(handle interface{}) func(*gin.Context) {
-	return func(ctx *gin.Context) {
-		t := reflect.TypeOf(handle)
-		v := reflect.ValueOf(handle)
-
-		var res []reflect.Value
-		switch t.NumIn() {
-		case 1:
-			log.Infof("access %v", ctx.Request.URL)
-			res = v.Call([]reflect.Value{reflect.ValueOf(ctx)})
-		case 2:
-			arg := reflect.New(t.In(1).Elem()).Interface()
-			if err := ctx.Bind(arg); err != nil {
-				response.WriteParamInvalid(ctx, err)
-				return
-			}
-			log.Infof("access %v %#v", ctx.Request.URL, arg)
-			res = v.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(arg)})
-		default:
-			response.WriteBase(ctx, fmt.Errorf("func arg must be: (ctx, [data])"))
+func CacheGet(cache repository.Cache, id int64, obj interface{}) error {
+	t := reflect.TypeOf(obj)
+	if buf, err := cache.Get(fmt.Sprintf("%s:%d", t.Name(), id)); err == nil {
+		if err := json.Unmarshal([]byte(buf), obj); err == nil {
+			return nil
+		} else {
+			return err
 		}
-
-		if len(res) == 0 {
-			return
-		}
-
-		switch err := res[len(res)-1].Interface().(type) {
-		case nil:
-			if len(res) == 1 {
-				response.WriteBase(ctx, err)
-				return
-			}
-		case error:
-			if err != nil {
-				response.WriteBase(ctx, err)
-				return
-			}
-		default:
-			response.WriteBase(ctx, fmt.Errorf("last res must be error %v", err))
-			return
-		}
-
-		if len(res) == 2 {
-			switch id := res[0].Interface().(type) {
-			case int64:
-				response.WriteBaseID(ctx, id)
-			default:
-				response.WriteData(ctx, res[0].Interface(), res[1].Interface())
-			}
-			return
-		}
-
-		if len(res) == 3 {
-			switch secondRes := res[1].Interface().(type) {
-			case int64:
-				response.WriteBasePage(ctx, res[0].Interface(), secondRes)
-			default:
-				response.WriteBase(ctx, fmt.Errorf("res must be (list [], total int64, err error)"))
-			}
-			return
-		}
-
-		response.WriteBase(ctx, fmt.Errorf("unknown res"))
+	} else {
+		return err
 	}
+}
+func CacheDel(cache repository.Cache, id int64, obj interface{}) error {
+	t := reflect.TypeOf(obj)
+	return cache.Del(fmt.Sprintf("%s:%d", t.Name(), id))
 }

@@ -3,20 +3,19 @@ package main
 import (
 	"go.uber.org/dig"
 
-	"shylinux.com/x/golang-story/src/project/server/application"
+	"shylinux.com/x/golang-story/src/project/server/controller"
 	"shylinux.com/x/golang-story/src/project/server/domain"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
 	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
 func main() {
 	container := dig.New()
-	service.Init(container)
-	application.Init(container)
 	domain.Init(container)
+	service.Init(container)
+	controller.Init(container)
 	infrastructure.Init(container)
-
-	container.Invoke(func(s *service.MainService) error {
-		return s.Run()
-	})
+	check.Assert(container.Invoke(func(s *controller.MainController, config *config.Config) error { return s.Run(config.Service.Addr) }))
 }

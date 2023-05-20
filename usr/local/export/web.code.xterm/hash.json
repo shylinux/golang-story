@@ -1,24 +1,44 @@
 {
-  "03a0b6": {
+  "18619f": {
     "meta": {
       "_target": {},
-      "daemon": "127_0_0_1_57907.8",
-      "time": "2023-05-16 09:18:07.383",
+      "daemon": "127_0_0_1_59394.8",
+      "time": "2023-05-17 18:59:27.398",
       "type": "ish"
     }
   },
-  "9b3fde": {
+  "315a65": {
+    "meta": {
+      "_target": [],
+      "time": "2023-05-18 15:31:31.205",
+      "type": "docker exec -w /root -it 9531b27f9b2d sh"
+    }
+  },
+  "730c1a": {
+    "meta": {
+      "daemon": "127_0_0_1_59492.14",
+      "time": "2023-05-18 15:47:23.417",
+      "type": "docker exec -w /root -it bc13672d95bc sh"
+    }
+  },
+  "b968ad": {
     "meta": {
       "_target": {
-        "Path": "/bin/bash",
         "Args": [
-          "/bin/bash"
+          "/usr/local/bin/docker",
+          "exec",
+          "-w",
+          "/root",
+          "-it",
+          "4ed0c5922796",
+          "sh"
         ],
+        "Dir": "/Users/shy/contexts/usr/local/work/20230511-golang-story",
         "Env": [
           "ctx_ops=http://localhost:9020",
           "ctx_log=var/log/boot.log",
           "ctx_pid=var/log/ice.pid",
-          "PATH=/Users/shy/contexts/usr/local/work/20230511-golang-story/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/publish:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/go/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/install/go/bin:/Users/shy/contexts/bin:/Users/shy/contexts/usr/publish:/Users/shy/contexts/usr/local/bin:/Users/shy/contexts/usr/local/go/bin:/Users/shy/contexts/usr/install/docker:/Users/shy/contexts/usr/install/jdk-18/bin:/Users/shy/contexts/usr/install/node-v16.15.1-linux-x64/bin:/Users/shy/contexts/usr/install/node-v16.15.1-darwin-x64/bin:/Users/shy/contexts/usr/install/ffmpeg-4.2.1/_install/bin:/Users/shy/contexts/usr/install/qemu-3.1.0/_install/bin:/Users/shy/contexts/usr/install/gdb-7.6.1/_install/bin:/Users/shy/contexts/usr/install/gcc-4.8.4/_install/bin:/Users/shy/contexts/usr/install/ctags-5.8/_install/bin:/Users/shy/contexts/usr/install/vim-vim-12be734/_install/bin:/Users/shy/contexts/usr/install/git-2.31.1/_install/libexec/git-core:/Users/shy/contexts/usr/install/git-2.31.1/_install/bin:/Users/shy/contexts/usr/install/tmux-3.2/_install/bin:/Users/shy/contexts/usr/install/bash-5.1/_install/bin:/Users/shy/contexts/usr/local/work/20221205-sshd/usr/publish:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/go/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+          "PATH=/Users/shy/contexts/usr/local/work/20230511-golang-story/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/publish:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/local/go/bin:/Users/shy/contexts/usr/local/work/20230511-golang-story/usr/install/go/bin:/Users/shy/contexts/bin:/Users/shy/contexts/usr/publish:/Users/shy/contexts/usr/local/bin:/Users/shy/contexts/usr/local/go/bin:/Users/shy/contexts/usr/install/docker:/Users/shy/contexts/usr/install/jdk-18/bin:/Users/shy/contexts/usr/install/node-v16.15.1-linux-x64/bin:/Users/shy/contexts/usr/install/node-v16.15.1-darwin-x64/bin:/Users/shy/contexts/usr/install/ffmpeg-4.2.1/_install/bin:/Users/shy/contexts/usr/install/qemu-3.1.0/_install/bin:/Users/shy/contexts/usr/install/gdb-7.6.1/_install/bin:/Users/shy/contexts/usr/install/gcc-4.8.4/_install/bin:/Users/shy/contexts/usr/install/ctags-5.8/_install/bin:/Users/shy/contexts/usr/install/vim-vim-12be734/_install/bin:/Users/shy/contexts/usr/install/git-2.31.1/_install/libexec/git-core:/Users/shy/contexts/usr/install/git-2.31.1/_install/bin:/Users/shy/contexts/usr/install/tmux-3.2/_install/bin:/Users/shy/contexts/usr/install/bash-5.1/_install/bin:/Users/shy/contexts/usr/local/work/20221205-sshd/usr/publish:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
           "USER=shylinux",
           "HOME=/Users/shy",
           "TERM=screen",
@@ -26,31 +46,40 @@
           "USERPROFILE=",
           "TERM=xterm"
         ],
-        "Dir": "/Users/shy/contexts/usr/local/work/20230511-golang-story",
+        "ExtraFiles": null,
+        "Path": "/usr/local/bin/docker",
+        "Process": {
+          "Pid": 76516
+        },
+        "ProcessState": null,
+        "Stderr": {},
         "Stdin": {},
         "Stdout": {},
-        "Stderr": {},
-        "ExtraFiles": null,
         "SysProcAttr": {
           "Chroot": "",
           "Credential": null,
-          "Ptrace": false,
-          "Setsid": true,
-          "Setpgid": false,
-          "Setctty": true,
-          "Noctty": false,
           "Ctty": 0,
           "Foreground": false,
-          "Pgid": 0
-        },
-        "Process": {
-          "Pid": 64716
-        },
-        "ProcessState": null
+          "Noctty": false,
+          "Pgid": 0,
+          "Ptrace": false,
+          "Setctty": true,
+          "Setpgid": false,
+          "Setsid": true
+        }
       },
-      "daemon": "127_0_0_1_60029.8",
-      "time": "2023-05-16 08:22:28.145",
-      "type": "bash"
+      "daemon": "127_0_0_1_57132.13",
+      "time": "2023-05-18 12:04:30.692",
+      "type": "docker exec -w /root -it 4ed0c5922796 sh"
+    }
+  },
+  "ddafa1": {
+    "meta": {
+      "_target": {},
+      "daemon": "127_0_0_1_64671.10",
+      "name": "main.go",
+      "time": "2023-05-19 01:15:56.938",
+      "type": "ish"
     }
   }
 }
