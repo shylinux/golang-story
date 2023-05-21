@@ -42,6 +42,8 @@ func NewEngine(config *config.Config, log log.Logger) (repository.Engine, error)
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		conf.Username, conf.Password, conf.Host, conf.Port, conf.Database,
 	)), &gorm.Config{Logger: logger.New(log, logger.Config{LogLevel: logger.Info})})
-	db.AutoMigrate(&domain.User{})
+	if err == nil {
+		db.AutoMigrate(&domain.User{})
+	}
 	return &engine{db: db}, err
 }

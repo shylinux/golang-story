@@ -48,6 +48,8 @@ func (s project) Generate(m *ice.Message, arg ...string) {
 	m.Cmdy(cli.SYSTEM, "protoc", "--go_out=./idl", list)
 }
 func (s project) Build(m *ice.Message, arg ...string) {
+	defer web.ToastProcess(m.Message)()
+	web.PushStream(m.Message)
 	s.System(m, m.Option(nfs.PATH), "go", "build", "-o", "bin/"+m.Option(mdb.NAME), "main.go")
 	s.Hash.Modify(m, kit.Simple(m.OptionSimple(mdb.NAME), mdb.TIME, m.Time(), ice.BIN, "bin/"+m.Option(mdb.NAME))...)
 }
