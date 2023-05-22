@@ -11,6 +11,7 @@ replace (
 )
 
 require (
+	google.golang.org/grpc v1.55.0 // indirect
 	shylinux.com/x/ice v1.3.2
 	shylinux.com/x/icebergs v1.5.6
 	shylinux.com/x/mysql-story v0.5.8

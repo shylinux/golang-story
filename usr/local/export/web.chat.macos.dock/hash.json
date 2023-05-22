@@ -1,7 +1,6 @@
 {
   "3d8576": {
     "meta": {
-      "_target": [],
       "icon": "/require/usr/icons/go.png",
       "index": "web.code.compile",
       "name": "compile",
