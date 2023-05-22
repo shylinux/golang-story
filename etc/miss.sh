@@ -9,9 +9,10 @@ ish_miss_prepare_compile
 ish_miss_prepare_develop
 ish_miss_prepare_project
 
-ish_miss_prepare release
+ish_miss_prepare_contexts
 ish_miss_prepare_icebergs
 ish_miss_prepare_toolkits
+ish_miss_prepare release
 
 ish_miss_prepare mysql-story
 ish_miss_prepare redis-story
