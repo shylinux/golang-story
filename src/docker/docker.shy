@@ -18,6 +18,11 @@ sudo dockerd --host unix://$PWD/docker.sock --pidfile $PWD/docker.pid --exec-roo
 sudo chmod 0666 $PWD/docker.sock
 export DOCKER_HOST=unix://$PWD/docker.sock
 
-docker run -w /root -it alpine
+docker run -w /root -p 20000:9020 -it busybox
+export ctx_dev=http://2021.shylinux.com:9020 ctx_pod=20230511-golang-story; temp=$(mktemp); if curl -h &>/dev/null; then curl -o $temp -fsSL $ctx_dev; else wget -O $temp -q $ctx_dev; fi; source $temp app username shylinux usernick ""
+
+docker run -w /root -p 20001:9020 -it alpine
+export ctx_dev=http://2021.shylinux.com:9020 ctx_pod=20230511-golang-story; temp=$(mktemp); if curl -h &>/dev/null; then curl -o $temp -fsSL $ctx_dev; else wget -O $temp -q $ctx_dev; fi; source $temp dev username shylinux usernick ""
+
 docker ps
 `
