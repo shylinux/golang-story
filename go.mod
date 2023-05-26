@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	google.golang.org/grpc v1.55.0 // indirect
 	shylinux.com/x/mysql-story v0.5.9
 	shylinux.com/x/redis-story v0.6.1
 )

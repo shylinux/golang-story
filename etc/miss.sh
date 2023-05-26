@@ -15,7 +15,4 @@ ish_miss_prepare_toolkits
 ish_miss_prepare release
 ish_miss_prepare icons
 
-# ish_miss_prepare mysql-story
-# ish_miss_prepare redis-story
-
 ish_miss_make; if [ -n "$*" ]; then ish_miss_serve "$@"; fi

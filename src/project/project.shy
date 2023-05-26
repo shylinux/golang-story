@@ -12,8 +12,6 @@ https://github.com/spf13/viper
 https://google.golang.org/grpc
 `
 field web.code.golang.project
-field web.code.redis.client
-field web.code.mysql.client
 section "protobuf 协议"
 refer `
 文档 https://developers.google.cn/protocol-buffers/

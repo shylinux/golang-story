@@ -1,6 +1,5 @@
 title "golang"
 
-source docker/docker.shy
 source project/project.shy
 source runtime/runtime.shy
 source compile/compile.shy
