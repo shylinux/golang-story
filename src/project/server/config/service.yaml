@@ -1,13 +1,17 @@
+consul:
+  addr: ":8500"
+  interval: "1s"
 service:
-  addr: ":8081"
+  name: "demo"
+  port: 8083
 storage:
   cache:
-    password: root
+    password: demo
     host: 127.0.0.1
     port: 10001
   engine:
-    username: root
-    password: root
+    username: demo
+    password: demo
     database: space
     host: 127.0.0.1
-    port: 10002
+    port: 3306

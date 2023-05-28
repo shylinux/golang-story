@@ -12,6 +12,15 @@ https://github.com/spf13/viper
 https://google.golang.org/grpc
 `
 field web.code.golang.project
+section "grpc consul"
+refer `
+'Consul教程' https://juejin.cn/post/7089016533682225160
+'5分钟看懂微服务Consul特性及搭建' https://zhuanlan.zhihu.com/p/126064282
+https://developer.hashicorp.com/consul/docs/integrate/partnerships
+'golang grpc consul 服务注册、发现和负载均衡' https://blog.csdn.net/qq_35916684/article/details/104055246
+'Consul 入门-gRPC 服务注册与发现' https://www.cnblogs.com/Zioyi/p/15255570.html
+`
+
 section "protobuf 协议"
 refer `
 文档 https://developers.google.cn/protocol-buffers/

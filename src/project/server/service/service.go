@@ -15,7 +15,7 @@ func Init(container *dig.Container) {
 func CacheSet(cache repository.Cache, id int64, obj interface{}) error {
 	if buf, err := json.Marshal(obj); err == nil {
 		t := reflect.TypeOf(obj)
-		return cache.Set(fmt.Sprintf("%s:%s", t.Name(), id), string(buf))
+		return cache.Set(fmt.Sprintf("%s:%d", t.Name(), id), string(buf))
 	} else {
 		return err
 	}

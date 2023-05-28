@@ -1,6 +1,6 @@
 module shylinux.com/x/golang-story
 
-go 1.13
+go 1.15
 
 replace (
 	shylinux.com/x/ice => ./usr/release

@@ -6,8 +6,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Consul struct {
+	Addr     string
+	Interval string
+}
 type Service struct {
-	Addr string
+	Name string
+	Port int
 }
 type Storage struct {
 	Cache
@@ -27,6 +32,7 @@ type Engine struct {
 }
 type Config struct {
 	file string
+	Consul
 	Service
 	Storage
 }
@@ -35,10 +41,10 @@ var config = &Config{}
 
 func init() {
 	flag.StringVar(&config.file, "config.file", "./config/service.yaml", "")
-	flag.StringVar(&config.Service.Addr, "service.addr", "", "host:port")
+	flag.IntVar(&config.Service.Port, "service.port", 0, "")
 }
 
-func NewConfig() (*Config, error) {
+func New() (*Config, error) {
 	flag.Parse()
 	defer flag.Parse()
 	viper.SetConfigFile(config.file)

@@ -2,9 +2,14 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"math/rand"
+	"net"
 	"testing"
+	"time"
 
+	"github.com/hashicorp/consul/api"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
@@ -19,11 +24,28 @@ type UserTestSuite struct {
 }
 
 func (s *UserTestSuite) SetupTest() {
-	config, err := config.NewConfig()
+	config, err := config.New()
 	if err != nil {
-		log.Fatalf("config load failure: %v", err)
+		log.Fatalln(err)
 	}
-	conn, err := grpc.Dial(config.Service.Addr, grpc.WithInsecure())
+	conf := api.DefaultConfig()
+	conf.Address = config.Consul.Addr
+	registry, err := api.NewClient(conf)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	conn, err := grpc.Dial(config.Service.Name, grpc.WithInsecure(), grpc.WithDialer(func(name string, timeout time.Duration) (net.Conn, error) {
+		list, _, err := registry.Health().Service(name, "", true, nil)
+		if err != nil {
+			return nil, err
+		}
+		if len(list) == 0 {
+			return nil, fmt.Errorf("error")
+		}
+		i := rand.Intn(len(list))
+		log.Printf("what %d %d %#v", i, len(list), list[i].Service.Address)
+		return net.Dial("tcp", list[i].Service.Address)
+	}))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

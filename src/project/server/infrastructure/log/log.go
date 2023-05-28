@@ -27,7 +27,7 @@ var l logger
 
 func Infof(str string, arg ...interface{}) { l.Infof(str, arg...) }
 
-func NewLogger(config *config.Config) (Logger, error) {
+func New(config *config.Config) (Logger, error) {
 	consoleErrors := zapcore.Lock(os.Stderr)
 	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool { return true })

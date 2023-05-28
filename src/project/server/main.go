@@ -17,5 +17,5 @@ func main() {
 	service.Init(container)
 	controller.Init(container)
 	infrastructure.Init(container)
-	check.Assert(container.Invoke(func(s *controller.MainController, config *config.Config) error { return s.Run(config.Service.Addr) }))
+	check.Assert(container.Invoke(func(s *controller.MainController, config *config.Config) error { return s.Run(config.Service.Port) }))
 }

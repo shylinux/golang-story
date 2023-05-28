@@ -1,2 +1,4 @@
+consul:
+  addr: ":8500"
 service:
-  addr: ":8081"
+  name: "demo"

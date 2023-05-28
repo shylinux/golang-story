@@ -18,6 +18,7 @@ type project struct {
 	ice.Code
 	ice.Hash
 	short    string `data:"name"`
+	start    string `name:"start port=11000" help:"启动"`
 	field    string `data:"time,name,path,repos,bin,pid,port"`
 	create   string `name:"create repos='shylinux.com/x/space'" help:"创建"`
 	generate string `name:"generate" help:"生成"`
@@ -25,7 +26,7 @@ type project struct {
 }
 
 func (s project) Create(m *ice.Message, arg ...string) {
-	p := path.Join(ice.USR, path.Base(m.Option(nfs.REPOS)))
+	p := path.Join(ice.USR, path.Base(m.Option(nfs.REPOS))) + nfs.PS
 	m.Cmd(nfs.DIR, nfs.PWD, kit.Dict(nfs.DIR_DEEP, ice.TRUE, nfs.DIR_TYPE, nfs.TYPE_CAT, nfs.DIR_ROOT, "src/project/server/"), func(value ice.Maps) {
 		p := path.Join(ice.USR, path.Base(m.Option(nfs.REPOS)), value[nfs.PATH])
 		m.Cmd(nfs.COPY, p, path.Join("src/project/server/", value[nfs.PATH]))
@@ -50,16 +51,25 @@ func (s project) Generate(m *ice.Message, arg ...string) {
 func (s project) Build(m *ice.Message, arg ...string) {
 	defer web.ToastProcess(m.Message)()
 	web.PushStream(m.Message)
-	s.System(m, m.Option(nfs.PATH), "go", "build", "-o", "bin/"+m.Option(mdb.NAME), "main.go")
-	s.Hash.Modify(m, kit.Simple(m.OptionSimple(mdb.NAME), mdb.TIME, m.Time(), ice.BIN, "bin/"+m.Option(mdb.NAME))...)
+	s.System(m, m.Option(nfs.PATH), "go", "build", "-o", nfs.BIN+m.Option(mdb.NAME), "main.go")
+	if cli.IsSuccess(m.Message) {
+		s.Hash.Modify(m, kit.Simple(m.OptionSimple(mdb.NAME), mdb.TIME, m.Time(), ice.BIN, nfs.BIN+m.Option(mdb.NAME))...)
+		m.ProcessRefresh()
+	} else {
+		m.ProcessInner()
+	}
 }
 func (s project) Start(m *ice.Message, arg ...string) {
-	s.Daemon(m, m.Option(nfs.PATH), "bin/"+m.Option(mdb.NAME), "--service.addr="+":"+m.Option(tcp.PORT))
-	s.Hash.Modify(m, kit.Simple(m.OptionSimple(mdb.NAME, tcp.PORT), "pid", m.Result())...)
-	m.Cmd(web.SPIDE, mdb.CREATE, m.Option(mdb.NAME), "http://localhost:"+m.Option(tcp.PORT))
+	s.Daemon(m, m.Option(nfs.PATH), nfs.BIN+m.Option(mdb.NAME), "--service.addr="+nfs.DF+m.Option(tcp.PORT))
+	if cli.IsSuccess(m.Message) {
+		s.Hash.Modify(m, kit.Simple(m.OptionSimple(mdb.NAME, tcp.PORT), cli.PID, m.Result())...)
+		m.Cmd(web.SPIDE, mdb.CREATE, m.Option(mdb.NAME), "http://localhost:"+m.Option(tcp.PORT))
+		m.ProcessRefresh()
+	}
 }
 func (s project) Test(m *ice.Message, arg ...string) {
-	ctx.ProcessField(m.Message, "apitest", []string{m.Option(mdb.NAME), m.Option(mdb.NAME)}, arg...)
+	// ctx.ProcessField(m.Message, "apitest", []string{m.Option(mdb.NAME), m.Option(mdb.NAME)}, arg...)
+	ctx.ProcessField(m.Message, "xterm", []string{"sh", "", "make test", m.Option(nfs.PATH)}, arg...)
 }
 func (s project) List(m *ice.Message, arg ...string) {
 	s.Hash.List(m, arg...)

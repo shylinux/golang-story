@@ -18,11 +18,11 @@ const (
 
 type Compile struct {
 	ice.Code
-	linux     string `data:"https://golang.google.cn/dl/go1.15.5.linux-amd64.tar.gz"`
-	darwin    string `data:"https://golang.google.cn/dl/go1.15.5.darwin-amd64.tar.gz"`
-	windows   string `data:"https://golang.google.cn/dl/go1.15.5.windows-amd64.zip"`
+	linux     string `data:"https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz"`
+	darwin    string `data:"https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz"`
+	windows   string `data:"https://golang.google.cn/dl/go1.17.13.windows-amd64.zip"`
 	bootstrap string `data:"https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz"`
-	source    string `data:"https://golang.google.cn/dl/go1.15.5.src.tar.gz"`
+	source    string `data:"https://golang.google.cn/dl/go1.17.13.src.tar.gz"`
 
 	c    string `name:"c" help:"源码"`
 	gcc  string `name:"gcc" help:"编译"`
