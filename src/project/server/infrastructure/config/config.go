@@ -14,9 +14,10 @@ type Service struct {
 	Name string
 	Port int
 }
-type Storage struct {
-	Cache
-	Engine
+type Queue struct {
+	Token string
+	Host  string
+	Port  string
 }
 type Cache struct {
 	Password string
@@ -29,6 +30,11 @@ type Engine struct {
 	Database string
 	Host     string
 	Port     string
+}
+type Storage struct {
+	Engine
+	Cache
+	Queue
 }
 type Config struct {
 	file string

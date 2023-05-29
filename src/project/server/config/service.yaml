@@ -5,6 +5,9 @@ service:
   name: "demo"
   port: 8083
 storage:
+  queue:
+    host: 127.0.0.1
+    port: 10003
   cache:
     password: demo
     host: 127.0.0.1
@@ -14,4 +17,4 @@ storage:
     password: demo
     database: space
     host: 127.0.0.1
-    port: 3306
+    port: 10002

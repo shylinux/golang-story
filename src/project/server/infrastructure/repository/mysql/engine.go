@@ -33,7 +33,7 @@ func (s engine) SelectList(obj interface{}, res interface{}, page, count int64) 
 	return s.db.Model(obj).Where("deleted = 0").Offset(int((page - 1) * count)).Limit(int(count)).Find(res).Error
 }
 
-func NewEngine(config *config.Config, log log.Logger) (repository.Engine, error) {
+func New(config *config.Config, log log.Logger) (repository.Engine, error) {
 	conf := config.Storage.Engine
 	if conf.Password == "" {
 		return nil, fmt.Errorf("not found config password")

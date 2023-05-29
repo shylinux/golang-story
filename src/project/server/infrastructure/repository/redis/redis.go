@@ -24,7 +24,7 @@ func (s *cache) Del(key string) error {
 	return s.rdb.Del(context.TODO(), key).Err()
 }
 
-func NewCache(config *config.Config) (repository.Cache, error) {
+func New(config *config.Config) (repository.Cache, error) {
 	conf := config.Storage.Cache
 	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%s", conf.Host, conf.Port), Password: conf.Password})}, nil
 }

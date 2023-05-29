@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"os"
 
 	"go.uber.org/zap"
@@ -25,7 +26,10 @@ func (s *logger) Printf(str string, arg ...interface{}) { s.Infof(str, arg...) }
 
 var l logger
 
-func Infof(str string, arg ...interface{}) { l.Infof(str, arg...) }
+func Infof(str string, arg ...interface{}) {
+	fmt.Println(fmt.Sprintf(str, arg...))
+	// l.Infof(str, arg...)
+}
 
 func New(config *config.Config) (Logger, error) {
 	consoleErrors := zapcore.Lock(os.Stderr)

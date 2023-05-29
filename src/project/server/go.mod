@@ -3,6 +3,7 @@ module shylinux.com/x/golang-story/src/project/server
 go 1.15
 
 require (
+	github.com/apache/pulsar-client-go v0.10.0 // indirect
 	github.com/gin-gonic/gin v1.9.0
 	github.com/hashicorp/consul/api v1.20.0 // indirect
 	github.com/prometheus/client_golang v1.15.1

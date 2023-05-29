@@ -2,24 +2,27 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"shylinux.com/x/golang-story/src/project/server/domain"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
 type UserService struct {
+	queue  repository.Queue
 	cache  repository.Cache
 	engine repository.Engine
 }
 
-func NewUserService(cache repository.Cache, engine repository.Engine) *UserService {
-	return &UserService{cache, engine}
+func NewUserService(queue repository.Queue, cache repository.Cache, engine repository.Engine) *UserService {
+	return &UserService{queue, cache, engine}
 }
 func (s *UserService) Create(ctx context.Context, name string) (*domain.User, error) {
 	user := &domain.User{Name: name}
 	if err := s.engine.Insert(user); err != nil {
 		return user, err
 	}
+	s.queue.Send("user", "create", []byte(fmt.Sprintf("%d", user.ID)))
 	CacheSet(s.cache, user.ID, user)
 	return user, nil
 }
