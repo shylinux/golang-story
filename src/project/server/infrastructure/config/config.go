@@ -11,25 +11,29 @@ type Consul struct {
 	Interval string
 }
 type Service struct {
-	Name string
-	Port int
+	Target string
+	Export bool
+	Type   string
+	Name   string
+	Host   string
+	Port   int
 }
 type Queue struct {
 	Token string
 	Host  string
-	Port  string
+	Port  int
 }
 type Cache struct {
 	Password string
 	Host     string
-	Port     string
+	Port     int
 }
 type Engine struct {
 	Username string
 	Password string
 	Database string
 	Host     string
-	Port     string
+	Port     int
 }
 type Storage struct {
 	Engine
@@ -37,9 +41,11 @@ type Storage struct {
 	Queue
 }
 type Config struct {
-	file string
+	file    string
+	LogPath string
 	Consul
 	Service
+	Internal map[string]Service
 	Storage
 }
 
@@ -57,5 +63,11 @@ func New() (*Config, error) {
 	if err := viper.ReadInConfig(); err != nil {
 		return config, err
 	}
-	return config, viper.Unmarshal(config)
+	if err := viper.Unmarshal(config); err != nil {
+		return config, err
+	}
+	if config.Service.Host == "" {
+		config.Service.Host = "127.0.0.1"
+	}
+	return config, nil
 }

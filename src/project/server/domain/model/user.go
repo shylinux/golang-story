@@ -1,4 +1,4 @@
-package domain
+package model
 
 type User struct {
 	Common
@@ -6,3 +6,5 @@ type User struct {
 	Email string
 	Phone string
 }
+
+func (s User) Table() string { return "user" }

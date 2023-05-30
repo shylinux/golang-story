@@ -1,7 +1,6 @@
 syntax = "proto3";
 option go_package ="./pb";
-import "idl/common.proto";
-package idl;
+package demo;
 
 service UserService {
     rpc Create (UserCreateRequest) returns (UserCreateReply);
@@ -47,4 +46,8 @@ message User {
     string name = 2;
     string email = 3;
     string phone = 4;
+}
+message BaseReply {
+    int32 code = 1;
+    string info = 2;
 }

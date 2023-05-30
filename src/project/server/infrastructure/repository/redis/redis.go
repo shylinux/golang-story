@@ -7,6 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
@@ -24,7 +25,11 @@ func (s *cache) Del(key string) error {
 	return s.rdb.Del(context.TODO(), key).Err()
 }
 
-func New(config *config.Config) (repository.Cache, error) {
+func New(config *config.Config, consul consul.Consul) (repository.Cache, error) {
 	conf := config.Storage.Cache
-	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%s", conf.Host, conf.Port), Password: conf.Password})}, nil
+	if list, err := consul.Resolve("redis"); err == nil && len(list) > 0 {
+		conf.Host = list[0].Host
+		conf.Port = list[0].Port
+	}
+	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}, nil
 }

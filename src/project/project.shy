@@ -11,6 +11,9 @@ https://github.com/go-gorm/gorm
 https://github.com/spf13/viper
 https://google.golang.org/grpc
 `
+refer `
+middleware https://github.com/grpc-ecosystem/go-grpc-middleware/blob/main/examples/client/main.go
+`
 field web.code.golang.project
 section "grpc consul"
 refer `

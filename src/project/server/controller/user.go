@@ -3,7 +3,7 @@ package controller
 import (
 	"context"
 
-	"shylinux.com/x/golang-story/src/project/server/domain"
+	"shylinux.com/x/golang-story/src/project/server/domain/model"
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/service"
 )
@@ -35,7 +35,7 @@ func (s *UserController) List(ctx context.Context, req *pb.UserListRequest) (*pb
 	}
 	return &pb.UserListReply{Data: data}, err
 }
-func UserDTO(user *domain.User) *pb.User {
+func UserDTO(user *model.User) *pb.User {
 	if user == nil {
 		return nil
 	}

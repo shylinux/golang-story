@@ -1,0 +1,54 @@
+syntax = "proto3";
+option go_package ="./pb";
+package demo.space;
+
+service SpaceService {
+    rpc Create (SpaceCreateRequest) returns (SpaceCreateReply);
+    rpc Remove (SpaceRemoveRequest) returns (SpaceRemoveReply);
+    rpc Info (SpaceInfoRequest) returns (SpaceInfoReply);
+    rpc List (SpaceListRequest) returns (SpaceListReply);
+}
+
+message SpaceCreateRequest {
+    string name = 1;
+}
+message SpaceCreateReply {
+    BaseReply baseResp = 1;
+    Space data = 2;
+}
+
+message SpaceRemoveRequest {
+    int64 id = 1;
+}
+message SpaceRemoveReply {
+    BaseReply baseResp = 1;
+}
+
+message SpaceInfoRequest {
+    int64 id = 1;
+}
+message SpaceInfoReply {
+    BaseReply baseResp = 1;
+    Space data = 2;
+}
+
+message SpaceListRequest {
+    int64 page = 1;
+    int64 count = 2;
+}
+message SpaceListReply {
+    BaseReply baseResp = 1;
+    repeated Space data = 2;
+}
+
+message Space {
+    int64 id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+}
+
+message BaseReply {
+    int32 code = 1;
+    string info = 2;
+}

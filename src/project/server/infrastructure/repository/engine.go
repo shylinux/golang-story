@@ -1,11 +1,14 @@
 package repository
 
+import "context"
+
 type Engine interface {
-	Insert(obj interface{}) error
-	Delete(obj interface{}, id int64) error
-	Update(obj interface{}, id int64) error
-	SelectOne(obj interface{}, id int64) (interface{}, error)
-	SelectList(obj interface{}, res interface{}, page, count int64) error
+	Insert(ctx context.Context, obj interface{}) error
+	Delete(ctx context.Context, obj interface{}, id int64) error
+	Update(ctx context.Context, obj interface{}, id int64) error
+	SelectOne(ctx context.Context, obj interface{}, id int64) (interface{}, error)
+	SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64) error
+	AutoMigrate(obj ...interface{}) error
 }
 
 type Cache interface {
@@ -15,5 +18,6 @@ type Cache interface {
 }
 
 type Queue interface {
-	Send(topic, key string, payload []byte) (string, error)
+	Send(ctx context.Context, topic, key string, payload string) (string, error)
+	Recv(name, topic string, cb func(ctx context.Context, key string, payload string) error) error
 }

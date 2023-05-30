@@ -1,8 +1,0 @@
-syntax = "proto3";
-option go_package ="./pb";
-package idl;
-
-message BaseReply {
-    int32 code = 1;
-    string info = 2;
-}

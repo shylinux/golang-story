@@ -1,6 +1,11 @@
-package domain
+package model
 
 import "time"
+
+type Model interface {
+	Table() string
+	GetID() int64
+}
 
 type Common struct {
 	ID       int64
@@ -8,3 +13,5 @@ type Common struct {
 	CreateAt time.Time `gorm:"autoCreateTime"`
 	UpdateAt time.Time `gorm:"autoUpdateTime"`
 }
+
+func (s Common) GetID() int64 { return s.ID }

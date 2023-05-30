@@ -1,4 +1,4 @@
-package test
+package space
 
 import (
 	"context"
@@ -6,44 +6,44 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/dig"
-	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
+	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
 
-type UserTestSuite struct {
+type SpaceTestSuite struct {
 	suite.Suite
-	user pb.UserServiceClient
+	space pb.SpaceServiceClient
 }
 
-func (s *UserTestSuite) SetupTest() {
+func (s *SpaceTestSuite) SetupTest() {
 	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, consul consul.Consul) error {
-		if conn, err := grpc.NewConn(context.TODO(), consul.Address(config.Service.Name)); err != nil {
+		if conn, err := grpc.NewConn(consul.Address(config.Service.Name)); err != nil {
 			return err
 		} else {
-			s.user = pb.NewUserServiceClient(conn)
+			s.space = pb.NewSpaceServiceClient(conn)
 			return nil
 		}
 	}))
 }
-func (s *UserTestSuite) TestCreate() {
-	req := &pb.UserCreateRequest{Name: "hi"}
-	res, err := s.user.Create(context.TODO(), req)
+func (s *SpaceTestSuite) TestCreate() {
+	req := &pb.SpaceCreateRequest{Name: "hi"}
+	res, err := s.space.Create(context.TODO(), req)
 	if s.Equal(nil, err, "test failure %v", err) {
 		s.Equal(req.Name, res.Data.Name)
 	}
 }
-func (s *UserTestSuite) TestList() {
-	req := &pb.UserListRequest{}
-	res, err := s.user.List(context.TODO(), req)
+func (s *SpaceTestSuite) TestList() {
+	req := &pb.SpaceListRequest{}
+	res, err := s.space.List(context.TODO(), req)
 	if s.Equal(nil, err, "test failure %v", err) {
 		if res.BaseResp != nil && res.BaseResp.Code > 100000 {
 			log.Fatalf("test failure: %v", res.BaseResp)
 		}
 	}
 }
-func TestUserTestSuite(t *testing.T) { suite.Run(t, new(UserTestSuite)) }
+func TestSpaceTestSuite(t *testing.T) { suite.Run(t, new(SpaceTestSuite)) }

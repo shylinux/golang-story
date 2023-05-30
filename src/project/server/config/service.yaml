@@ -1,20 +1,30 @@
+logPath: log/service.log
 consul:
   addr: ":8500"
-  interval: "1s"
+  interval: "10s"
 service:
+  type: "grpc"
+  # type: "http"
   name: "demo"
   port: 8083
+internal:
+  user:
+    target: "demo"
+    export: true
+  space:
+    target: "demo"
+    export: true
 storage:
   queue:
     host: 127.0.0.1
-    port: 10003
+    port: 6650
   cache:
     password: demo
     host: 127.0.0.1
-    port: 10001
+    port: 6379
   engine:
     username: demo
     password: demo
     database: space
     host: 127.0.0.1
-    port: 10002
+    port: 3306

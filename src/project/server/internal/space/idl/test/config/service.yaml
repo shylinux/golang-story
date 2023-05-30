@@ -1,0 +1,4 @@
+consul:
+  addr: ":8500"
+service:
+  name: "demo"
