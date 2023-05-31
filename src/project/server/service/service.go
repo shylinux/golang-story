@@ -14,8 +14,16 @@ func Init(container *dig.Container) {
 	container.Provide(NewUserService)
 }
 
-func cacheKey(cache repository.Cache, model model.Model) string {
-	return fmt.Sprintf("%s:%d", model.Table(), model.GetID())
+func QueueSend(queue repository.Queue, ctx context.Context, topic, op string, v interface{}) error {
+	buf, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = queue.Send(ctx, topic, op, buf)
+	return err
+}
+func QueueRecv(queue repository.Queue, ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte) error) error {
+	return queue.Recv(ctx, name, topic, cb)
 }
 func CacheSet(cache repository.Cache, model model.Model) error {
 	if buf, err := json.Marshal(model); err == nil {
@@ -34,10 +42,6 @@ func CacheGet(cache repository.Cache, model model.Model) error {
 func CacheDel(cache repository.Cache, model model.Model) error {
 	return cache.Del(cacheKey(cache, model))
 }
-func QueueSend(queue repository.Queue, ctx context.Context, op string, model model.Model) error {
-	_, err := queue.Send(ctx, model.Table(), op, fmt.Sprintf("%d", model.GetID()))
-	return err
-}
-func QueueRecv(queue repository.Queue, name, topic string, cb func(ctx context.Context, key string, payload string) error) error {
-	return queue.Recv(name, topic, cb)
+func cacheKey(cache repository.Cache, model model.Model) string {
+	return fmt.Sprintf("%s:%d", model.Table(), model.GetID())
 }

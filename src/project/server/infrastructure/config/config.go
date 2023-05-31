@@ -6,6 +6,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Log struct {
+	Path string
+}
 type Consul struct {
 	Addr     string
 	Interval string
@@ -19,16 +22,19 @@ type Service struct {
 	Port   int
 }
 type Queue struct {
+	Name  string
 	Token string
 	Host  string
 	Port  int
 }
 type Cache struct {
+	Name     string
 	Password string
 	Host     string
 	Port     int
 }
 type Engine struct {
+	Name     string
 	Username string
 	Password string
 	Database string
@@ -41,8 +47,8 @@ type Storage struct {
 	Queue
 }
 type Config struct {
-	file    string
-	LogPath string
+	file string
+	Log
 	Consul
 	Service
 	Internal map[string]Service

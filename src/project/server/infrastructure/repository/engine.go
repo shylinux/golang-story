@@ -18,6 +18,6 @@ type Cache interface {
 }
 
 type Queue interface {
-	Send(ctx context.Context, topic, key string, payload string) (string, error)
-	Recv(name, topic string, cb func(ctx context.Context, key string, payload string) error) error
+	Send(ctx context.Context, topic, key string, payload []byte) (string, error)
+	Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte) error) error
 }

@@ -1,12 +1,12 @@
-logPath: log/service.log
+log:
+  path: log/service.log
 consul:
   addr: ":8500"
   interval: "10s"
 service:
   type: "grpc"
-  # type: "http"
   name: "demo"
-  port: 8083
+  port: 9090
 internal:
   user:
     target: "demo"
@@ -16,13 +16,16 @@ internal:
     export: true
 storage:
   queue:
+    name: "pulsar"
     host: 127.0.0.1
     port: 6650
   cache:
+    name: "redis"
     password: demo
     host: 127.0.0.1
     port: 6379
   engine:
+    name: "mysql"
     username: demo
     password: demo
     database: space

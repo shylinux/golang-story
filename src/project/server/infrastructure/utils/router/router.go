@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/response"
 )
 
@@ -48,16 +48,16 @@ func handler(method interface{}) func(*gin.Context) {
 		var res []reflect.Value
 		switch t.NumIn() {
 		case 1:
-			log.Infof("%s %s", ctx.Request.Method, ctx.Request.URL)
+			logs.Infof("%s %s", ctx.Request.Method, ctx.Request.URL)
 			res = v.Call([]reflect.Value{reflect.ValueOf(ctx)})
 		case 2:
 			arg := reflect.New(t.In(1).Elem()).Interface()
 			if err := ctx.Bind(arg); err != nil {
-				log.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, err)
+				logs.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, err)
 				response.WriteParamInvalid(ctx, err)
 				return
 			}
-			log.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, arg)
+			logs.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, arg)
 			res = v.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(arg)})
 		default:
 			response.WriteBase(ctx, fmt.Errorf("func arg must be: (ctx, [data])"))

@@ -27,7 +27,7 @@ func (s *cache) Del(key string) error {
 
 func New(config *config.Config, consul consul.Consul) (repository.Cache, error) {
 	conf := config.Storage.Cache
-	if list, err := consul.Resolve("redis"); err == nil && len(list) > 0 {
+	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
 		conf.Host = list[0].Host
 		conf.Port = list[0].Port
 	}

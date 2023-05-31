@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/consul/api"
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
 type Service struct {
@@ -31,7 +31,7 @@ type consul struct {
 	*config.Config
 }
 
-func New(config *config.Config, log log.Logger) (Consul, error) {
+func New(config *config.Config, logs logs.Logger) (Consul, error) {
 	conf := api.DefaultConfig()
 	conf.Address = config.Consul.Addr
 	client, err := api.NewClient(conf)
@@ -51,7 +51,7 @@ func (s *consul) Register(service Service) error {
 		Interval: s.interval, DeregisterCriticalServiceAfter: s.interval,
 		GRPC: fmt.Sprintf("%s/%s", service.Address(), registration.Name),
 	}
-	log.Infof("register service %#v", service)
+	logs.With().Infof("register service %+v", service)
 	return s.Client.Agent().ServiceRegister(registration)
 }
 func (s *consul) Resolve(name string) (res []Service, err error) {
@@ -64,7 +64,7 @@ func (s *consul) Resolve(name string) (res []Service, err error) {
 			res = append(res, Service{Name: v.ID, Host: v.Address, Port: v.Port})
 		}
 	}
-	log.Infof("resolve service %s %#v", name, res)
+	logs.With().Infof("resolve service %s %+v", name, res)
 	return
 }
 func (s *consul) Address(target string) string {

@@ -10,7 +10,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
@@ -42,7 +42,7 @@ func (s *SpaceTestSuite) TestList() {
 	res, err := s.space.List(context.TODO(), req)
 	if s.Equal(nil, err, "test failure %v", err) {
 		if res.BaseResp != nil && res.BaseResp.Code > 100000 {
-			log.Fatalf("test failure: %v", res.BaseResp)
+			logs.Fatalf("test failure: %v", res.BaseResp)
 		}
 	}
 }

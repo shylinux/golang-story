@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
 	"net"
 
@@ -12,6 +11,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/router"
 	"shylinux.com/x/golang-story/src/project/server/internal"
 )
@@ -28,8 +28,11 @@ type MainController struct {
 }
 
 func NewMainController(config *config.Config, csl consul.Consul, server *grpc.Server, engine *gin.Engine, user *UserController, internal *internal.InternalController) *MainController {
-	pb.RegisterUserServiceServer(server, user)
-	router.Register(engine, enums.Service.User, user)
+	if config.Service.Type == "http" {
+		router.Register(engine, enums.Service.User, user)
+	} else {
+		pb.RegisterUserServiceServer(server, user)
+	}
 	csl.Register(consul.Service{Name: config.Service.Name, Port: config.Service.Port})
 	return &MainController{config, server, engine}
 }

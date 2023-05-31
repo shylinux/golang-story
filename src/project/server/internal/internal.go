@@ -9,6 +9,7 @@ func Init(container *dig.Container) {
 	container.Provide(NewInternalController)
 	container.Provide(space.NewSpaceController)
 	container.Provide(space.NewSpaceService)
+	container.Provide(space.NewUserConsumer)
 }
 
 type InternalController struct{}

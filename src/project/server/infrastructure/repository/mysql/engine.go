@@ -8,7 +8,8 @@ import (
 	"gorm.io/gorm"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
@@ -17,7 +18,7 @@ type engine struct {
 }
 
 func (s engine) Insert(ctx context.Context, obj interface{}) error {
-	return s.db.WithContext(ctx).Create(obj).Error
+	return errors.New(s.db.WithContext(ctx).Create(obj).Error, "gorm create failure")
 }
 func (s engine) Delete(ctx context.Context, obj interface{}, id int64) error {
 	return s.db.WithContext(ctx).Model(obj).Where("id = ?", id).Update("deleted", "1").Error
@@ -36,12 +37,12 @@ func (s *engine) AutoMigrate(obj ...interface{}) error {
 	return s.db.AutoMigrate(obj...)
 }
 
-func New(consul consul.Consul, config *config.Config, log log.Logger) (repository.Engine, error) {
+func New(consul consul.Consul, config *config.Config, logs logs.Logger) (repository.Engine, error) {
 	conf := config.Storage.Engine
 	if conf.Password == "" {
 		return nil, fmt.Errorf("not found config password")
 	}
-	if list, err := consul.Resolve("mysql"); err == nil && len(list) > 0 {
+	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
 		conf.Host = list[0].Host
 		conf.Port = list[0].Port
 	}
@@ -57,6 +58,6 @@ func New(consul consul.Consul, config *config.Config, log log.Logger) (repositor
 }
 
 func after(db *gorm.DB) {
-	logger := log.With()
+	logger := logs.With()
 	logger.Infof(db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...), db.Statement.Context)
 }
