@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/log"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
@@ -76,8 +77,12 @@ func (s *queue) Recv(name, topic string, cb func(ctx context.Context, key string
 	}()
 	return nil
 }
-func New(config *config.Config) (repository.Queue, error) {
+func New(consul consul.Consul, config *config.Config) (repository.Queue, error) {
 	conf := config.Storage.Queue
+	if list, err := consul.Resolve("pulsar"); err == nil && len(list) > 0 {
+		conf.Host = list[0].Host
+		conf.Port = list[0].Port
+	}
 	options := pulsar.ClientOptions{URL: fmt.Sprintf("pulsar://%s:%d", conf.Host, conf.Port)}
 	if conf.Token != "" {
 		options.Authentication = pulsar.NewAuthenticationToken(conf.Token)

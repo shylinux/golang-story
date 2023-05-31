@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -34,10 +35,10 @@ func NewMainController(config *config.Config, csl consul.Consul, server *grpc.Se
 }
 func (s *MainController) Run() error {
 	if s.Config.Service.Type == "http" {
-		return s.Engine.Run(fmt.Sprintf(":%d", s.Config.Service.Port))
+		return errors.New(s.Engine.Run(fmt.Sprintf(":%d", s.Config.Service.Port)), "start gin failure")
 	} else if l, e := net.Listen("tcp", fmt.Sprintf(":%d", s.Config.Service.Port)); e != nil {
-		return e
+		return errors.New(e, "start rpc failure")
 	} else {
-		return s.Server.Serve(l)
+		return errors.New(s.Server.Serve(l), "start rpc failure")
 	}
 }
