@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strings"
 
 	"github.com/natefinch/lumberjack"
 	"go.opentelemetry.io/otel/trace"
@@ -50,6 +51,7 @@ func (s *logger) format(str string, arg ...interface{}) string {
 }
 
 var l *logger
+var log *logger
 
 func New(config *config.Config) (Logger, error) {
 	conf := config.Log
@@ -63,10 +65,11 @@ func New(config *config.Config) (Logger, error) {
 			Filename: conf.Path, MaxSize: conf.MaxSize, MaxAge: conf.MaxAge, LocalTime: true,
 		}), zap.InfoLevel))
 	}
-	l = &logger{zap.New(zapcore.NewTee(tees...), zap.AddCaller()).Sugar()}
+	log = &logger{zap.New(zapcore.NewTee(tees...), zap.AddCaller()).Sugar()}
+	l = &logger{log.SugaredLogger.WithOptions(zap.AddCallerSkip(2))}
 	return l, nil
 }
-func With(arg ...interface{}) Logger        { return l.With(arg...) }
+func With(arg ...interface{}) Logger        { return log.With(arg...) }
 func Infof(str string, arg ...interface{})  { l.Infof(str, arg...) }
 func Warnf(str string, arg ...interface{})  { l.Warnf(str, arg...) }
 func Errorf(str string, arg ...interface{}) { l.Errorf(str, arg...) }
@@ -77,4 +80,12 @@ func Debugf(str string, arg ...interface{}) { l.Debugf(str, arg) }
 func FuncName(skip int) string {
 	fun, _, _, _ := runtime.Caller(skip)
 	return path.Base(runtime.FuncForPC(fun).Name())
+}
+func FileLine(skip int) string {
+	_, file, line, _ := runtime.Caller(skip)
+	list := strings.Split(file, "/")
+	if len(list) > 2 {
+		list = list[len(list)-2:]
+	}
+	return fmt.Sprintf("%s:%d", path.Join(list[:]...), line)
 }

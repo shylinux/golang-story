@@ -15,7 +15,7 @@ internal:
   space:
     export: true
     port: 9091
-storage:
+engine:
   queue:
     name: pulsar
     host: 127.0.0.1
@@ -25,7 +25,7 @@ storage:
     password: demo
     host: 127.0.0.1
     port: 6379
-  engine:
+  storage:
     name: mysql
     username: demo
     password: demo

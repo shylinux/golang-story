@@ -8,7 +8,6 @@ import (
 	"google.golang.org/grpc"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
@@ -26,7 +25,7 @@ type SpaceController struct {
 	service *SpaceService
 }
 
-func NewSpaceController(config *config.Config, server *grpc.Server, mainServer *infrastructure.MainServer, consumer *UserConsumer, service *SpaceService) *SpaceController {
+func NewSpaceController(mainServer *infrastructure.MainServer, server *grpc.Server, consumer *UserConsumer, service *SpaceService) *SpaceController {
 	consul.Tags = append(consul.Tags, pb.SpaceService_ServiceDesc.ServiceName)
 	controller := &SpaceController{MainServer: mainServer, service: service}
 	pb.RegisterSpaceServiceServer(server, controller)

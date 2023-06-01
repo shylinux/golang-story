@@ -8,6 +8,7 @@ import (
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
@@ -26,10 +27,11 @@ func (s *cache) Del(key string) error {
 }
 
 func New(config *config.Config, consul consul.Consul) (repository.Cache, error) {
-	conf := config.Storage.Cache
+	conf := config.Engine.Cache
 	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
 		conf.Host = list[0].Host
 		conf.Port = list[0].Port
 	}
+	logs.Infof("connect service redis %s:%d", conf.Host, conf.Port)
 	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}, nil
 }

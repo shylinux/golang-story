@@ -38,7 +38,7 @@ type Cache struct {
 	Host     string
 	Port     int
 }
-type Engine struct {
+type Storage struct {
 	Name     string
 	Username string
 	Password string
@@ -46,8 +46,8 @@ type Engine struct {
 	Host     string
 	Port     int
 }
-type Storage struct {
-	Engine
+type Engine struct {
+	Storage
 	Cache
 	Queue
 }
@@ -57,7 +57,7 @@ type Config struct {
 	Consul
 	Service
 	Internal map[string]Service
-	Storage
+	Engine
 }
 
 var config = &Config{}

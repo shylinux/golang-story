@@ -2,7 +2,7 @@ package repository
 
 import "context"
 
-type Engine interface {
+type Storage interface {
 	Insert(ctx context.Context, obj interface{}) error
 	Delete(ctx context.Context, obj interface{}, id int64) error
 	Update(ctx context.Context, obj interface{}, id int64) error

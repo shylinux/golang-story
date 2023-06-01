@@ -42,15 +42,14 @@ func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (st
 	}
 }
 func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte) error) error {
-	logger := logs.With()
 	p, e := s.Client.Subscribe(pulsar.ConsumerOptions{
 		Topic: fmt.Sprintf("persistent://public/default/%s", topic), SubscriptionName: name, Type: pulsar.Shared,
 	})
 	if e != nil {
-		logger.Warnf("subscribe topic: %s err: %s", topic, e)
+		logs.Warnf("subscribe topic: %s err: %s", topic, e)
 		return e
 	} else {
-		logger.Infof("subscribe topic: %s service: %s", topic, p.Subscription())
+		logs.Infof("subscribe topic: %s service: %s %s", topic, p.Subscription(), logs.FileLine(2))
 	}
 	go func() {
 		for {
@@ -68,14 +67,14 @@ func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx contex
 					return nil, nil
 				})
 			} else {
-				logger.Warnf("recv message topic: %s err: %s", topic, e, ctx)
+				logs.Warnf("recv message topic: %s err: %s", topic, e, ctx)
 			}
 		}
 	}()
 	return nil
 }
 func New(consul consul.Consul, config *config.Config) (repository.Queue, error) {
-	conf := config.Storage.Queue
+	conf := config.Engine.Queue
 	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
 		conf.Host = list[0].Host
 		conf.Port = list[0].Port

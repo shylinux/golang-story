@@ -25,7 +25,7 @@ type UserTestSuite struct {
 }
 
 func (s *UserTestSuite) SetupTest() {
-	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, consul consul.Consul) error {
+	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, logger logs.Logger, consul consul.Consul) error {
 		if conn, err := grpc.NewConn(s.ctx, consul.Address(pb.UserService_ServiceDesc.ServiceName)); err != nil {
 			return err
 		} else {

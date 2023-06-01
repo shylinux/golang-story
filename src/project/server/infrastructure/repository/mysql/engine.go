@@ -13,32 +13,32 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
-type engine struct {
+type storage struct {
 	db *gorm.DB
 }
 
-func (s engine) Insert(ctx context.Context, obj interface{}) error {
+func (s storage) Insert(ctx context.Context, obj interface{}) error {
 	return errors.New(s.db.WithContext(ctx).Create(obj).Error, "gorm create failure")
 }
-func (s engine) Delete(ctx context.Context, obj interface{}, id int64) error {
+func (s storage) Delete(ctx context.Context, obj interface{}, id int64) error {
 	return s.db.WithContext(ctx).Model(obj).Where("id = ?", id).Update("deleted", "1").Error
 }
-func (s engine) Update(ctx context.Context, obj interface{}, id int64) error {
+func (s storage) Update(ctx context.Context, obj interface{}, id int64) error {
 	return s.db.WithContext(ctx).Model(obj).Where("id = ?", id).Updates(obj).Error
 }
-func (s engine) SelectOne(ctx context.Context, obj interface{}, id int64) (interface{}, error) {
+func (s storage) SelectOne(ctx context.Context, obj interface{}, id int64) (interface{}, error) {
 	res := s.db.WithContext(ctx).Model(obj).Where("id = ?", id).First(obj)
 	return obj, res.Error
 }
-func (s engine) SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64) (err error) {
+func (s storage) SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64) (err error) {
 	return s.db.WithContext(ctx).Model(obj).Where("deleted = 0").Offset(int((page - 1) * count)).Limit(int(count)).Find(res).Error
 }
-func (s *engine) AutoMigrate(obj ...interface{}) error {
+func (s *storage) AutoMigrate(obj ...interface{}) error {
 	return s.db.AutoMigrate(obj...)
 }
 
-func New(consul consul.Consul, config *config.Config, logs logs.Logger) (repository.Engine, error) {
-	conf := config.Storage.Engine
+func New(consul consul.Consul, config *config.Config) (repository.Storage, error) {
+	conf := config.Engine.Storage
 	if conf.Password == "" {
 		return nil, fmt.Errorf("not found config password")
 	}
@@ -54,10 +54,10 @@ func New(consul consul.Consul, config *config.Config, logs logs.Logger) (reposit
 	db.Callback().Update().After("gorm:after_update").Register("some:after", after)
 	db.Callback().Delete().After("gorm:after_delete").Register("some:after", after)
 	db.Callback().Query().After("gorm:after_query").Register("some:after", after)
-	return &engine{db: db}, err
+	logs.Infof("connect service mysql %s:%d", conf.Host, conf.Port)
+	return &storage{db: db}, err
 }
 
 func after(db *gorm.DB) {
-	logger := logs.With()
-	logger.Infof(db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...), db.Statement.Context)
+	logs.Infof(db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...), db.Statement.Context)
 }
