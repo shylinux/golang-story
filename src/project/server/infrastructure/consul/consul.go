@@ -2,6 +2,7 @@ package consul
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/consul/api"
 	_ "github.com/mbobakov/grpc-consul-resolver"
@@ -31,6 +32,9 @@ type consul struct {
 	*config.Config
 }
 
+var Meta = map[string]string{}
+var Tags = []string{}
+
 func New(config *config.Config, logs logs.Logger) (Consul, error) {
 	conf := api.DefaultConfig()
 	conf.Address = config.Consul.Addr
@@ -44,6 +48,8 @@ func (s *consul) Register(service Service) error {
 	}
 	registration := new(api.AgentServiceRegistration)
 	registration.Name = service.Name
+	registration.Tags = Tags
+	registration.Meta = Meta
 	registration.Port = service.Port
 	registration.Address = service.Host
 	registration.ID = fmt.Sprintf("%s-%s-%d", service.Name, service.Host, service.Port)
@@ -68,8 +74,9 @@ func (s *consul) Resolve(name string) (res []Service, err error) {
 	return
 }
 func (s *consul) Address(target string) string {
-	if s, ok := s.Config.Internal[target]; ok && s.Target != "" {
-		target = s.Target
+	list := strings.Split(target, ".")
+	if len(list) > 1 {
+		list = list[:len(list)-1]
 	}
-	return fmt.Sprintf("consul://%s/%s", s.address, target)
+	return fmt.Sprintf("consul://%s/%s", s.address, strings.Join(list, "."))
 }

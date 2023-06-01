@@ -2,22 +2,27 @@ package config
 
 import (
 	"flag"
+	"os"
+	"path"
 
 	"github.com/spf13/viper"
 )
 
 type Log struct {
-	Path string
+	Path    string
+	MaxSize int
+	MaxAge  int
+	Stdout  bool
 }
 type Consul struct {
 	Addr     string
 	Interval string
 }
 type Service struct {
-	Target string
 	Export bool
-	Type   string
 	Name   string
+	Main   string
+	Type   string
 	Host   string
 	Port   int
 }
@@ -59,6 +64,11 @@ var config = &Config{}
 
 func init() {
 	flag.StringVar(&config.file, "config.file", "./config/service.yaml", "")
+	flag.StringVar(&config.Log.Path, "log.path", "./log/service.log", "")
+	flag.StringVar(&config.Consul.Addr, "consul.addr", "127.0.0.1:8500", "")
+	flag.StringVar(&config.Service.Name, "service.name", path.Base(os.Args[0]), "")
+	flag.StringVar(&config.Service.Main, "service.main", path.Base(os.Args[0]), "")
+	flag.StringVar(&config.Service.Host, "service.host", "127.0.0.1", "")
 	flag.IntVar(&config.Service.Port, "service.port", 0, "")
 }
 
@@ -71,9 +81,6 @@ func New() (*Config, error) {
 	}
 	if err := viper.Unmarshal(config); err != nil {
 		return config, err
-	}
-	if config.Service.Host == "" {
-		config.Service.Host = "127.0.0.1"
 	}
 	return config, nil
 }

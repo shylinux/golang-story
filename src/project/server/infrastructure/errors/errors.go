@@ -19,13 +19,19 @@ func (s *errorResp) Error() string {
 	return fmt.Sprintf("%d: %s %s %s", s.code, s.info, s.fileline, s.last.Error())
 }
 func newResp(err error, code int, str string, arg ...interface{}) error {
-	if err == nil {
+	switch err.(type) {
+	case nil:
 		return nil
+	case *errorResp:
+		return err
 	}
 	return &errorResp{code: code, info: fmt.Sprintf(str, arg...), fileline: FileLine(3), last: err}
 }
 func NewResp(err error, code int, str string, arg ...interface{}) error {
 	return newResp(err, code, str, arg...)
+}
+func NewInvalidParams(err error) error {
+	return newResp(err, enums.Errors.InvalidParams, "invalid params")
 }
 func NewCreateFailResp(err error) error {
 	return newResp(err, enums.Errors.ModelCreate, "model create failure")
@@ -50,11 +56,8 @@ func (s *errors) Error() string {
 	return fmt.Sprintf("%s %s %s", s.info, s.fileline, s.last.Error())
 }
 func newError(err error, str string, arg ...interface{}) error {
-	switch err.(type) {
-	case nil:
+	if err == nil {
 		return nil
-	case *errorResp:
-		return err
 	}
 	return &errors{last: err, info: fmt.Sprintf(str, arg...), fileline: FileLine(3)}
 }

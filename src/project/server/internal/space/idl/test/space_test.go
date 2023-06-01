@@ -2,8 +2,10 @@ package space
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/dig"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
@@ -17,33 +19,69 @@ import (
 
 type SpaceTestSuite struct {
 	suite.Suite
-	space pb.SpaceServiceClient
+	user pb.SpaceServiceClient
+	ctx  context.Context
+	t    *testing.T
 }
 
 func (s *SpaceTestSuite) SetupTest() {
 	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, consul consul.Consul) error {
-		if conn, err := grpc.NewConn(consul.Address(config.Service.Name)); err != nil {
+		if conn, err := grpc.NewConn(s.ctx, consul.Address(pb.SpaceService_ServiceDesc.ServiceName)); err != nil {
 			return err
 		} else {
-			s.space = pb.NewSpaceServiceClient(conn)
+			s.user = pb.NewSpaceServiceClient(conn)
 			return nil
 		}
 	}))
 }
 func (s *SpaceTestSuite) TestCreate() {
-	req := &pb.SpaceCreateRequest{Name: "hi"}
-	res, err := s.space.Create(context.TODO(), req)
-	if s.Equal(nil, err, "test failure %v", err) {
-		s.Equal(req.Name, res.Data.Name)
+	cases := []struct {
+		ok   bool
+		name string
+	}{
+		{ok: false, name: ""},
+		{ok: false, name: "hi"},
+		{ok: true, name: "goodlife"},
+	}
+	for i, c := range cases {
+		_, err := s.user.Create(s.ctx, &pb.SpaceCreateRequest{Name: c.name})
+		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
+			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
+		})
+	}
+}
+func (s *SpaceTestSuite) TestInfo() {
+	cases := []struct {
+		ok bool
+		id int64
+	}{
+		{ok: false, id: 0},
+		{ok: true, id: 1},
+		{ok: false, id: -1},
+	}
+	for i, c := range cases {
+		_, err := s.user.Info(s.ctx, &pb.SpaceInfoRequest{Id: c.id})
+		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
+			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
+		})
 	}
 }
 func (s *SpaceTestSuite) TestList() {
-	req := &pb.SpaceListRequest{}
-	res, err := s.space.List(context.TODO(), req)
-	if s.Equal(nil, err, "test failure %v", err) {
-		if res.BaseResp != nil && res.BaseResp.Code > 100000 {
-			logs.Fatalf("test failure: %v", res.BaseResp)
-		}
+	cases := []struct {
+		ok    bool
+		page  int64
+		count int64
+	}{
+		{ok: false, page: 0, count: 0},
+		{ok: false, page: 0, count: 10},
+		{ok: true, page: 1, count: 10},
+		{ok: true, page: 1, count: 10},
+	}
+	for i, c := range cases {
+		_, err := s.user.List(s.ctx, &pb.SpaceListRequest{Page: c.page, Count: c.count})
+		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
+			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
+		})
 	}
 }
-func TestSpaceTestSuite(t *testing.T) { suite.Run(t, new(SpaceTestSuite)) }
+func TestSpaceTestSuite(t *testing.T) { suite.Run(t, &SpaceTestSuite{ctx: context.TODO(), t: t}) }

@@ -1,18 +1,8 @@
 package controller
 
 import (
-	"fmt"
-	"net"
-
-	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
-	"google.golang.org/grpc"
-	"shylinux.com/x/golang-story/src/project/server/domain/enums"
-	"shylinux.com/x/golang-story/src/project/server/idl/pb"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/router"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure"
 	"shylinux.com/x/golang-story/src/project/server/internal"
 )
 
@@ -21,27 +11,8 @@ func Init(container *dig.Container) {
 	container.Provide(NewUserController)
 }
 
-type MainController struct {
-	*config.Config
-	*grpc.Server
-	*gin.Engine
-}
+type MainController struct{ *infrastructure.MainServer }
 
-func NewMainController(config *config.Config, csl consul.Consul, server *grpc.Server, engine *gin.Engine, user *UserController, internal *internal.InternalController) *MainController {
-	if config.Service.Type == "http" {
-		router.Register(engine, enums.Service.User, user)
-	} else {
-		pb.RegisterUserServiceServer(server, user)
-	}
-	csl.Register(consul.Service{Name: config.Service.Name, Port: config.Service.Port})
-	return &MainController{config, server, engine}
-}
-func (s *MainController) Run() error {
-	if s.Config.Service.Type == "http" {
-		return errors.New(s.Engine.Run(fmt.Sprintf(":%d", s.Config.Service.Port)), "start gin failure")
-	} else if l, e := net.Listen("tcp", fmt.Sprintf(":%d", s.Config.Service.Port)); e != nil {
-		return errors.New(e, "start rpc failure")
-	} else {
-		return errors.New(s.Server.Serve(l), "start rpc failure")
-	}
+func NewMainController(mainServer *infrastructure.MainServer, user *UserController, internal *internal.InternalController) *MainController {
+	return &MainController{mainServer}
 }

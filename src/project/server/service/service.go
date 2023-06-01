@@ -43,5 +43,5 @@ func CacheDel(cache repository.Cache, model model.Model) error {
 	return cache.Del(cacheKey(cache, model))
 }
 func cacheKey(cache repository.Cache, model model.Model) string {
-	return fmt.Sprintf("%s:%d", model.Table(), model.GetID())
+	return fmt.Sprintf("%s:%d", model.TableName(), model.GetID())
 }

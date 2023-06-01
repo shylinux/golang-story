@@ -1,6 +1,6 @@
 syntax = "proto3";
 option go_package ="./pb";
-package demo;
+package demo.user;
 
 service UserService {
     rpc Create (UserCreateRequest) returns (UserCreateReply);

@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Model interface {
-	Table() string
+	TableName() string
 	GetID() int64
 }
 

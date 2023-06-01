@@ -1,7 +1,10 @@
 all:
-
+	go build -v -o bin/space cmd/main.go
 idl:
 	protoc --go_out=./idl --go-grpc_out=./idl ./idl/*.proto
 test:
 	go test -v --count=1 ./idl/test
-.PHONY: idl
+clean:
+	rm -f bin/* log/* idl/test/log/*
+
+.PHONY: idl test clean

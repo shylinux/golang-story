@@ -1,17 +1,19 @@
 package enums
 
 var Errors = struct {
-	Success     int
-	Unknown     int
-	ModelCreate int
-	ModelRemove int
-	ModelInfo   int
-	ModelList   int
+	Success       int
+	Unknown       int
+	InvalidParams int
+	ModelCreate   int
+	ModelRemove   int
+	ModelInfo     int
+	ModelList     int
 }{
-	Success:     0,
-	Unknown:     10000,
-	ModelCreate: 10001,
-	ModelRemove: 10002,
-	ModelInfo:   10003,
-	ModelList:   10004,
+	Success:       0,
+	Unknown:       10000,
+	InvalidParams: 10001,
+	ModelCreate:   20001,
+	ModelRemove:   20002,
+	ModelInfo:     20003,
+	ModelList:     20004,
 }

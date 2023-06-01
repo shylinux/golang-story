@@ -1,5 +1,7 @@
 package model
 
+import "shylinux.com/x/golang-story/src/project/server/domain/enums"
+
 type User struct {
 	Common
 	Name  string
@@ -7,4 +9,4 @@ type User struct {
 	Phone string
 }
 
-func (s User) Table() string { return "user" }
+func (s User) TableName() string { return enums.Table.User }

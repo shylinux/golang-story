@@ -21,8 +21,9 @@ func Init(container *dig.Container) *dig.Container {
 	container.Provide(pulsar.New)
 	container.Provide(redis.New)
 	container.Provide(mysql.New)
-	container.Provide(grpc.NewServer)
 	container.Provide(gin.NewEngine)
+	container.Provide(grpc.NewServer)
 	container.Provide(context.Background)
+	container.Provide(NewMainServer)
 	return container
 }
