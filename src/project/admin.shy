@@ -1,0 +1,51 @@
+shell `
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+cnpm install -g @vue/cli
+vue create demo && cd demo
+vue serve
+
+cnpm i --save-dev grpc-web
+cnpm i --save-dev google-protobuf
+cnpm i -g protoc-gen-js protoc-gen-grpc-web
+protoc --js_out=import_style=commonjs:./demo/src --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./demo/src ./idl/*.proto
+`
+
+shell `
+https://www.imooc.com/course/list?c=nodejs
+https://gitee.com/talelin
+
+https://doc.cms.talelin.com
+http://face.cms.talelin.com
+
+git clone -b imooc-island https://gitee.com/talelin/lin-cms-vue.git
+git clone -b imooc-island https://gitee.com/talelin/lin-cms-koa.git
+
+cnpm install
+
+https://gitee.com/talelin/lin-cms-vue
+https://gitee.com/talelin/lin-cms-koa
+
+npm install
+npm run serve
+https://www.imooc.com/video/23022
+https://www.imooc.com/video/23025
+`
+
+section "node"
+refer `
+官网 https://nodejs.org/
+文档 https://nodejs.org/docs/latest-v6.x/api/
+源码 https://github.com/nodejs/node
+`
+
+section "vue"
+refer `
+`
+
+section "vscode"
+refer `
+https://code.visualstudio.com
+https://code.visualstudio.com/docs
+https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/VSCode-darwin-universal.zip
+https://vscode.cdn.azure.cn/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/VSCode-darwin-universal.zip
+`
