@@ -14,7 +14,7 @@ import (
 func main() {
 	container := dig.New()
 	space.Init(container)
-	check.Assert(infrastructure.Init(container).Invoke(func(s *space.SpaceController) error { return s.Run() }))
+	check.Assert(infrastructure.Init(container).Invoke(func(s *space.SpaceController) error { return s.Main.Run() }))
 }
 func init() {
 	wd, _ := os.Getwd()

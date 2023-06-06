@@ -1,0 +1,5 @@
+{
+	"host": "http://localhost:10000/",
+	"src/views/admin/space/SpaceList.vue": "#/space/list",
+	"src/views/admin/user/UserList.vue": "#/user/list"
+}

@@ -21,13 +21,14 @@ func Init(container *dig.Container) {
 
 type SpaceController struct {
 	pb.UnimplementedSpaceServiceServer
-	*infrastructure.MainServer
+	Main    *infrastructure.MainServer
 	service *SpaceService
 }
 
 func NewSpaceController(mainServer *infrastructure.MainServer, server *grpc.Server, consumer *UserConsumer, service *SpaceService) *SpaceController {
 	consul.Tags = append(consul.Tags, pb.SpaceService_ServiceDesc.ServiceName)
-	controller := &SpaceController{MainServer: mainServer, service: service}
+	controller := &SpaceController{Main: mainServer, service: service}
+	mainServer.RegisterProxy(pb.SpaceService_ServiceDesc.ServiceName, controller)
 	pb.RegisterSpaceServiceServer(server, controller)
 	return controller
 }

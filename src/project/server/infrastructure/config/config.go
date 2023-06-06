@@ -9,6 +9,7 @@ import (
 )
 
 type Log struct {
+	Pid     string
 	Path    string
 	MaxSize int
 	MaxAge  int
@@ -17,6 +18,11 @@ type Log struct {
 type Consul struct {
 	Addr     string
 	Interval string
+}
+type Gateway struct {
+	Export bool
+	Root   string
+	Port   int
 }
 type Service struct {
 	Export bool
@@ -55,6 +61,7 @@ type Config struct {
 	file string
 	Log
 	Consul
+	Gateway
 	Service
 	Internal map[string]Service
 	Engine

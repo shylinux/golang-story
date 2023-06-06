@@ -9,6 +9,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/domain/trans"
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
@@ -21,9 +22,10 @@ type UserController struct {
 	pb.UnimplementedUserServiceServer
 }
 
-func NewUserController(config *config.Config, server *grpc.Server, engine *gin.Engine, service *service.UserService) *UserController {
+func NewUserController(config *config.Config, mainServer *infrastructure.MainServer, server *grpc.Server, engine *gin.Engine, service *service.UserService) *UserController {
 	consul.Tags = append(consul.Tags, pb.UserService_ServiceDesc.ServiceName)
 	controller := &UserController{service: service}
+	mainServer.RegisterProxy(pb.UserService_ServiceDesc.ServiceName, controller)
 	if config.Service.Type == enums.Service.HTTP {
 		router.Register(engine, pb.UserService_ServiceDesc.ServiceName, controller)
 	} else {

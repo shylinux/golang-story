@@ -3,8 +3,10 @@ package logs
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -67,6 +69,9 @@ func New(config *config.Config) (Logger, error) {
 	}
 	log = &logger{zap.New(zapcore.NewTee(tees...), zap.AddCaller()).Sugar()}
 	l = &logger{log.SugaredLogger.WithOptions(zap.AddCallerSkip(2))}
+	if conf.Pid != "" {
+		ioutil.WriteFile(conf.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
+	}
 	return l, nil
 }
 func With(arg ...interface{}) Logger        { return log.With(arg...) }
@@ -81,8 +86,17 @@ func FuncName(skip int) string {
 	fun, _, _, _ := runtime.Caller(skip)
 	return path.Base(runtime.FuncForPC(fun).Name())
 }
-func FileLine(skip int) string {
-	_, file, line, _ := runtime.Caller(skip)
+func FileLine(skip interface{}) string {
+	file, line := "", 0
+	switch skip := skip.(type) {
+	case int:
+		_, file, line, _ = runtime.Caller(skip)
+	case uintptr:
+		file, line = runtime.FuncForPC(skip).FileLine(skip)
+	default:
+		fun := reflect.ValueOf(skip).Pointer()
+		file, line = runtime.FuncForPC(fun).FileLine(fun)
+	}
 	list := strings.Split(file, "/")
 	if len(list) > 2 {
 		list = list[len(list)-2:]
