@@ -5,7 +5,8 @@ idl:
 	# protoc --js_out=import_style=commonjs:./usr/vue-element-admin/src/ --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./usr/vue-element-admin/src/ ./idl/*.proto
 test:
 	go test -v --count=1 ./idl/test
+pack:
+	tar zcvf service.tar.gz bin config usr/vue-element-admin/dist
 clean:
 	rm -f bin/* log/* idl/test/log/*
-
-.PHONY: idl test clean
+.PHONY: idl test pack clean
