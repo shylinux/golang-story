@@ -2,4 +2,3 @@ log:
   path: log/service.log
 consul:
   addr: ":8500"
-

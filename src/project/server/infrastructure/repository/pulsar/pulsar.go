@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/apache/pulsar-client-go/pulsar"
-	"github.com/apache/pulsar-client-go/pulsar/log"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -86,18 +85,3 @@ func New(consul consul.Consul, config *config.Config) (repository.Queue, error) 
 	client, e := pulsar.NewClient(options)
 	return &queue{config, client}, e
 }
-
-type logger struct{}
-
-func (l *logger) SubLogger(fields log.Fields) log.Logger             { return l }
-func (l *logger) WithFields(fields log.Fields) log.Entry             { return l }
-func (l *logger) WithField(name string, value interface{}) log.Entry { return l }
-func (l *logger) WithError(err error) log.Entry                      { return l }
-func (l *logger) Info(args ...interface{})                           {}
-func (l *logger) Warn(args ...interface{})                           {}
-func (l *logger) Error(args ...interface{})                          {}
-func (l *logger) Debug(args ...interface{})                          {}
-func (l *logger) Infof(format string, args ...interface{})           {}
-func (l *logger) Warnf(format string, args ...interface{})           {}
-func (l *logger) Errorf(format string, args ...interface{})          {}
-func (l *logger) Debugf(format string, args ...interface{})          {}

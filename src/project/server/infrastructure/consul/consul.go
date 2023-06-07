@@ -26,10 +26,8 @@ type Consul interface {
 	Address(target string) string
 }
 type consul struct {
-	*api.Client
-	address  string
-	interval string
 	*config.Config
+	*api.Client
 }
 
 func New(config *config.Config) (Consul, error) {
@@ -37,13 +35,14 @@ func New(config *config.Config) (Consul, error) {
 	conf.Address = config.Consul.Addr
 	client, err := api.NewClient(conf)
 	logs.Infof("find service consul %s", conf.Address)
-	return &consul{client, config.Consul.Addr, config.Consul.Interval, config}, err
+	return &consul{config, client}, err
 }
 
 var Tags = []string{}
 var Meta = map[string]string{}
 
 func (s *consul) Register(service Service) error {
+	interval := config.ValueWithDef(s.Config.Consul.Interval, "10s")
 	registration := new(api.AgentServiceRegistration)
 	registration.Tags = Tags
 	registration.Meta = Meta
@@ -52,7 +51,7 @@ func (s *consul) Register(service Service) error {
 	registration.Address = service.Host
 	registration.ID = fmt.Sprintf("%s-%s-%d", service.Name, service.Host, service.Port)
 	registration.Check = &api.AgentServiceCheck{
-		Interval: s.interval, DeregisterCriticalServiceAfter: s.interval,
+		Interval: interval, DeregisterCriticalServiceAfter: interval,
 		GRPC: fmt.Sprintf("%s/%s", service.Address(), registration.Name),
 	}
 	logs.Infof("register service %+v %s", service, logs.FileLine(2))
@@ -76,5 +75,5 @@ func (s *consul) Address(target string) string {
 	if len(list) > 1 {
 		list = list[:len(list)-1]
 	}
-	return fmt.Sprintf("consul://%s/%s", s.address, strings.Join(list, "."))
+	return fmt.Sprintf("consul://%s/%s", s.Config.Consul.Addr, strings.Join(list, "."))
 }

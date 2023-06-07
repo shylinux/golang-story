@@ -54,13 +54,13 @@ func handler(method interface{}) func(*gin.Context) {
 			arg := reflect.New(t.In(1).Elem()).Interface()
 			if err := ctx.Bind(arg); err != nil {
 				logs.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, err)
-				response.WriteParamInvalid(ctx, err)
+				response.WriteError(ctx, err)
 				return
 			}
 			logs.Infof("%s %s %+v", ctx.Request.Method, ctx.Request.URL, arg)
 			res = v.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(arg)})
 		default:
-			response.WriteBase(ctx, fmt.Errorf("func arg must be: (ctx, [data])"))
+			response.WriteError(ctx, fmt.Errorf("func arg must be: (ctx, [data])"))
 		}
 		if len(res) == 0 {
 			return
@@ -68,21 +68,16 @@ func handler(method interface{}) func(*gin.Context) {
 		switch err := res[len(res)-1].Interface().(type) {
 		case nil:
 			if len(res) == 1 {
-				response.WriteBase(ctx, nil)
+				response.WriteError(ctx, nil)
 				return
 			}
 		case error:
-			response.WriteBase(ctx, err)
+			response.WriteError(ctx, err)
 			return
 		default:
-			response.WriteBase(ctx, fmt.Errorf("last res must be error %v", err))
+			response.WriteError(ctx, fmt.Errorf("last res must be error %v", err))
 			return
 		}
-		switch id := res[0].Interface().(type) {
-		case int64:
-			response.WriteBaseID(ctx, id)
-		default:
-			response.WriteData(ctx, res[0].Interface(), res[1].Interface())
-		}
+		response.WriteData(ctx, res[0].Interface(), res[1].Interface())
 	}
 }

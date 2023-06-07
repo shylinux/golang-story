@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"fmt"
 	"net"
-	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -19,11 +18,11 @@ type MainServer struct {
 	consul.Consul
 	*grpc.Server
 	*gin.Engine
-	proxy map[string]reflect.Value
+	*Proxy
 }
 
-func NewMainServer(config *config.Config, logger logs.Logger, consul consul.Consul, server *grpc.Server, engine *gin.Engine) *MainServer {
-	return &MainServer{config, consul, server, engine, map[string]reflect.Value{}}
+func NewMainServer(config *config.Config, logger logs.Logger, consul consul.Consul, proxy *Proxy, server *grpc.Server, engine *gin.Engine) *MainServer {
+	return &MainServer{config, consul, server, engine, proxy}
 }
 func (s *MainServer) registerService(key string, name string, host string, port int) {
 	if name == "" {
@@ -40,13 +39,10 @@ func (s *MainServer) Run() error {
 			}
 		}
 		if conf := s.Config.Gateway; conf.Export {
-			go s.goproxy(conf)
+			go s.Proxy.run(conf)
 		}
 	} else {
 		v := s.Config.Internal[k]
-		if v.Port > 0 {
-			service.Port = v.Port
-		}
 		s.registerService(k, v.Name, service.Host, service.Port)
 	}
 	logs.Infof("start service %s %s %s:%d", service.Name, service.Type, service.Host, service.Port)

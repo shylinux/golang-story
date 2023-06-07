@@ -17,9 +17,10 @@ service:
 internal:
   user:
     export: true
+    port: 9091
   space:
     export: true
-    port: 9093
+    port: 9092
 engine:
   queue:
     name: pulsar

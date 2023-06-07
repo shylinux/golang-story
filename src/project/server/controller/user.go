@@ -18,18 +18,23 @@ import (
 )
 
 type UserController struct {
-	service *service.UserService
 	pb.UnimplementedUserServiceServer
+	service *service.UserService
+	name    string
 }
 
-func NewUserController(config *config.Config, mainServer *infrastructure.MainServer, server *grpc.Server, engine *gin.Engine, service *service.UserService) *UserController {
-	consul.Tags = append(consul.Tags, pb.UserService_ServiceDesc.ServiceName)
-	controller := &UserController{service: service}
-	mainServer.RegisterProxy(pb.UserService_ServiceDesc.ServiceName, controller)
-	if config.Service.Type == enums.Service.HTTP {
-		router.Register(engine, pb.UserService_ServiceDesc.ServiceName, controller)
-	} else {
-		pb.RegisterUserServiceServer(server, controller)
+func NewUserController(config *config.Config, mainServer *infrastructure.MainServer, proxy *infrastructure.Proxy, engine *gin.Engine, server *grpc.Server, service *service.UserService) *UserController {
+	controller := &UserController{service: service, name: pb.UserService_ServiceDesc.ServiceName}
+	if config.Internal[enums.Service.User].Export {
+		consul.Tags = append(consul.Tags, controller.name)
+		if config.Gateway.Export {
+			proxy.Register(controller.name, controller)
+		}
+		if config.Service.Type == enums.Service.HTTP {
+			router.Register(engine, controller.name, controller)
+		} else {
+			pb.RegisterUserServiceServer(server, controller)
+		}
 	}
 	return controller
 }

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
@@ -23,13 +24,18 @@ type SpaceController struct {
 	pb.UnimplementedSpaceServiceServer
 	Main    *infrastructure.MainServer
 	service *SpaceService
+	name    string
 }
 
-func NewSpaceController(mainServer *infrastructure.MainServer, server *grpc.Server, consumer *UserConsumer, service *SpaceService) *SpaceController {
-	consul.Tags = append(consul.Tags, pb.SpaceService_ServiceDesc.ServiceName)
-	controller := &SpaceController{Main: mainServer, service: service}
-	mainServer.RegisterProxy(pb.SpaceService_ServiceDesc.ServiceName, controller)
-	pb.RegisterSpaceServiceServer(server, controller)
+func NewSpaceController(config *config.Config, mainServer *infrastructure.MainServer, proxy *infrastructure.Proxy, server *grpc.Server, consumer *UserConsumer, service *SpaceService) *SpaceController {
+	controller := &SpaceController{Main: mainServer, service: service, name: pb.SpaceService_ServiceDesc.ServiceName}
+	if config.Internal[enums.Service.User].Export {
+		consul.Tags = append(consul.Tags, pb.SpaceService_ServiceDesc.ServiceName)
+		if config.Gateway.Export {
+			proxy.Register(controller.name, controller)
+		}
+		pb.RegisterSpaceServiceServer(server, controller)
+	}
 	return controller
 }
 func (s *SpaceController) Create(ctx context.Context, req *pb.SpaceCreateRequest) (*pb.SpaceCreateReply, error) {

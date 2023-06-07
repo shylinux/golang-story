@@ -25,5 +25,6 @@ func Init(container *dig.Container) *dig.Container {
 	container.Provide(grpc.NewServer)
 	container.Provide(context.Background)
 	container.Provide(NewMainServer)
+	container.Provide(NewProxy)
 	return container
 }

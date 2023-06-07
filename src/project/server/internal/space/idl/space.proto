@@ -13,7 +13,7 @@ message SpaceCreateRequest {
     string name = 1;
 }
 message SpaceCreateReply {
-    BaseReply baseResp = 1;
+    Error error = 1;
     Space data = 2;
 }
 
@@ -21,14 +21,14 @@ message SpaceRemoveRequest {
     int64 id = 1;
 }
 message SpaceRemoveReply {
-    BaseReply baseResp = 1;
+    Error error = 1;
 }
 
 message SpaceInfoRequest {
     int64 id = 1;
 }
 message SpaceInfoReply {
-    BaseReply baseResp = 1;
+    Error error = 1;
     Space data = 2;
 }
 
@@ -37,7 +37,7 @@ message SpaceListRequest {
     int64 count = 2;
 }
 message SpaceListReply {
-    BaseReply baseResp = 1;
+    Error error = 1;
     repeated Space data = 2;
 }
 
@@ -48,7 +48,7 @@ message Space {
     string phone = 4;
 }
 
-message BaseReply {
-    int32 code = 1;
+message Error {
+    int64 code = 1;
     string info = 2;
 }

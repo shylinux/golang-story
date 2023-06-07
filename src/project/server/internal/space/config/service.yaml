@@ -1,4 +1,5 @@
 log:
+  pid: log/service.pid
   path: log/service.log
   maxsize: 10 # 10M
   maxage: 30  # 30days
@@ -12,9 +13,10 @@ service:
 internal:
   user:
     export: true
+    port: 9091
   space:
     export: true
-    port: 9091
+    port: 9092
 engine:
   queue:
     name: pulsar

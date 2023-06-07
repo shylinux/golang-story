@@ -205,5 +205,5 @@ var SpaceService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/space/idl/space.proto",
+	Metadata: "idl/space.proto",
 }

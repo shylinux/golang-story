@@ -13,12 +13,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
+	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/response"
 )
 
-func (s *MainServer) RegisterProxy(service string, controller interface{}) {
+type Proxy struct {
+	proxy map[string]reflect.Value
+}
+
+func NewProxy() *Proxy {
+	return &Proxy{map[string]reflect.Value{}}
+}
+func (s *Proxy) Register(service string, controller interface{}) {
 	t := reflect.TypeOf(controller)
 	v := reflect.ValueOf(controller)
 	for i := 0; i < v.NumMethod(); i++ {
@@ -26,33 +35,38 @@ func (s *MainServer) RegisterProxy(service string, controller interface{}) {
 		s.proxy[path.Join("/", service, t.Method(i).Name)] = v.Method(i)
 	}
 }
-func (s *MainServer) proxyHandler(ctx *gin.Context) {
+func (s *Proxy) handler(ctx *gin.Context) {
 	p := strings.TrimPrefix(ctx.Request.URL.Path, "/api")
 	cb, ok := s.proxy[p]
 	if !ok {
-		logs.Warnf("proxy %s %s", p, errors.New(fmt.Errorf("not found proxy"), ""))
-		ctx.JSON(http.StatusInternalServerError, "")
+		response.WriteError(ctx, errors.NewNotFoundProxy(fmt.Errorf(p)))
 		return
 	}
-	arg, err := s.proxyParse(ctx, cb)
+	arg, err := s.parse(ctx, cb)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "")
+		response.WriteError(ctx, errors.NewInvalidParams(err))
 		return
 	}
 	otelgrpc.UnaryServerInterceptor()(context.Background(), nil, &grpc.UnaryServerInfo{}, func(_ctx context.Context, req interface{}) (interface{}, error) {
 		logs.Infof("proxy %s %+v", p, arg, _ctx)
 		res := cb.Call([]reflect.Value{reflect.ValueOf(_ctx), reflect.ValueOf(arg)})
 		if err, ok := res[1].Interface().(error); ok && err != nil {
-			logs.Warnf("proxy %s %s", p, errors.New(err, ""), _ctx)
-			ctx.JSON(http.StatusInternalServerError, "")
+			logs.Warnf("proxy %s %s", p, err.Error(), _ctx)
+			if ls := strings.SplitN(err.Error(), ":", 2); len(ls) > 1 {
+				if code, err := strconv.ParseInt(ls[0], 10, 64); err == nil && code > 0 {
+					response.WriteError(ctx, errors.NewResp(err, code, ls[1]))
+					return nil, nil
+				}
+			}
+			response.WriteError(ctx, errors.NewResp(err, enums.Errors.Unknown, p))
 		} else {
-			ctx.JSON(http.StatusOK, res[0].Interface())
+			response.WriteData(ctx, res[0].Interface(), nil)
 		}
 		return nil, nil
 	})
 
 }
-func (s *MainServer) proxyParse(ctx *gin.Context, cb reflect.Value) (interface{}, error) {
+func (s *Proxy) parse(ctx *gin.Context, cb reflect.Value) (interface{}, error) {
 	t := cb.Type()
 	arg := reflect.New(t.In(1).Elem()).Interface()
 	if ctx.Request.Method == http.MethodGet {
@@ -86,10 +100,10 @@ func (s *MainServer) proxyParse(ctx *gin.Context, cb reflect.Value) (interface{}
 	}
 	return arg, nil
 }
-func (s *MainServer) goproxy(conf config.Gateway) {
+func (s *Proxy) run(conf config.Gateway) {
 	engine := gin.New()
-	engine.GET("/api/*s", s.proxyHandler)
-	engine.POST("/api/*s", s.proxyHandler)
+	engine.GET("/api/*s", s.handler)
+	engine.POST("/api/*s", s.handler)
 	if !path.IsAbs(conf.Root) {
 		wd, _ := os.Getwd()
 		conf.Root = path.Join(wd, conf.Root)

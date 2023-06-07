@@ -19,10 +19,10 @@ func init() {
 					return
 				}
 				switch s {
-				case syscall.SIGTERM:
-					os.Exit(0)
 				case syscall.SIGINT:
 					os.Exit(1)
+				case syscall.SIGTERM:
+					os.Exit(0)
 				}
 			}
 		}
