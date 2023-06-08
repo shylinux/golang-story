@@ -26,6 +26,7 @@ func (s *SpaceService) Info(ctx context.Context, id int64) (*Space, error) {
 	data, err := s.storage.SelectOne(ctx, &Space{}, id)
 	return data.(*Space), errors.NewInfoFail(err)
 }
-func (s *SpaceService) List(ctx context.Context, page int64, count int64) (res []*Space, err error) {
-	return res, errors.NewListFail(s.storage.SelectList(ctx, &Space{}, &res, page, count))
+func (s *SpaceService) List(ctx context.Context, page int64, count int64) (res []*Space, total int64, err error) {
+	total, err = s.storage.SelectList(ctx, &Space{}, &res, page, count, "")
+	return res, total, errors.NewListFail(err)
 }

@@ -10,7 +10,7 @@ var ch = make(chan os.Signal, 10)
 
 func init() {
 	listen(syscall.SIGINT)
-	listen(syscall.SIGTERM)
+	listen(syscall.SIGQUIT)
 	go func() {
 		for {
 			select {
@@ -21,7 +21,7 @@ func init() {
 				switch s {
 				case syscall.SIGINT:
 					os.Exit(1)
-				case syscall.SIGTERM:
+				case syscall.SIGQUIT:
 					os.Exit(0)
 				}
 			}

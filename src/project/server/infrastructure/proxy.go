@@ -53,7 +53,7 @@ func (s *Proxy) handler(ctx *gin.Context) {
 		if err, ok := res[1].Interface().(error); ok && err != nil {
 			logs.Warnf("proxy %s %s", p, err.Error(), _ctx)
 			if ls := strings.SplitN(err.Error(), ":", 2); len(ls) > 1 {
-				if code, err := strconv.ParseInt(ls[0], 10, 64); err == nil && code > 0 {
+				if code, _err := strconv.ParseInt(ls[0], 10, 64); _err == nil && code > 0 {
 					response.WriteError(ctx, errors.NewResp(err, code, ls[1]))
 					return nil, nil
 				}

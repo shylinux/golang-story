@@ -7,6 +7,7 @@ var Errors = struct {
 	InvalidParams int64
 	ModelCreate   int64
 	ModelRemove   int64
+	ModelModify   int64
 	ModelInfo     int64
 	ModelList     int64
 }{
@@ -16,6 +17,7 @@ var Errors = struct {
 	InvalidParams: 10002,
 	ModelCreate:   20001,
 	ModelRemove:   20002,
-	ModelInfo:     20003,
-	ModelList:     20004,
+	ModelModify:   20003,
+	ModelInfo:     20004,
+	ModelList:     20005,
 }

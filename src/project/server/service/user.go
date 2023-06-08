@@ -35,6 +35,16 @@ func (s *UserService) Create(ctx context.Context, name string) (*model.User, err
 	}
 	return user, nil
 }
+func (s *UserService) Rename(ctx context.Context, id int64, name string) error {
+	user := &model.User{Name: name}
+	if err := s.storage.Update(ctx, user, id); err != nil {
+		return errors.NewModifyFail(err)
+	}
+	if err := CacheDel(s.cache, user); err != nil {
+		logs.Warnf(errors.New(err, "del cache failure").Error(), ctx)
+	}
+	return nil
+}
 func (s *UserService) Remove(ctx context.Context, id int64) error {
 	user := &model.User{Common: model.Common{ID: id}}
 	if err := QueueSend(s.queue, ctx, enums.Topic.User, enums.Operate.Remove, trans.UserDTO(user)); err != nil {
@@ -57,6 +67,15 @@ func (s *UserService) Info(ctx context.Context, id int64) (*model.User, error) {
 	}
 	return data.(*model.User), errors.NewInfoFail(err)
 }
-func (s *UserService) List(ctx context.Context, page int64, count int64) (res []*model.User, err error) {
-	return res, errors.NewListFail(s.storage.SelectList(ctx, &model.User{}, &res, page, count))
+func (s *UserService) List(ctx context.Context, page int64, count int64, filter string) (res []*model.User, total int64, err error) {
+	condition, arg := Clause(filter != "", "name = ? and ", filter)
+	total, err = s.storage.SelectList(ctx, &model.User{}, &res, page, count, condition, arg...)
+	return res, total, errors.NewListFail(err)
+}
+
+func Clause(cond bool, stmt string, arg ...interface{}) (string, []interface{}) {
+	if cond {
+		return stmt, arg
+	}
+	return "", []interface{}{}
 }

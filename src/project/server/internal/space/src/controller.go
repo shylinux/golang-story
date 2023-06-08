@@ -62,10 +62,10 @@ func (s *SpaceController) List(ctx context.Context, req *pb.SpaceListRequest) (*
 	if req.Page < 1 || req.Count < 1 {
 		return nil, errors.NewInvalidParams(fmt.Errorf("page or count"))
 	}
-	list, err := s.service.List(ctx, req.Page, req.Count)
+	list, total, err := s.service.List(ctx, req.Page, req.Count)
 	data := []*pb.Space{}
 	for _, space := range list {
 		data = append(data, SpaceDTO(space))
 	}
-	return &pb.SpaceListReply{Data: data}, errors.NewListFailResp(err)
+	return &pb.SpaceListReply{Data: data, Total: total}, errors.NewListFailResp(err)
 }

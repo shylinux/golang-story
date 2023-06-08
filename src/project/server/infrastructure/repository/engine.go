@@ -7,7 +7,7 @@ type Storage interface {
 	Delete(ctx context.Context, obj interface{}, id int64) error
 	Update(ctx context.Context, obj interface{}, id int64) error
 	SelectOne(ctx context.Context, obj interface{}, id int64) (interface{}, error)
-	SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64) error
+	SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64, condition string, arg ...interface{}) (int64, error)
 	AutoMigrate(obj ...interface{}) error
 }
 

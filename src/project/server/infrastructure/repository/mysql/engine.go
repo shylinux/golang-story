@@ -30,8 +30,10 @@ func (s storage) SelectOne(ctx context.Context, obj interface{}, id int64) (inte
 	res := s.db.WithContext(ctx).Model(obj).Where("id = ?", id).First(obj)
 	return obj, errors.New(res.Error, "gorm select failure")
 }
-func (s storage) SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64) (err error) {
-	return errors.New(s.db.WithContext(ctx).Model(obj).Where("deleted = 0").Offset(int((page-1)*count)).Limit(int(count)).Find(res).Error, "gorm select failure")
+func (s storage) SelectList(ctx context.Context, obj interface{}, res interface{}, page, count int64, condition string, arg ...interface{}) (total int64, err error) {
+	db := s.db.WithContext(ctx).Model(obj).Where(condition+" deleted = 0", arg...)
+	db.Count(&total)
+	return total, errors.New(db.Offset(int((page-1)*count)).Limit(int(count)).Find(res).Error, "gorm select failure")
 }
 func (s *storage) AutoMigrate(obj ...interface{}) error {
 	return errors.New(s.db.AutoMigrate(obj...), "gorm migrate failure")

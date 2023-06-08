@@ -39,6 +39,7 @@ message SpaceListRequest {
 message SpaceListReply {
     Error error = 1;
     repeated Space data = 2;
+    int64 total = 3;
 }
 
 message Space {

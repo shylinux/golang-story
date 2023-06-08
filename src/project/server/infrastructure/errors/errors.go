@@ -41,6 +41,9 @@ func NewCreateFailResp(err error) error {
 func NewRemoveFailResp(err error) error {
 	return newResp(err, enums.Errors.ModelRemove, "model remove failure")
 }
+func NewModifyFailResp(err error) error {
+	return newResp(err, enums.Errors.ModelModify, "model modify failure")
+}
 func NewInfoFailResp(err error) error {
 	return newResp(err, enums.Errors.ModelInfo, "model info failure")
 }
@@ -71,5 +74,6 @@ func New(err error, str string, arg ...interface{}) error {
 }
 func NewCreateFail(err error) error { return newError(err, "storage create failure") }
 func NewRemoveFail(err error) error { return newError(err, "storage remove failure") }
+func NewModifyFail(err error) error { return newError(err, "storage modify failure") }
 func NewInfoFail(err error) error   { return newError(err, "storage info failure") }
 func NewListFail(err error) error   { return newError(err, "storage list failure") }

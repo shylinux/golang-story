@@ -1,1 +1,1 @@
-while true; do ./bin/demo && break done
+while true; do ./bin/demo && break; done

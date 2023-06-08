@@ -45,6 +45,12 @@ func (s *UserController) Create(ctx context.Context, req *pb.UserCreateRequest) 
 	user, err := s.service.Create(ctx, req.Name)
 	return &pb.UserCreateReply{Data: trans.UserDTO(user)}, errors.NewCreateFailResp(err)
 }
+func (s *UserController) Rename(ctx context.Context, req *pb.UserRenameRequest) (*pb.UserRenameReply, error) {
+	if req.Name == "" || len(req.Name) < 5 {
+		return nil, errors.NewInvalidParams(fmt.Errorf(enums.Field.Name))
+	}
+	return &pb.UserRenameReply{}, errors.NewModifyFailResp(s.service.Rename(ctx, req.Id, req.Name))
+}
 func (s *UserController) Remove(ctx context.Context, req *pb.UserRemoveRequest) (*pb.UserRemoveReply, error) {
 	if req.Id < 1 {
 		return nil, errors.NewInvalidParams(fmt.Errorf(enums.Field.ID))
@@ -62,10 +68,10 @@ func (s *UserController) List(ctx context.Context, req *pb.UserListRequest) (*pb
 	if req.Page < 1 || req.Count < 1 {
 		return nil, errors.NewInvalidParams(fmt.Errorf("page or count"))
 	}
-	list, err := s.service.List(ctx, req.Page, req.Count)
+	list, total, err := s.service.List(ctx, req.Page, req.Count, req.Filter)
 	data := []*pb.User{}
 	for _, user := range list {
 		data = append(data, trans.UserDTO(user))
 	}
-	return &pb.UserListReply{Data: data}, errors.NewListFailResp(err)
+	return &pb.UserListReply{Data: data, Total: total}, errors.NewListFailResp(err)
 }
