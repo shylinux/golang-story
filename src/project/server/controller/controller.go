@@ -1,21 +1,18 @@
 package controller
 
 import (
-	"go.uber.org/dig"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure"
-	"shylinux.com/x/golang-story/src/project/server/internal"
-	"shylinux.com/x/golang-story/src/project/server/service"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 )
 
-func Init(container *dig.Container) {
+func Init(container *container.Container) {
 	container.Provide(NewMainController)
+	container.Provide(NewAuthController)
 	container.Provide(NewUserController)
-	internal.Init(container)
-	service.Init(container)
 }
 
-type MainController struct{ *infrastructure.MainServer }
+type MainController struct{ *server.MainServer }
 
-func NewMainController(mainServer *infrastructure.MainServer, user *UserController, internal *internal.InternalController) *MainController {
-	return &MainController{mainServer}
+func NewMainController(server *server.MainServer, auth *AuthController, user *UserController) *MainController {
+	return &MainController{server}
 }

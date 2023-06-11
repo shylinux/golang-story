@@ -5,43 +5,75 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"go.uber.org/dig"
 	"shylinux.com/x/golang-story/src/project/server/domain/model"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
-func Init(container *dig.Container) {
+func Init(container *container.Container) {
+	container.Provide(NewAuthService)
 	container.Provide(NewUserService)
 }
 
-func QueueSend(queue repository.Queue, ctx context.Context, topic, op string, v interface{}) error {
-	buf, err := json.Marshal(v)
-	if err != nil {
+func Clause(cond bool, stmt string, arg ...interface{}) (string, []interface{}) {
+	if cond {
+		return stmt, arg
+	}
+	return "", []interface{}{}
+}
+func SearchUpdate(ctx context.Context, search repository.Search, mapping string, id int64, data interface{}) error {
+	if err := search.Update(ctx, mapping, id, data); err != nil {
+		logs.Errorf(errors.New(err, "search update failure %s", logs.FileLine(2)).Error(), ctx)
 		return err
 	}
-	_, err = queue.Send(ctx, topic, op, buf)
-	return err
+	return nil
 }
-func QueueRecv(queue repository.Queue, ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte) error) error {
-	return queue.Recv(ctx, name, topic, cb)
-}
-func CacheSet(cache repository.Cache, model model.Model) error {
-	if buf, err := json.Marshal(model); err == nil {
-		return cache.Set(cacheKey(cache, model), string(buf))
-	} else {
+func SearchDelete(ctx context.Context, search repository.Search, mapping string, id int64) error {
+	if err := search.Delete(ctx, mapping, id); err != nil {
+		logs.Warnf(errors.New(err, "search delete failure %s", logs.FileLine(2)).Error(), ctx)
 		return err
 	}
+	return nil
 }
-func CacheGet(cache repository.Cache, model model.Model) error {
-	if buf, err := cache.Get(cacheKey(cache, model)); err == nil {
-		return json.Unmarshal([]byte(buf), model)
-	} else {
+func QueueSend(ctx context.Context, queue repository.Queue, topic, op string, v interface{}) error {
+	if buf, err := json.Marshal(v); err != nil {
+		logs.Errorf(errors.New(err, "message send failure topic: %s operate: %s payload: %+s %s", topic, op, v, logs.FileLine(2)).Error(), ctx)
+		return err
+	} else if _, err = queue.Send(ctx, topic, op, buf); err != nil {
+		logs.Errorf(errors.New(err, "message send failure topic: %s operate: %s payload: %+s %s", topic, op, v, logs.FileLine(2)).Error(), ctx)
 		return err
 	}
+	return nil
 }
-func CacheDel(cache repository.Cache, model model.Model) error {
-	return cache.Del(cacheKey(cache, model))
+func CacheSet(ctx context.Context, cache repository.Cache, prefix string, model model.Model) error {
+	if buf, err := json.Marshal(model); err != nil {
+		logs.Warnf(errors.New(err, "cache set failure %s", logs.FileLine(2)).Error(), ctx)
+		return err
+	} else if err := cache.Set(ctx, cacheKey(cache, prefix, model), string(buf)); err != nil {
+		logs.Warnf(errors.New(err, "cache set failure %s", logs.FileLine(2)).Error(), ctx)
+		return err
+	}
+	return nil
 }
-func cacheKey(cache repository.Cache, model model.Model) string {
-	return fmt.Sprintf("%s:%d", model.TableName(), model.GetID())
+func CacheDel(ctx context.Context, cache repository.Cache, prefix string, model model.Model) error {
+	if err := cache.Del(ctx, cacheKey(cache, prefix, model)); err != nil {
+		logs.Warnf(errors.New(err, "cache del failure %s", logs.FileLine(2)).Error(), ctx)
+		return err
+	}
+	return nil
+}
+func CacheGet(ctx context.Context, cache repository.Cache, prefix string, model model.Model) error {
+	if buf, err := cache.Get(ctx, cacheKey(cache, prefix, model)); err != nil {
+		logs.Warnf(errors.New(err, "cache get failure %s", logs.FileLine(2)).Error(), ctx)
+		return err
+	} else if err := json.Unmarshal([]byte(buf), model); err != nil {
+		logs.Warnf(errors.New(err, "cache get failure %s", logs.FileLine(2)).Error(), ctx)
+		return err
+	}
+	return nil
+}
+func cacheKey(cache repository.Cache, prefix string, model model.Model) string {
+	return fmt.Sprintf("%s:%s", prefix, model.GetID())
 }

@@ -5,33 +5,49 @@ import (
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
-
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
 type cache struct {
-	rdb *redis.Client
+	*redis.Client
 }
 
-func (s *cache) Set(key string, value string) error {
-	return s.rdb.Set(context.TODO(), key, value, 0).Err()
-}
-func (s *cache) Get(key string) (string, error) {
-	return s.rdb.Get(context.TODO(), key).Result()
-}
-func (s *cache) Del(key string) error {
-	return s.rdb.Del(context.TODO(), key).Err()
-}
-
-func New(config *config.Config, consul consul.Consul) (repository.Cache, error) {
+func New(config *config.Config, consul consul.Consul) repository.Cache {
 	conf := config.Engine.Cache
-	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
-		conf.Host = list[0].Host
-		conf.Port = list[0].Port
+	if list, err := consul.Resolve(config.WithDef(conf.Name, "redis")); err == nil && len(list) > 0 {
+		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
-	logs.Infof("connect service redis %s:%d", conf.Host, conf.Port)
-	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}, nil
+	logs.Infof("engine connect redis %s:%d", conf.Host, conf.Port)
+	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}
+}
+func (s *cache) Set(ctx context.Context, key string, value string) error {
+	if err := s.Client.Set(ctx, key, value, 0).Err(); err != nil {
+		logs.Warnf("redis set %s %s %s", key, value, err, ctx)
+		return errors.New(err, "redis set")
+	} else {
+		logs.Infof("redis set %s %s", key, value, ctx)
+		return nil
+	}
+}
+func (s *cache) Get(ctx context.Context, key string) (string, error) {
+	if res, err := s.Client.Get(ctx, key).Result(); err != nil {
+		logs.Warnf("redis get %s %s", key, err, ctx)
+		return res, errors.New(err, "redis get")
+	} else {
+		logs.Infof("redis get %s %s", key, res, ctx)
+		return res, nil
+	}
+}
+func (s *cache) Del(ctx context.Context, key string) error {
+	if err := s.Client.Del(ctx, key).Err(); err != nil {
+		logs.Warnf("redis del %s %s", key, err, ctx)
+		return errors.New(err, "redis del")
+	} else {
+		logs.Infof("redis del %s", key, ctx)
+		return nil
+	}
 }

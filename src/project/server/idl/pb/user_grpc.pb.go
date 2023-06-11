@@ -21,6 +21,7 @@ type UserServiceClient interface {
 	Create(ctx context.Context, in *UserCreateRequest, opts ...grpc.CallOption) (*UserCreateReply, error)
 	Remove(ctx context.Context, in *UserRemoveRequest, opts ...grpc.CallOption) (*UserRemoveReply, error)
 	Rename(ctx context.Context, in *UserRenameRequest, opts ...grpc.CallOption) (*UserRenameReply, error)
+	Search(ctx context.Context, in *UserSearchRequest, opts ...grpc.CallOption) (*UserSearchReply, error)
 	Info(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoReply, error)
 	List(ctx context.Context, in *UserListRequest, opts ...grpc.CallOption) (*UserListReply, error)
 }
@@ -60,6 +61,15 @@ func (c *userServiceClient) Rename(ctx context.Context, in *UserRenameRequest, o
 	return out, nil
 }
 
+func (c *userServiceClient) Search(ctx context.Context, in *UserSearchRequest, opts ...grpc.CallOption) (*UserSearchReply, error) {
+	out := new(UserSearchReply)
+	err := c.cc.Invoke(ctx, "/demo.user.UserService/Search", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Info(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoReply, error) {
 	out := new(UserInfoReply)
 	err := c.cc.Invoke(ctx, "/demo.user.UserService/Info", in, out, opts...)
@@ -85,6 +95,7 @@ type UserServiceServer interface {
 	Create(context.Context, *UserCreateRequest) (*UserCreateReply, error)
 	Remove(context.Context, *UserRemoveRequest) (*UserRemoveReply, error)
 	Rename(context.Context, *UserRenameRequest) (*UserRenameReply, error)
+	Search(context.Context, *UserSearchRequest) (*UserSearchReply, error)
 	Info(context.Context, *UserInfoRequest) (*UserInfoReply, error)
 	List(context.Context, *UserListRequest) (*UserListReply, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -102,6 +113,9 @@ func (UnimplementedUserServiceServer) Remove(context.Context, *UserRemoveRequest
 }
 func (UnimplementedUserServiceServer) Rename(context.Context, *UserRenameRequest) (*UserRenameReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Rename not implemented")
+}
+func (UnimplementedUserServiceServer) Search(context.Context, *UserSearchRequest) (*UserSearchReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
 func (UnimplementedUserServiceServer) Info(context.Context, *UserInfoRequest) (*UserInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
@@ -176,6 +190,24 @@ func _UserService_Rename_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserSearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Search(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/demo.user.UserService/Search",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Search(ctx, req.(*UserSearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Info_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserInfoRequest)
 	if err := dec(in); err != nil {
@@ -230,6 +262,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Rename",
 			Handler:    _UserService_Rename_Handler,
+		},
+		{
+			MethodName: "Search",
+			Handler:    _UserService_Search_Handler,
 		},
 		{
 			MethodName: "Info",

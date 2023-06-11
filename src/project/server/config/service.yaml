@@ -1,26 +1,39 @@
-log:
+logs:
   pid: log/service.pid
   path: log/service.log
   maxsize: 10 # 10M
   maxage: 30  # 30days
   stdout: true
-consul:
-  addr: ":8500"
-  interval: 10s
-gateway:
+proxy:
   export: true
   root: "usr/vue-element-admin/dist/"
   port: 8081
-service:
+token:
+  issuer: "demo.auth"
+  secret: "demo.auth"
+  expire: "24h"
+consul:
+  addr: ":8500"
+  interval: 10s
+  workid: 1
+server:
   name: demo
   port: 9090
+generate:
+  path: "idl/"
+  pbPath: "idl/pb/"
+  goPath: "idl/api/"
+  jsPath: "usr/vue-element-admin/src/api/"
 internal:
-  user:
+  auth:
     export: true
     port: 9091
-  space:
+  user:
     export: true
     port: 9092
+  space:
+    export: true
+    port: 9093
 engine:
   queue:
     name: pulsar
@@ -31,6 +44,11 @@ engine:
     password: demo
     host: 127.0.0.1
     port: 6379
+  search:
+    name: elasticsearch
+    index: demo
+    host: 127.0.0.1
+    port: 9200
   storage:
     name: mysql
     username: demo

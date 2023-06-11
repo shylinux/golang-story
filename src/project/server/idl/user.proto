@@ -6,61 +6,82 @@ service UserService {
     rpc Create (UserCreateRequest) returns (UserCreateReply);
     rpc Remove (UserRemoveRequest) returns (UserRemoveReply);
     rpc Rename (UserRenameRequest) returns (UserRenameReply);
+    rpc Search (UserSearchRequest) returns (UserSearchReply);
     rpc Info (UserInfoRequest) returns (UserInfoReply);
     rpc List (UserListRequest) returns (UserListReply);
 }
 
 message UserCreateRequest {
-    string name = 1;
+    // length >= 6
+    string username = 1;
+    string email = 2;
 }
 message UserCreateReply {
-    Error error = 1;
+    UserError error = 1;
     User data = 2;
 }
 
 message UserRemoveRequest {
-    int64 id = 1;
+    // required
+    int64 userID = 1;
 }
 message UserRemoveReply {
-    Error error = 1;
+    UserError error = 1;
 }
+
 message UserRenameRequest {
-    int64 id = 1;
-    string name = 2;
+    // required
+    int64 userID = 1;
+    // required
+    string username = 2;
 }
 message UserRenameReply {
-    Error error = 1;
+    UserError error = 1;
+}
+
+message UserSearchRequest {
+    int64 page = 1;
+    int64 count = 2;
+    // required
+    string key = 3;
+    // required
+    string value = 4;
+}
+message UserSearchReply {
+    UserError error = 1;
+    repeated User data = 2;
+    int64 total = 3;
 }
 
 message UserInfoRequest {
-    int64 id = 1;
+    // required
+    int64 userID = 1;
 }
 message UserInfoReply {
-    Error error = 1;
+    UserError error = 1;
     User data = 2;
 }
 
 message UserListRequest {
+    // default 1
     int64 page = 1;
+    // default 10
     int64 count = 2;
-    string filter = 3;
+    string key = 3;
+    string value = 4;
 }
 message UserListReply {
-    Error error = 1;
+    UserError error = 1;
     repeated User data = 2;
     int64 total = 3;
 }
 
 message User {
-    int64 id = 1;
-    string name = 2;
+    int64 userID = 1;
+    string username = 2;
     string email = 3;
-    string phone = 4;
 }
-message Page {
-    int64 total = 1;
-}
-message Error {
+message UserError {
     int64 code = 1;
     string info = 2;
 }

@@ -1,9 +1,7 @@
 package enums
 
 var Cache = struct {
-	User  string
-	Space string
+	User string
 }{
-	User:  "user",
-	Space: "space",
+	User: "user",
 }

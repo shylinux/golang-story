@@ -2,37 +2,27 @@ package space
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stretchr/testify/suite"
-	"go.uber.org/dig"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/tests"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
 
 type SpaceTestSuite struct {
-	suite.Suite
-	user pb.SpaceServiceClient
-	ctx  context.Context
-	t    *testing.T
+	*tests.Suite
+	ctx   context.Context
+	space pb.SpaceServiceClient
+	id    int64
 }
 
 func (s *SpaceTestSuite) SetupTest() {
-	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, logger logs.Logger, consul consul.Consul) error {
-		if conn, err := grpc.NewConn(s.ctx, consul.Address(pb.SpaceService_ServiceDesc.ServiceName)); err != nil {
-			return err
-		} else {
-			s.user = pb.NewSpaceServiceClient(conn)
-			return nil
-		}
-	}))
+	s.space = pb.NewSpaceServiceClient(s.Conn(s.ctx, pb.SpaceService_ServiceDesc.ServiceName))
+	if res, err := s.space.Create(s.ctx, &pb.SpaceCreateRequest{Name: "goodlife"}); err != nil {
+		panic(err)
+	} else {
+		s.id = res.Data.SpaceID
+	}
 }
 func (s *SpaceTestSuite) TestCreate() {
 	cases := []struct {
@@ -44,26 +34,36 @@ func (s *SpaceTestSuite) TestCreate() {
 		{ok: true, name: "goodlife"},
 	}
 	for i, c := range cases {
-		_, err := s.user.Create(s.ctx, &pb.SpaceCreateRequest{Name: c.name})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.space.Create(s.ctx, &pb.SpaceCreateRequest{Name: c.name})
+		s.ConveySo(i, c.ok, c, res, err)
+	}
+}
+func (s *SpaceTestSuite) TestRemove() {
+	cases := []struct {
+		ok      bool
+		spaceID int64
+	}{
+		{ok: false, spaceID: 0},
+		{ok: true, spaceID: s.id},
+		{ok: false, spaceID: -1},
+	}
+	for i, c := range cases {
+		res, err := s.space.Remove(s.ctx, &pb.SpaceRemoveRequest{SpaceID: c.spaceID})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
 func (s *SpaceTestSuite) TestInfo() {
 	cases := []struct {
-		ok bool
-		id int64
+		ok      bool
+		spaceID int64
 	}{
-		{ok: false, id: 0},
-		{ok: true, id: 1},
-		{ok: false, id: -1},
+		{ok: false, spaceID: 0},
+		{ok: true, spaceID: s.id},
+		{ok: false, spaceID: -1},
 	}
 	for i, c := range cases {
-		_, err := s.user.Info(s.ctx, &pb.SpaceInfoRequest{Id: c.id})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.space.Info(s.ctx, &pb.SpaceInfoRequest{SpaceID: c.spaceID})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
 func (s *SpaceTestSuite) TestList() {
@@ -78,10 +78,12 @@ func (s *SpaceTestSuite) TestList() {
 		{ok: true, page: 1, count: 10},
 	}
 	for i, c := range cases {
-		_, err := s.user.List(s.ctx, &pb.SpaceListRequest{Page: c.page, Count: c.count})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.space.List(s.ctx, &pb.SpaceListRequest{Page: c.page, Count: c.count})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
-func TestSpaceTestSuite(t *testing.T) { suite.Run(t, &SpaceTestSuite{ctx: context.TODO(), t: t}) }
+func TestSpaceTestSuite(t *testing.T) {
+	infrastructure.Test(t, func(suite *tests.Suite) interface{} {
+		return &SpaceTestSuite{Suite: suite, ctx: suite.Context()}
+	})
+}

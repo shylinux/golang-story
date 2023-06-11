@@ -11,11 +11,11 @@ import (
 )
 
 type Base struct {
-	Error *pb.Error   `json:"error"`
-	Data  interface{} `json:"data"`
+	Error *pb.UserError `json:"error,omitempty"`
+	Data  interface{}   `json:"data,omitempty"`
 }
 
-var success = &pb.Error{Code: enums.Errors.Success, Info: "ok"}
+var success = &pb.UserError{Code: enums.Errors.Success, Info: "ok"}
 
 func Write(ctx *gin.Context, data interface{}) {
 	ctx.SecureJSON(http.StatusOK, data)
@@ -26,24 +26,22 @@ func WriteError(ctx *gin.Context, err interface{}) {
 	case nil:
 		Write(ctx, &Base{Error: success})
 	case *errors.ErrorResp:
-		Write(ctx, &Base{Error: &pb.Error{
-			Code: err.Code,
-			Info: err.Info,
-		}})
-	case *pb.Error:
+		if err == nil {
+			Write(ctx, &Base{})
+		} else {
+			Write(ctx, &Base{Error: &pb.UserError{Code: err.Code, Info: err.Info}})
+		}
+	case *pb.UserError:
 		Write(ctx, &Base{Error: err})
 	default:
-		Write(ctx, &Base{Error: &pb.Error{
-			Code: enums.Errors.Unknown,
-			Info: fmt.Sprintf("%v", err),
-		}})
+		Write(ctx, &Base{Error: &pb.UserError{Code: enums.Errors.Unknown, Info: fmt.Sprintf("%v", err)}})
 	}
 }
 
-func WriteData(ctx *gin.Context, data, err interface{}) {
-	if err != nil {
+func WriteData(ctx *gin.Context, data interface{}, err error) {
+	if err != nil && err.Error() != "" {
 		WriteError(ctx, err)
-		return
+	} else {
+		Write(ctx, data)
 	}
-	Write(ctx, data)
 }

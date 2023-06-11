@@ -10,46 +10,55 @@ service SpaceService {
 }
 
 message SpaceCreateRequest {
+    // length > 6
     string name = 1;
+    string repos = 2;
+    string binary = 3;
 }
 message SpaceCreateReply {
-    Error error = 1;
+    SpaceError error = 1;
     Space data = 2;
 }
 
 message SpaceRemoveRequest {
-    int64 id = 1;
+    // required
+    int64 spaceID = 1;
 }
 message SpaceRemoveReply {
-    Error error = 1;
+    SpaceError error = 1;
 }
 
 message SpaceInfoRequest {
-    int64 id = 1;
+    // required
+    int64 spaceID = 1;
 }
 message SpaceInfoReply {
-    Error error = 1;
+    SpaceError error = 1;
     Space data = 2;
 }
 
 message SpaceListRequest {
+    // default 1
     int64 page = 1;
+    // default 10
     int64 count = 2;
+    string key = 3;
+    string value = 4;
 }
 message SpaceListReply {
-    Error error = 1;
+    SpaceError error = 1;
     repeated Space data = 2;
     int64 total = 3;
 }
 
 message Space {
-    int64 id = 1;
+    int64 spaceID = 1;
     string name = 2;
-    string email = 3;
-    string phone = 4;
+    string repos = 3;
+    string binary = 4;
 }
 
-message Error {
+message SpaceError {
     int64 code = 1;
     string info = 2;
 }

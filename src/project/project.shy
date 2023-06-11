@@ -2,6 +2,7 @@ chapter "project"
 section "后端框架"
 refer `
 prometheus https://github.com/prometheus/client_golang
+https://github.com/elastic/go-elasticsearch
 https://github.com/stretchr/testify
 https://pkg.go.dev/go.uber.org/zap
 https://pkg.go.dev/go.uber.org/dig

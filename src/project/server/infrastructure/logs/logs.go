@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/natefinch/lumberjack"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
@@ -40,9 +39,7 @@ func (s *logger) Debugf(str string, arg ...interface{}) {
 func (s *logger) format(str string, arg ...interface{}) string {
 	if len(arg) > 0 {
 		if ctx, ok := arg[len(arg)-1].(context.Context); ok {
-			if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
-				return fmt.Sprintf(" %s-%s ", span.TraceID().String(), span.SpanID()) + fmt.Sprintf(str, arg[:len(arg)-1]...)
-			}
+			return TraceID(ctx) + " " + fmt.Sprintf(str, arg[:len(arg)-1]...)
 		}
 	}
 	return fmt.Sprintf(str, arg...)
@@ -52,9 +49,9 @@ var l *logger
 var log *logger
 
 func New(config *config.Config) (Logger, error) {
-	conf := config.Log
-	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+	conf := config.Logs
 	tees := []zapcore.Core{}
+	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 	if conf.Stdout || conf.Path == "" {
 		tees = append(tees, zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stderr), zap.InfoLevel))
 	}
@@ -67,6 +64,7 @@ func New(config *config.Config) (Logger, error) {
 	l = &logger{log.SugaredLogger.WithOptions(zap.AddCallerSkip(2))}
 	if conf.Pid != "" {
 		ioutil.WriteFile(conf.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
+		go watch()
 	}
 	return l, nil
 }
@@ -74,6 +72,6 @@ func With(arg ...interface{}) Logger        { return log.With(arg...) }
 func Infof(str string, arg ...interface{})  { l.Infof(str, arg...) }
 func Warnf(str string, arg ...interface{})  { l.Warnf(str, arg...) }
 func Errorf(str string, arg ...interface{}) { l.Errorf(str, arg...) }
+func Debugf(str string, arg ...interface{}) { l.Debugf(str, arg) }
 func Fatalf(str string, arg ...interface{}) { l.Fatalf(str, arg...) }
 func Fatalln(arg ...interface{})            { l.Fatalln(arg...) }
-func Debugf(str string, arg ...interface{}) { l.Debugf(str, arg) }

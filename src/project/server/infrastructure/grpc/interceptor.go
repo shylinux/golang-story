@@ -2,34 +2,58 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"runtime/debug"
 	"time"
 
 	"google.golang.org/grpc"
-	"shylinux.com/x/golang-story/src/project/server/domain/enums"
+	"google.golang.org/grpc/status"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-func serverInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+func serverInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
 	if info.FullMethod == "/grpc.health.v1.Health/Check" {
 		return handler(ctx, req)
 	}
 	begin := time.Now()
-	logs.Infof("access %s [%+s]", info.FullMethod, req, ctx)
-	if resp, err = handler(ctx, req); err == nil {
-		logs.Infof("result %s cost: %s resp: [%+v]", info.FullMethod, time.Now().Sub(begin), resp, ctx)
-	} else {
-		logs.Warnf("result %s cost: %s err: %s", info.FullMethod, time.Now().Sub(begin), err, ctx)
+	logs.Infof("access %s %s", info.FullMethod, logs.Marshal(req), ctx)
+	echo := func(res interface{}, err error) (interface{}, error) {
+		if err != nil && err.Error() != "" {
+			err = errors.ParseResp(err, "result failure").ToGRPC()
+			logs.Warnf("result %s %s cost:%s", info.FullMethod, err, logs.Cost(begin), ctx)
+			return nil, err
+		} else {
+			logs.Infof("result %s %s cost:%s", info.FullMethod, logs.Marshal(res), logs.Cost(begin), ctx)
+			return res, nil
+		}
 	}
-	return resp, errors.NewResp(err, enums.Errors.Unknown, "result failure")
+	defer func() {
+		if err := recover(); err != nil {
+			debug.PrintStack()
+			echo(nil, err.(error))
+		}
+	}()
+	if valid, ok := req.(interface{ Validate() error }); ok {
+		if err := valid.Validate(); err != nil && err.Error() != "" {
+			return echo(nil, err)
+		}
+	}
+	res, err = handler(ctx, req)
+	return echo(res, err)
 }
-func clientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (err error) {
+func clientInterceptor(ctx context.Context, method string, req, res interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (err error) {
 	begin := time.Now()
-	logs.Infof("request %s [%+v]", method, req, ctx)
-	if err = invoker(ctx, method, req, reply, cc, opts...); err == nil {
-		logs.Infof("response %s cost: %s reply: [%+v]", method, time.Now().Sub(begin), reply, ctx)
+	logs.Infof("request %s %s", method, logs.Marshal(req), ctx)
+	if err = invoker(ctx, method, req, res, cc, opts...); err != nil && err.Error() != "" {
+		if status, ok := status.FromError(err); ok {
+			err = errors.NewResp(fmt.Errorf(method), int64(status.Code()), status.Message())
+		} else {
+			err = errors.ParseResp(err, "response failure")
+		}
+		logs.Warnf("response %s %s cost:%s", method, err, logs.Cost(begin), ctx)
 	} else {
-		logs.Warnf("response %s cost: %s err: %s", method, time.Now().Sub(begin), err, ctx)
+		logs.Infof("response %s %s cost:%s", method, logs.Marshal(res), logs.Cost(begin), ctx)
 	}
-	return errors.New(err, "request %s failure", method)
+	return err
 }

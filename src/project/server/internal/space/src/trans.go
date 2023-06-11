@@ -6,5 +6,5 @@ func SpaceDTO(space *Space) *pb.Space {
 	if space == nil {
 		return nil
 	}
-	return &pb.Space{Id: space.ID, Name: space.Name, Email: space.Email}
+	return &pb.Space{SpaceID: space.SpaceID, Name: space.Name, Repos: space.Repos, Binary: space.Binary}
 }

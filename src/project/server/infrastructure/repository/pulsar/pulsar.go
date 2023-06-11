@@ -5,13 +5,12 @@ import (
 	"fmt"
 
 	"github.com/apache/pulsar-client-go/pulsar"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/trace"
 )
 
 type queue struct {
@@ -19,69 +18,63 @@ type queue struct {
 	pulsar.Client
 }
 
-func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (string, error) {
-	logger := logs.With("key", key, "payload", string(payload))
-	p, e := s.Client.CreateProducer(pulsar.ProducerOptions{Topic: fmt.Sprintf("persistent://public/default/%s", topic)})
-	if e != nil {
-		logger.Warnf("send message topic: %s err: %s", topic, e, ctx)
-		return "", e
-	}
-	defer p.Close()
-	md, _ := metadata.FromIncomingContext(ctx)
-	kv := map[string]string{}
-	for k, v := range md {
-		kv[k] = v[0]
-	}
-	if msgid, e := p.Send(ctx, &pulsar.ProducerMessage{Key: key, Payload: payload, Properties: kv}); e != nil {
-		logger.Warnf("send message topic: %s err: %s", topic, e, ctx)
-		return "", e
-	} else {
-		logger.Infof("send message topic: %s msgid: %s", topic, msgid.String(), ctx)
-		return msgid.String(), nil
-	}
-}
-func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte) error) error {
-	p, e := s.Client.Subscribe(pulsar.ConsumerOptions{
-		Topic: fmt.Sprintf("persistent://public/default/%s", topic), SubscriptionName: name, Type: pulsar.Shared,
-	})
-	if e != nil {
-		logs.Warnf("subscribe topic: %s err: %s", topic, e)
-		return e
-	} else {
-		logs.Infof("subscribe topic: %s service: %s %s", topic, p.Subscription(), logs.FileLine(2))
-	}
-	go func() {
-		for {
-			if msg, err := p.Receive(ctx); err == nil {
-				kv := []string{}
-				for k, v := range msg.Properties() {
-					kv = append(kv, k, v)
-				}
-				ctx := metadata.NewIncomingContext(ctx, metadata.Pairs(kv...))
-				otelgrpc.UnaryServerInterceptor()(ctx, nil, &grpc.UnaryServerInfo{}, func(ctx context.Context, req interface{}) (interface{}, error) {
-					logger := logs.With("key", msg.Key(), "payload", string(msg.Payload()))
-					logger.Infof("recv message topic: %s msgid: %s", topic, msg.ID().String(), ctx)
-					cb(ctx, msg.Key(), msg.Payload())
-					p.Ack(msg)
-					return nil, nil
-				})
-			} else {
-				logs.Warnf("recv message topic: %s err: %s", topic, e, ctx)
-			}
-		}
-	}()
-	return nil
-}
-func New(consul consul.Consul, config *config.Config) (repository.Queue, error) {
+func New(config *config.Config, consul consul.Consul) (repository.Queue, error) {
 	conf := config.Engine.Queue
-	if list, err := consul.Resolve(conf.Name); err == nil && len(list) > 0 {
-		conf.Host = list[0].Host
-		conf.Port = list[0].Port
+	if list, err := consul.Resolve(config.WithDef(conf.Name, "pulsar")); err == nil && len(list) > 0 {
+		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	options := pulsar.ClientOptions{URL: fmt.Sprintf("pulsar://%s:%d", conf.Host, conf.Port), Logger: &logger{}}
 	if conf.Token != "" {
 		options.Authentication = pulsar.NewAuthenticationToken(conf.Token)
 	}
-	client, e := pulsar.NewClient(options)
-	return &queue{config, client}, e
+	if client, err := pulsar.NewClient(options); err != nil {
+		logs.Errorf("engine connect pulsar %s:%d %s", conf.Host, conf.Port, err)
+		return nil, errors.New(err, "engine connect pulsar failure")
+	} else {
+		logs.Infof("engine connect pulsar %s:%d", conf.Host, conf.Port)
+		return &queue{config, client}, nil
+	}
+}
+func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (string, error) {
+	echo := func(res string, err error) (string, error) {
+		if err != nil && err.Error() != "" {
+			logs.Errorf("pulsar send %s:%s %s %s", topic, key, err, string(payload), ctx)
+		} else {
+			logs.Infof("pulsar send %s:%s %s %s", topic, key, res, string(payload), ctx)
+		}
+		return res, errors.New(err, "pulsar send failure")
+	}
+	p, err := s.Client.CreateProducer(pulsar.ProducerOptions{Topic: fmt.Sprintf("persistent://public/default/%s", topic)})
+	if err != nil {
+		return echo("", err)
+	}
+	defer p.Close()
+	if msgid, err := p.Send(ctx, &pulsar.ProducerMessage{Key: key, Payload: payload, Properties: trace.Outgoing(ctx)}); err != nil {
+		return echo("", err)
+	} else {
+		return echo(msgid.String(), nil)
+	}
+}
+func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte)) error {
+	p, err := s.Client.Subscribe(pulsar.ConsumerOptions{Topic: fmt.Sprintf("persistent://public/default/%s", topic), SubscriptionName: name, Type: pulsar.Shared})
+	if err != nil {
+		logs.Errorf("%s subscribe %s %s %s", name, topic, err, logs.FileLine(2), ctx)
+		return errors.New(err, "pulsar subscribe failure")
+	} else {
+		logs.Infof("%s subscribe %s %s", name, topic, logs.FileLine(2), ctx)
+	}
+	go func() {
+		for {
+			if msg, err := p.Receive(ctx); err != nil {
+				logs.Errorf("pulsar recv %s %s", topic, err, ctx)
+			} else {
+				trace.ServerAccess(trace.Incoming(ctx, msg.Properties()), func(ctx context.Context) {
+					logs.Infof("pulsar recv %s:%s %s %s", topic, msg.Key(), msg.ID().String(), string(msg.Payload()), ctx)
+					cb(ctx, msg.Key(), msg.Payload())
+					p.Ack(msg)
+				})
+			}
+		}
+	}()
+	return nil
 }

@@ -1,0 +1,64 @@
+syntax = "proto3";
+option go_package ="./pb";
+package demo.auth;
+
+service AuthService {
+    rpc Register (AuthRegisterRequest) returns (AuthRegisterReply);
+    rpc Login (AuthLoginRequest) returns (AuthLoginReply);
+    rpc Logout (AuthLogoutRequest) returns (AuthLogoutReply);
+    rpc Refresh (AuthRefreshRequest) returns (AuthRefreshReply);
+    rpc Verify (AuthVerifyRequest) returns (AuthVerifyReply);
+}
+
+message AuthRegisterRequest {
+    // length >= 6
+    string username = 1;
+    // length >= 6
+    string password = 2;
+    string email = 3;
+    string phone = 4;
+}
+message AuthRegisterReply {
+    AuthError error = 1;
+    string token = 2;
+}
+
+message AuthLoginRequest {
+    // length >= 6
+    string username = 1;
+    // length >= 6
+    string password = 2;
+}
+message AuthLoginReply {
+    AuthError error = 1;
+    string token = 2;
+}
+
+message AuthLogoutRequest {
+    // length >= 6
+    string token = 1;
+}
+message AuthLogoutReply {
+    AuthError error = 1;
+}
+
+message AuthRefreshRequest {
+    string token = 1;
+}
+message AuthRefreshReply {
+    AuthError error = 1;
+    string token = 2;
+}
+
+message AuthVerifyRequest {
+    string token = 1;
+}
+message AuthVerifyReply {
+    AuthError error = 1;
+    string username = 2;
+}
+
+message AuthError {
+    int64 code = 1;
+    string info = 2;
+}

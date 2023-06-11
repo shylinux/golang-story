@@ -2,68 +2,99 @@ package test
 
 import (
 	"context"
-	"fmt"
 	"testing"
+	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stretchr/testify/suite"
-	"go.uber.org/dig"
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/tests"
 )
 
 type UserTestSuite struct {
-	suite.Suite
-	user pb.UserServiceClient
+	*tests.Suite
 	ctx  context.Context
-	t    *testing.T
+	user pb.UserServiceClient
+	id   int64
 }
 
 func (s *UserTestSuite) SetupTest() {
-	check.Assert(infrastructure.Init(dig.New()).Invoke(func(config *config.Config, logger logs.Logger, consul consul.Consul) error {
-		if conn, err := grpc.NewConn(s.ctx, consul.Address(pb.UserService_ServiceDesc.ServiceName)); err != nil {
-			return err
-		} else {
-			s.user = pb.NewUserServiceClient(conn)
-			return nil
-		}
-	}))
+	s.user = pb.NewUserServiceClient(s.Conn(s.ctx, pb.UserService_ServiceDesc.ServiceName))
+	if res, err := s.user.Create(s.ctx, &pb.UserCreateRequest{Username: time.Now().Format("20060102150405.000")}); err != nil {
+		panic(err)
+	} else {
+		s.id = res.Data.UserID
+	}
 }
 func (s *UserTestSuite) TestCreate() {
 	cases := []struct {
-		ok   bool
-		name string
+		ok       bool
+		username string
 	}{
-		{ok: false, name: ""},
-		{ok: false, name: "hi"},
-		{ok: true, name: "goodlife"},
+		{ok: false, username: ""},
+		{ok: false, username: "hi"},
+		{ok: true, username: time.Now().Format("20060102150405.000")},
 	}
 	for i, c := range cases {
-		_, err := s.user.Create(s.ctx, &pb.UserCreateRequest{Name: c.name})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.user.Create(s.ctx, &pb.UserCreateRequest{Username: c.username})
+		s.ConveySo(i, c.ok, c, res, err)
+	}
+}
+func (s *UserTestSuite) TestRemove() {
+	cases := []struct {
+		ok     bool
+		userID int64
+	}{
+		{ok: false, userID: 0},
+		{ok: true, userID: s.id},
+		{ok: false, userID: -1},
+	}
+	for i, c := range cases {
+		res, err := s.user.Remove(s.ctx, &pb.UserRemoveRequest{UserID: c.userID})
+		s.ConveySo(i, c.ok, c, res, err)
+	}
+}
+func (s *UserTestSuite) TestRename() {
+	cases := []struct {
+		ok       bool
+		userID   int64
+		username string
+	}{
+		{ok: false, userID: 0, username: ""},
+		{ok: false, userID: 0, username: "hi"},
+		{ok: true, userID: s.id, username: time.Now().Format("20060102150405.000")},
+	}
+	for i, c := range cases {
+		res, err := s.user.Rename(s.ctx, &pb.UserRenameRequest{UserID: c.userID, Username: c.username})
+		s.ConveySo(i, c.ok, c, res, err)
+	}
+}
+func (s *UserTestSuite) TestSearch() {
+	cases := []struct {
+		ok    bool
+		key   string
+		value string
+	}{
+		{ok: false, key: "username", value: ""},
+		{ok: true, key: "username", value: "hi"},
+		{ok: true, key: "username", value: "he*"},
+	}
+	for i, c := range cases {
+		res, err := s.user.Search(s.ctx, &pb.UserSearchRequest{Key: c.key, Value: c.value})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
 func (s *UserTestSuite) TestInfo() {
 	cases := []struct {
-		ok bool
-		id int64
+		ok     bool
+		userID int64
 	}{
-		{ok: false, id: 0},
-		{ok: true, id: 1},
-		{ok: false, id: -1},
+		{ok: false, userID: 0},
+		{ok: true, userID: s.id},
+		{ok: false, userID: -1},
 	}
 	for i, c := range cases {
-		_, err := s.user.Info(s.ctx, &pb.UserInfoRequest{Id: c.id})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.user.Info(s.ctx, &pb.UserInfoRequest{UserID: c.userID})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
 func (s *UserTestSuite) TestList() {
@@ -78,10 +109,12 @@ func (s *UserTestSuite) TestList() {
 		{ok: true, page: 1, count: 10},
 	}
 	for i, c := range cases {
-		_, err := s.user.List(s.ctx, &pb.UserListRequest{Page: c.page, Count: c.count})
-		Convey(fmt.Sprintf("%s case: %d %+v", logs.FuncName(1), i+1, c), s.t, func() {
-			So(c.ok && err != nil || !c.ok && err == nil, ShouldBeFalse)
-		})
+		res, err := s.user.List(s.ctx, &pb.UserListRequest{Page: c.page, Count: c.count})
+		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
-func TestUserTestSuite(t *testing.T) { suite.Run(t, &UserTestSuite{ctx: context.TODO(), t: t}) }
+func TestUserTestSuite(t *testing.T) {
+	infrastructure.Test(t, func(suite *tests.Suite) interface{} {
+		return &UserTestSuite{Suite: suite, ctx: suite.Context()}
+	})
+}

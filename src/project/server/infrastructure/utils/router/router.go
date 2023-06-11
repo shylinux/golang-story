@@ -31,6 +31,9 @@ func saveapi(grp *gin.RouterGroup, name string, method interface{}) {
 	}
 }
 func Register(g *gin.Engine, group string, controller interface{}) {
+	if g == nil {
+		return
+	}
 	grp := g.Group(group)
 	t := reflect.TypeOf(controller)
 	v := reflect.ValueOf(controller)
@@ -78,6 +81,6 @@ func handler(method interface{}) func(*gin.Context) {
 			response.WriteError(ctx, fmt.Errorf("last res must be error %v", err))
 			return
 		}
-		response.WriteData(ctx, res[0].Interface(), res[1].Interface())
+		response.WriteData(ctx, res[0].Interface(), res[1].Interface().(error))
 	}
 }

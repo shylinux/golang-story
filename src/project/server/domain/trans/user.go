@@ -9,5 +9,5 @@ func UserDTO(user *model.User) *pb.User {
 	if user == nil {
 		return nil
 	}
-	return &pb.User{Id: user.ID, Name: user.Name, Email: user.Email}
+	return &pb.User{UserID: user.UserID, Username: user.Username, Email: user.Email}
 }

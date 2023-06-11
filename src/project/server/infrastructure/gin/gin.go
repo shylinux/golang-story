@@ -8,7 +8,7 @@ import (
 )
 
 func NewEngine(config *config.Config) *gin.Engine {
-	if config.Service.Type == enums.Service.HTTP {
+	if config.Server.Type == enums.Service.HTTP {
 		engine := gin.New()
 		engine.GET("/metrics", func(ctx *gin.Context) { promhttp.Handler().ServeHTTP(ctx.Writer, ctx.Request) })
 		return engine
