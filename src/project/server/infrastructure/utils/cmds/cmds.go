@@ -7,20 +7,20 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 )
 
 type Cmds struct {
 	*cobra.Command
 }
 
-func New() *Cmds {
+func New(config *config.Config) *Cmds {
 	return &Cmds{&cobra.Command{
 		Use:   "demo",
 		Short: "demo command",
 		Long:  "demo command",
 		Run: func(cmd *cobra.Command, arg []string) {
-			fmt.Println(logs.FileLine(1))
+			fmt.Printf("%#v", config)
 		},
 	}}
 }

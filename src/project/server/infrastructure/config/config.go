@@ -123,6 +123,13 @@ func New() (*Config, error) {
 	if err := viper.Unmarshal(config); err != nil {
 		return config, err
 	}
+	viper.SetConfigFile("config/install.yaml")
+	if err := viper.ReadInConfig(); err != nil {
+		return config, err
+	}
+	if err := viper.Unmarshal(config); err != nil {
+		return config, err
+	}
 	if config.Server.Main != config.Server.Name {
 		if v := config.Internal[config.Server.Main]; v.Port > 0 {
 			config.Server.Port = v.Port

@@ -47,12 +47,12 @@ func FuncName(skip int) string {
 	return path.Base(runtime.FuncForPC(fun).Name())
 }
 func Size(size int64) string {
-	if size > 1000000000 {
-		return fmt.Sprintf("%.2fG", float64(size)/1000000000)
-	} else if size > 1000000 {
-		return fmt.Sprintf("%.2fM", float64(size)/1000000)
-	} else if size > 1000 {
-		return fmt.Sprintf("%.2fK", float64(size)/1000)
+	if size > 1<<30 {
+		return fmt.Sprintf("%.2fG", float64(size)/(1<<30))
+	} else if size > 1<<20 {
+		return fmt.Sprintf("%.2fM", float64(size)/(1<<20))
+	} else if size > 1<<10 {
+		return fmt.Sprintf("%.2fK", float64(size)/(1<<10))
 	} else {
 		return fmt.Sprintf("%sB", size)
 	}
@@ -64,7 +64,7 @@ func Percent(size int64, total int64) string {
 	if total == 0 {
 		total = 2*size + 1
 	}
-	return fmt.Sprintf("%d%", int(size*100/total))
+	return fmt.Sprintf("%d%%", int(size*100/total))
 }
 func Marshal(v interface{}) string {
 	buf, _ := json.Marshal(v)
