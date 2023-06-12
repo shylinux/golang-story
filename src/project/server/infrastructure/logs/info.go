@@ -46,8 +46,25 @@ func FuncName(skip int) string {
 	fun, _, _, _ := runtime.Caller(skip)
 	return path.Base(runtime.FuncForPC(fun).Name())
 }
+func Size(size int64) string {
+	if size > 1000000000 {
+		return fmt.Sprintf("%.2fG", float64(size)/1000000000)
+	} else if size > 1000000 {
+		return fmt.Sprintf("%.2fM", float64(size)/1000000)
+	} else if size > 1000 {
+		return fmt.Sprintf("%.2fK", float64(size)/1000)
+	} else {
+		return fmt.Sprintf("%sB", size)
+	}
+}
 func Cost(begin time.Time) string {
 	return fmt.Sprintf("%.2fms", float64(time.Now().Sub(begin))/float64(time.Millisecond))
+}
+func Percent(size int64, total int64) string {
+	if total == 0 {
+		total = 2*size + 1
+	}
+	return fmt.Sprintf("%d%", int(size*100/total))
 }
 func Marshal(v interface{}) string {
 	buf, _ := json.Marshal(v)

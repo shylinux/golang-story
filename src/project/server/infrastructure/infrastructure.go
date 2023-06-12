@@ -18,6 +18,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/tests"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/token"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/deploy"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/proto"
 )
 
@@ -37,6 +39,8 @@ func Init(container *container.Container) {
 	container.Provide(grpc.NewServer)
 	container.Provide(context.Background)
 	container.Provide(proto.NewGenerate)
+	container.Provide(deploy.New)
+	container.Provide(cmds.New)
 }
 func Test(t *testing.T, cb func(*tests.Suite) interface{}) {
 	container.New(Init).Invoke(func(suite *tests.Suite) {

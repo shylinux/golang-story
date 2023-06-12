@@ -1,4 +1,5 @@
 all:
+	go build -v -o bin/cmds cmd/cmds.go
 	go build -v -o bin/demo cmd/main.go && kill -INT `cat log/service.pid`
 idl:
 	protoc --go_out=./idl --go-grpc_out=./idl ./idl/*.proto

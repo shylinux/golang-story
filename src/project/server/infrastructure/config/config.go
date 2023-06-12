@@ -95,6 +95,7 @@ type Config struct {
 	Generate
 	Internal map[string]Service
 	Engine
+	Install
 }
 
 var config = &Config{}

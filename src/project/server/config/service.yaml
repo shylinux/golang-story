@@ -56,3 +56,14 @@ engine:
     database: demo
     host: 127.0.0.1
     port: 3306
+install:
+  linux:
+    consul:
+      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_linux_amd64.zip
+  darwin:
+    consul:
+      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_darwin_amd64.zip
+  windows:
+    consul:
+      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_windows_amd64.zip
+

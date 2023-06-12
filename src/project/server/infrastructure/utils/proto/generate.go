@@ -3,6 +3,7 @@ package proto
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"os"
@@ -12,14 +13,22 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
 )
 
 type Generate struct {
 	*config.Config
 }
 
-func NewGenerate(config *config.Config, logger logs.Logger) *Generate {
-	return &Generate{config}
+func NewGenerate(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Generate {
+	gen := &Generate{config}
+	cmds.Add("generate", "generate", func(ctx context.Context, arg ...string) {
+		gen.GenValid()
+		// gen.GenTest()
+		gen.GenGoAPI()
+		gen.GenJsAPI()
+	})
+	return gen
 }
 func (s *Generate) OpenProto(cb func(*os.File, string)) error {
 	list, err := os.ReadDir(s.Config.Generate.Path)
