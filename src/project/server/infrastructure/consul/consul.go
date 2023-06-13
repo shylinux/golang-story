@@ -36,10 +36,10 @@ func New(config *config.Config, _ logs.Logger) (Consul, error) {
 	conf := api.DefaultConfig()
 	conf.Address = config.Consul.Addr
 	if client, err := api.NewClient(conf); err != nil {
-		logs.Errorf("engine connect consul %s %s", conf.Address, err)
+		// logs.Errorf("engine connect consul %s %s", conf.Address, err)
 		return nil, errors.New(err, "engine connnect consul")
 	} else {
-		logs.Infof("engine connect consul %s", conf.Address)
+		// logs.Infof("engine connect consul %s", conf.Address)
 		return &consul{config, client}, nil
 	}
 }

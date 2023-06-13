@@ -12,7 +12,6 @@ func NewUserServiceClient(ctx context.Context, consul consul.Consul) (pb.UserSer
 	if conn, err := grpc.NewConn(ctx, consul.Address(pb.UserService_ServiceDesc.ServiceName)); err != nil {
 		return nil, err
 	} else {
-		client := pb.NewUserServiceClient(conn)
-		return client, err
+		return pb.NewUserServiceClient(conn), err
 	}
 }

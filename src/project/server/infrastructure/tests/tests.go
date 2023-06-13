@@ -8,11 +8,12 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/suite"
-	grpcs "google.golang.org/grpc"
+	"gopkg.in/yaml.v2"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
 type Suite struct {
@@ -30,7 +31,15 @@ func (s *Suite) Context() context.Context {
 func (s *Suite) Run(t *testing.T, ts interface{}) {
 	suite.Run(t, ts.(suite.TestingSuite))
 }
-func (s *Suite) Conn(ctx context.Context, name string) *grpcs.ClientConn {
+func (s *Suite) Load(file string, data interface{}) error {
+	if f, e := system.Open(file); e != nil {
+		return e
+	} else {
+		defer f.Close()
+		return yaml.NewDecoder(f).Decode(data)
+	}
+}
+func (s *Suite) Conn(ctx context.Context, name string) *grpc.ClientConn {
 	if conn, err := grpc.NewConn(ctx, s.Consul.Address(name)); err != nil {
 		panic(err)
 	} else {

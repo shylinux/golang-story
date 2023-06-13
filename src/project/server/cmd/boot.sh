@@ -1,1 +1,1 @@
-while true; do ./bin/demo && break; sleep 1; done
+while true; do ./bin/server && break; sleep 1; done

@@ -9,18 +9,21 @@ import (
 
 func Init(container *container.Container) {
 	container.Provide(New)
-	container.Provide(NewTuiCmds)
+	container.Provide(cmds.New)
+	container.Provide(proto.NewGenerate)
+	container.Provide(deploy.New)
+	container.Provide(NewServerCmds)
 	container.Provide(NewJavaCmds)
 	container.Provide(NewNodeCmds)
-	container.Provide(NewUserCmds)
-	container.Provide(NewServerCmds)
+	container.Provide(NewTuiCmds)
 }
 
 type Cmds struct{ *cmds.Cmds }
 
 func New(cmds *cmds.Cmds,
-	_ *proto.Generate, _ *deploy.Deploy, _ *ServerCmds,
-	_ *UserCmds,
+	_ *proto.Generate,
+	_ *deploy.Deploy,
+	_ *ServerCmds,
 	_ *JavaCmds,
 	_ *NodeCmds,
 	_ *TuiCmds,

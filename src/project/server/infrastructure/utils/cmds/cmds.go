@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/spf13/cobra"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
 type Cmds struct {
@@ -16,17 +19,15 @@ type Cmds struct {
 
 func New(config *config.Config) *Cmds {
 	return &Cmds{&cobra.Command{
-		Use:   "demo",
-		Short: "demo command",
-		Long:  "demo command",
+		Use:   config.Server.Name,
+		Short: config.Server.Name + " command",
+		Long:  config.Server.Name + " command",
 		Run: func(cmd *cobra.Command, arg []string) {
-			fmt.Printf("%#v", config)
+			fmt.Println(logs.MarshalIndent(config))
 		},
 	}}
 }
-func (s *Cmds) Run() error {
-	return s.Execute()
-}
+func (s *Cmds) Run() error { return s.Execute() }
 func (s *Cmds) Add(name string, info string, cb func(ctx context.Context, arg ...string)) *Cmds {
 	cmd := &cobra.Command{
 		Use:   name,
@@ -39,15 +40,33 @@ func (s *Cmds) Add(name string, info string, cb func(ctx context.Context, arg ..
 }
 func (s *Cmds) Register(name string, help string, obj interface{}) *Cmds {
 	cmds := s.Add(name, help, func(ctx context.Context, arg ...string) {})
-	t := reflect.TypeOf(obj)
-	v := reflect.ValueOf(obj)
+	t, v := reflect.TypeOf(obj), reflect.ValueOf(obj)
 	for i := 0; i < v.NumMethod(); i++ {
-		name := strings.ToLower(t.Method(i).Name)
-		method := v.Method(i)
+		method, name := v.Method(i), strings.ToLower(t.Method(i).Name)
 		cmds.Add(name, name, func(ctx context.Context, arg ...string) {
-			args := []reflect.Value{reflect.ValueOf(ctx)}
-			method.Call(args)
+			method.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(Bind(reflect.New(method.Type().In(1).Elem()).Interface(), arg...))})
 		})
 	}
 	return cmds
+}
+func Bind(req interface{}, arg ...string) interface{} {
+	rt, rv := reflect.TypeOf(req).Elem(), reflect.ValueOf(req).Elem()
+	trans := map[string]string{}
+	for i := 0; i < rv.NumField(); i++ {
+		if unicode.IsUpper(rune(rt.Field(i).Name[0])) {
+			trans[strings.ToLower(rt.Field(i).Name)] = rt.Field(i).Name
+		}
+	}
+	for i := 0; i < len(arg); i += 2 {
+		if fv := rv.FieldByName(trans[arg[i]]); fv.CanSet() {
+			switch fv.Type().Kind() {
+			case reflect.String:
+				fv.SetString(arg[i+1])
+			case reflect.Int64:
+				v, _ := strconv.ParseInt(arg[i+1], 10, 64)
+				fv.SetInt(v)
+			}
+		}
+	}
+	return req
 }

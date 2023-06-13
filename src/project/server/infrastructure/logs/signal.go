@@ -8,7 +8,7 @@ import (
 
 var ch = make(chan os.Signal, 10)
 
-func watch() {
+func Watch() {
 	listen(syscall.SIGINT)
 	listen(syscall.SIGQUIT)
 	for {

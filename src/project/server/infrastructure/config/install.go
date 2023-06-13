@@ -20,6 +20,7 @@ type Target struct {
 	Type    string
 	Name    string
 	Address string
+	Start   string
 }
 
 func (s Install) GetTarget(name string) Target {

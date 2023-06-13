@@ -3,7 +3,6 @@ package logs
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/natefinch/lumberjack"
@@ -62,10 +61,6 @@ func New(config *config.Config) (Logger, error) {
 	}
 	log = &logger{zap.New(zapcore.NewTee(tees...), zap.AddCaller()).Sugar()}
 	l = &logger{log.SugaredLogger.WithOptions(zap.AddCallerSkip(2))}
-	if conf.Pid != "" {
-		ioutil.WriteFile(conf.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
-		go watch()
-	}
 	return l, nil
 }
 func With(arg ...interface{}) Logger        { return log.With(arg...) }

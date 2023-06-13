@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/spf13/viper"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
 )
 
 type Logs struct {
@@ -42,7 +43,9 @@ type Server struct {
 type Generate struct {
 	Path   string
 	PbPath string
+	TsPath string
 	GoPath string
+	ShPath string
 	JsPath string
 }
 type Service struct {
@@ -116,26 +119,22 @@ func init() {
 func New() (*Config, error) {
 	flag.Parse()
 	defer flag.Parse()
-	viper.SetConfigFile(config.file)
-	if err := viper.ReadInConfig(); err != nil {
-		return config, err
-	}
-	if err := viper.Unmarshal(config); err != nil {
-		return config, err
-	}
-	viper.SetConfigFile("config/install.yaml")
-	if err := viper.ReadInConfig(); err != nil {
-		return config, err
-	}
-	if err := viper.Unmarshal(config); err != nil {
-		return config, err
-	}
+	load(config.file)
+	load("config/install.yaml")
 	if config.Server.Main != config.Server.Name {
 		if v := config.Internal[config.Server.Main]; v.Port > 0 {
 			config.Server.Port = v.Port
 		}
 	}
 	return config, nil
+}
+func load(p string) {
+	if _, e := os.Stat(p); os.IsNotExist(e) {
+		return
+	}
+	viper.SetConfigFile(p)
+	check.Assert(viper.ReadInConfig())
+	check.Assert(viper.Unmarshal(config))
 }
 func (config *Config) WithDef(val, def string) string {
 	if val == "" {

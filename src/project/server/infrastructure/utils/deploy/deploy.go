@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
@@ -27,48 +28,48 @@ type Deploy struct {
 
 func New(cmds *cmds.Cmds, config *config.Config, logger logs.Logger) *Deploy {
 	s := &Deploy{config}
-	cmds.Add("deploy", "deploy", func(ctx context.Context, arg ...string) {
-		// deploy.Install("consul")
-		s.Unpack("consul")
-	})
 	cmds.Add("install", "install", func(ctx context.Context, arg ...string) {
 		if len(arg) == 0 {
 			buf, _ := json.MarshalIndent(config.Install, "", "  ")
 			fmt.Println(string(buf))
-			return
+		} else {
+			s.Install(arg[0])
 		}
-		s.Install(arg[0])
 	})
 	cmds.Add("unpack", "unpack", func(ctx context.Context, arg ...string) {
 		if len(arg) == 0 {
 			buf, _ := json.MarshalIndent(config.Install, "", "  ")
 			fmt.Println(string(buf))
-			return
+		} else {
+			s.Install(arg[0])
+			s.Unpack(arg[0])
 		}
-		s.Unpack(arg[0])
+	})
+	cmds.Add("start", "start", func(ctx context.Context, arg ...string) {
+		if len(arg) == 0 {
+			buf, _ := json.MarshalIndent(config.Install, "", "  ")
+			fmt.Println(string(buf))
+		} else {
+			s.Install(arg[0])
+			s.Unpack(arg[0])
+			s.Start(arg[0])
+		}
 	})
 	return s
 }
-
-func (s *Deploy) Create(name string, mode os.FileMode) (*os.File, error) {
-	os.MkdirAll(path.Dir(name), 0755)
-	os.OpenFile(name, os.O_CREATE|os.O_WRONLY, mode)
-	return os.Create(name)
-}
 func (s *Deploy) Install(name string) {
 	target := s.Config.Install.GetTarget(name)
-	logs.Infof("download prepare %s %s", name, target.Address)
 	_target := path.Join("usr", path.Base(target.Address))
-	if s, e := os.Stat(_target); e == nil {
-		logs.Infof("download success %s %s %s", name, target.Address, logs.Size(s.Size()))
+	if _, e := os.Stat(_target); e == nil {
 		return
 	}
-	begin := time.Now()
+	logs.Infof("download prepare %s %s", name, target.Address)
 	req, err := http.NewRequest(http.MethodGet, target.Address, nil)
 	if err != nil {
 		logs.Errorf("download failure %s %s %s", name, target.Address, err)
 		return
 	}
+	begin := time.Now()
 	req.Header.Set("User-Agent", "curl/7.87.0")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -100,10 +101,13 @@ func (s *Deploy) Install(name string) {
 }
 func (s *Deploy) Unpack(name string) {
 	target := s.Config.Install.GetTarget(name)
-	if strings.HasSuffix(target.Address, ".zip") {
-		s.UnpackZIP(name)
-	} else if strings.HasSuffix(target.Address, ".tar.gz") {
+	if _, e := os.Stat(target.Start); e == nil {
+		return
+	}
+	if strings.HasSuffix(target.Address, ".tar.gz") {
 		s.UnpackGZIP(name)
+	} else if strings.HasSuffix(target.Address, ".zip") {
+		s.UnpackZIP(name)
 	}
 }
 func (s *Deploy) UnpackGZIP(name string) {
@@ -139,7 +143,7 @@ func (s *Deploy) UnpackGZIP(name string) {
 		h, e := t.Next()
 		if e != nil {
 			logs.Errorf("unpack failure %s %s", h.Name, e)
-			break
+			continue
 		}
 		bar.Add(1)
 		_name := path.Base(h.Name)
@@ -148,16 +152,15 @@ func (s *Deploy) UnpackGZIP(name string) {
 		} else {
 			_name = _name[:10]
 		}
-
 		bar.Describe(_name)
 		if h.FileInfo().IsDir() {
-			os.MkdirAll(path.Dir(name), h.FileInfo().Mode())
+			os.MkdirAll(path.Join("usr", h.Name), h.FileInfo().Mode())
 			continue
 		}
 		func() {
-			f, e := os.OpenFile(name, os.O_CREATE|os.O_WRONLY, h.FileInfo().Mode())
+			f, e := os.OpenFile(path.Join("usr", h.Name), os.O_CREATE|os.O_WRONLY, h.FileInfo().Mode())
 			if e != nil {
-				logs.Errorf("unpack failure %s %s", name, e)
+				logs.Errorf("unpack failure %s %s", h.Name, e)
 				return
 			}
 			io.Copy(f, t)
@@ -195,21 +198,9 @@ func (s *Deploy) UnpackZIP(name string) {
 		}()
 	}
 }
-func (s *Deploy) Clone() {
-}
-func (s *Deploy) Build() {
-}
-func (s *Deploy) Start() {
-}
-
-type process struct {
-	cb func([]byte)
-}
-
-func newprocess(cb func([]byte)) *process {
-	return &process{cb}
-}
-func (s process) Write(buf []byte) (n int, e error) {
-	s.cb(buf)
-	return len(buf), nil
+func (s *Deploy) Start(name string) {
+	target := s.Config.Install.GetTarget(name)
+	cmd := exec.Command(target.Start)
+	buf, _ := cmd.CombinedOutput()
+	fmt.Println(string(buf))
 }

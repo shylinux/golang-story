@@ -12,17 +12,22 @@ import (
 
 type UserTestSuite struct {
 	*tests.Suite
-	ctx  context.Context
-	user pb.UserServiceClient
-	id   int64
+	ctx      context.Context
+	client   pb.UserServiceClient
+	userID   int64
+	username string
 }
 
+func (s *UserTestSuite) newUsername() string {
+	return time.Now().Format("20060102150405.000")
+}
 func (s *UserTestSuite) SetupTest() {
-	s.user = pb.NewUserServiceClient(s.Conn(s.ctx, pb.UserService_ServiceDesc.ServiceName))
-	if res, err := s.user.Create(s.ctx, &pb.UserCreateRequest{Username: time.Now().Format("20060102150405.000")}); err != nil {
-		panic(err)
+	s.username = s.newUsername()
+	s.client = pb.NewUserServiceClient(s.Conn(s.ctx, pb.UserService_ServiceDesc.ServiceName))
+	if res, err := s.client.Create(s.ctx, &pb.UserCreateRequest{Username: s.username}); err != nil {
+		s.T().Error(err)
 	} else {
-		s.id = res.Data.UserID
+		s.userID = res.Data.UserID
 	}
 }
 func (s *UserTestSuite) TestCreate() {
@@ -32,10 +37,11 @@ func (s *UserTestSuite) TestCreate() {
 	}{
 		{ok: false, username: ""},
 		{ok: false, username: "hi"},
-		{ok: true, username: time.Now().Format("20060102150405.000")},
+		{ok: false, username: s.username},
+		{ok: true, username: s.newUsername()},
 	}
 	for i, c := range cases {
-		res, err := s.user.Create(s.ctx, &pb.UserCreateRequest{Username: c.username})
+		res, err := s.client.Create(s.ctx, &pb.UserCreateRequest{Username: c.username})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
@@ -45,11 +51,11 @@ func (s *UserTestSuite) TestRemove() {
 		userID int64
 	}{
 		{ok: false, userID: 0},
-		{ok: true, userID: s.id},
 		{ok: false, userID: -1},
+		{ok: true, userID: s.userID},
 	}
 	for i, c := range cases {
-		res, err := s.user.Remove(s.ctx, &pb.UserRemoveRequest{UserID: c.userID})
+		res, err := s.client.Remove(s.ctx, &pb.UserRemoveRequest{UserID: c.userID})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
@@ -61,10 +67,11 @@ func (s *UserTestSuite) TestRename() {
 	}{
 		{ok: false, userID: 0, username: ""},
 		{ok: false, userID: 0, username: "hi"},
-		{ok: true, userID: s.id, username: time.Now().Format("20060102150405.000")},
+		{ok: false, userID: s.userID, username: "hi"},
+		{ok: true, userID: s.userID, username: s.newUsername()},
 	}
 	for i, c := range cases {
-		res, err := s.user.Rename(s.ctx, &pb.UserRenameRequest{UserID: c.userID, Username: c.username})
+		res, err := s.client.Rename(s.ctx, &pb.UserRenameRequest{UserID: c.userID, Username: c.username})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
@@ -79,7 +86,7 @@ func (s *UserTestSuite) TestSearch() {
 		{ok: true, key: "username", value: "he*"},
 	}
 	for i, c := range cases {
-		res, err := s.user.Search(s.ctx, &pb.UserSearchRequest{Key: c.key, Value: c.value})
+		res, err := s.client.Search(s.ctx, &pb.UserSearchRequest{Key: c.key, Value: c.value})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
@@ -89,11 +96,11 @@ func (s *UserTestSuite) TestInfo() {
 		userID int64
 	}{
 		{ok: false, userID: 0},
-		{ok: true, userID: s.id},
 		{ok: false, userID: -1},
+		{ok: true, userID: s.userID},
 	}
 	for i, c := range cases {
-		res, err := s.user.Info(s.ctx, &pb.UserInfoRequest{UserID: c.userID})
+		res, err := s.client.Info(s.ctx, &pb.UserInfoRequest{UserID: c.userID})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }
@@ -103,13 +110,13 @@ func (s *UserTestSuite) TestList() {
 		page  int64
 		count int64
 	}{
-		{ok: false, page: 0, count: 0},
-		{ok: false, page: 0, count: 10},
+		{ok: true, page: 0, count: 0},
+		{ok: true, page: 0, count: 10},
 		{ok: true, page: 1, count: 10},
 		{ok: true, page: 1, count: 10},
 	}
 	for i, c := range cases {
-		res, err := s.user.List(s.ctx, &pb.UserListRequest{Page: c.page, Count: c.count})
+		res, err := s.client.List(s.ctx, &pb.UserListRequest{Page: c.page, Count: c.count})
 		s.ConveySo(i, c.ok, c, res, err)
 	}
 }

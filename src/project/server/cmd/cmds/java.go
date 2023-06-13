@@ -17,9 +17,8 @@ func (s *JavaCmds) Install(ctx context.Context, arg ...string) {
 	s.deploy.Install(JAVA)
 }
 func NewJavaCmds(cmds *cmds.Cmds, deploy *deploy.Deploy) *JavaCmds {
-	java := &JavaCmds{deploy: deploy}
-	cmds.Register(JAVA, `java command
-  install
-`, java)
-	return java
+	s := &JavaCmds{deploy: deploy}
+	cmds = cmds.Add(JAVA, JAVA, func(ctx context.Context, arg ...string) {})
+	cmds.Add("install", "install", s.Install)
+	return s
 }

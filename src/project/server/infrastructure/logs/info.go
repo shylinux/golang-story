@@ -21,6 +21,19 @@ func TraceID(ctx context.Context) string {
 	}
 	return ""
 }
+func PwdModPath() string {
+	file, _ := os.Getwd()
+	ls := strings.Split(file, "/")
+	for i := len(ls) - 1; i > 0; i-- {
+		p := path.Join(strings.Join(ls[:i], "/"), "go.mod")
+		if _, e := os.Stat(p); e == nil {
+			buf, _ := ioutil.ReadFile(p)
+			head := bytes.SplitN(buf, []byte("\n"), 2)
+			return path.Join(strings.Split(string(head[0]), " ")[1], path.Join(ls[i:]...))
+		}
+	}
+	return file
+}
 func ModPath(skip int) string {
 	_, file, _, _ := runtime.Caller(skip)
 	ls := strings.Split(file, "/")
@@ -68,5 +81,9 @@ func Percent(size int64, total int64) string {
 }
 func Marshal(v interface{}) string {
 	buf, _ := json.Marshal(v)
+	return string(buf)
+}
+func MarshalIndent(v interface{}) string {
+	buf, _ := json.MarshalIndent(v, "", "  ")
 	return string(buf)
 }

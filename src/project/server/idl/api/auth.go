@@ -12,7 +12,6 @@ func NewAuthServiceClient(ctx context.Context, consul consul.Consul) (pb.AuthSer
 	if conn, err := grpc.NewConn(ctx, consul.Address(pb.AuthService_ServiceDesc.ServiceName)); err != nil {
 		return nil, err
 	} else {
-		client := pb.NewAuthServiceClient(conn)
-		return client, err
+		return pb.NewAuthServiceClient(conn), err
 	}
 }

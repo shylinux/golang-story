@@ -2,10 +2,8 @@ package controller
 
 import (
 	"context"
-	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
-	"shylinux.com/x/golang-story/src/project/server/domain/model"
 	"shylinux.com/x/golang-story/src/project/server/domain/trans"
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
@@ -54,12 +52,7 @@ func (s *UserController) Info(ctx context.Context, req *pb.UserInfoRequest) (*pb
 	return &pb.UserInfoReply{Data: trans.UserDTO(user)}, errors.NewInfoFailResp(err)
 }
 func (s *UserController) List(ctx context.Context, req *pb.UserListRequest) (*pb.UserListReply, error) {
-	list, total, err := []*model.User{}, int64(0), errors.New(nil, "")
-	if req.Key == "" || !strings.Contains(req.Value, "*") {
-		list, total, err = s.service.List(ctx, req.Page, req.Count, req.Key, req.Value)
-	} else {
-		list, total, err = s.service.Search(ctx, req.Page, req.Count, req.Key, req.Value)
-	}
+	list, total, err := s.service.List(ctx, req.Page, req.Count, req.Key, req.Value)
 	data := []*pb.User{}
 	trans.ListDTO(list, trans.UserDTO, &data)
 	return &pb.UserListReply{Data: data, Total: total}, errors.NewListFailResp(err)

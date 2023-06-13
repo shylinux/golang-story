@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -31,7 +33,7 @@ func (s *MainServer) registerService(key string, name string, host string, port 
 }
 func (s *MainServer) Run() error {
 	server := s.Config.Server
-	if k := server.Main; k == server.Name {
+	if k := server.Main; k == server.Name || k == "server" {
 		for k, v := range s.Config.Internal {
 			if v.Export {
 				s.registerService(k, v.Name, server.Host, server.Port)
@@ -43,6 +45,10 @@ func (s *MainServer) Run() error {
 	} else {
 		v := s.Config.Internal[k]
 		s.registerService(k, v.Name, server.Host, server.Port)
+	}
+	if s.Config.Logs.Pid != "" {
+		ioutil.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
+		go logs.Watch()
 	}
 	addr := fmt.Sprintf("%s:%d", server.Host, server.Port)
 	logs.Infof("server start %s %s %s", server.Name, server.Type, addr)

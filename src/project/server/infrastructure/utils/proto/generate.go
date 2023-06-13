@@ -14,95 +14,92 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
 type Generate struct {
-	*config.Config
+	conf   config.Generate
+	protos map[string]map[string]*Item
 }
 
 func NewGenerate(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Generate {
-	gen := &Generate{config}
+	s := &Generate{conf: config.Generate}
 	cmds.Add("generate", "generate", func(ctx context.Context, arg ...string) {
-		gen.GenValid()
-		// gen.GenTest()
-		gen.GenGoAPI()
-		gen.GenJsAPI()
+		s.protos = map[string]map[string]*Item{}
+		s.OpenProto(func(file *os.File, name string) { s.protos[name] = s.ParseProto(file) })
+		s.GenValid()
+		s.GenTests()
+		s.GenGoAPI()
+		s.GenShCLI()
+		s.GenJsAPI()
+		s.GenErrors()
 	})
-	return gen
+	return s
 }
 func (s *Generate) OpenProto(cb func(*os.File, string)) error {
-	list, err := os.ReadDir(s.Config.Generate.Path)
+	list, err := system.ReadDir(s.conf.Path)
 	if err != nil {
-		logs.Errorf("read proto dir failure %s", err)
 		return errors.New(err, "read proto dir failure")
 	}
 	for _, info := range list {
 		if !strings.HasSuffix(info.Name(), ".proto") {
-
-		} else if file, err := os.Open(path.Join(s.Config.Generate.Path, info.Name())); err != nil {
-			logs.Errorf("open proto file failure %s", err)
-		} else {
-			defer file.Close()
-			logs.Infof("open proto file %s", file.Name())
-			cb(file, strings.TrimSuffix(path.Base(file.Name()), ".proto"))
+			continue
+		}
+		if f, err := system.Open(path.Join(s.conf.Path, info.Name())); err == nil {
+			defer f.Close()
+			cb(f, strings.TrimSuffix(path.Base(f.Name()), ".proto"))
 		}
 	}
 	return nil
 }
-func (s *Generate) ScanProto(file *os.File, cb func([]string, string)) {
-	for bio := bufio.NewScanner(file); bio.Scan(); {
+func (s *Generate) ScanProto(f *os.File, cb func([]string, string)) {
+	for bio := bufio.NewScanner(f); bio.Scan(); {
 		text := strings.TrimSpace(bio.Text())
 		if text == "" {
 			continue
 		}
+		text = strings.TrimPrefix(text, "repeated")
+		text = strings.TrimSuffix(text, ";")
+		text = strings.TrimSpace(text)
 		cb(strings.Split(text, " "), text)
 	}
 }
-func (s *Generate) Render(file string, tmpl string, data interface{}) error {
-	if _, e := os.Stat(path.Dir(file)); os.IsNotExist(e) {
-		os.MkdirAll(path.Dir(file), 0755)
-	}
-	f, e := os.Create(file)
+
+func (s *Generate) Render(name string, tmpl string, data interface{}, funcs template.FuncMap) error {
+	f, e := system.Create(name)
 	if e != nil {
-		logs.Errorf("  render file %s", e)
 		return errors.New(e, "render file")
 	}
 	defer f.Close()
-	if t, e := template.New("render").Parse(strings.TrimPrefix(tmpl, "\n")); e != nil {
-		logs.Errorf("  render file %s", e)
-		return errors.New(e, "render file")
-	} else if e := t.Execute(f, data); e != nil {
-		logs.Errorf("  render file %s", e)
+	if e := system.NewTemplate(name, strings.TrimPrefix(tmpl, "\n"), funcs, f, data); e != nil {
 		return errors.New(e, "render file")
 	} else {
-		logs.Infof("  render file %s", file)
+		if strings.HasSuffix(name, ".go") {
+			system.Command("gofmt", "-w", name)
+		}
 		return nil
 	}
 }
-func (s *Generate) Template(tmpl string, data interface{}) string {
+func (s *Generate) Template(tmpl string, data interface{}, funcs template.FuncMap) string {
 	buf := bytes.NewBuffer(make([]byte, 0, 1024))
-	template.Must(template.New("render").Funcs(template.FuncMap{"Capital": Capital}).Parse(tmpl)).Execute(buf, data)
+	system.NewTemplate(logs.FileLine(2), tmpl, funcs, buf, data)
 	return string(buf.Bytes())
 }
-func (s *Generate) Output(file string, cb func(func(str string, arg ...interface{}))) {
-	f, err := os.Create(file)
-	if err != nil {
-		logs.Errorf("generate %s %s", file, err)
-		return
+func (s *Generate) Output(name string, cb func(func(str string, arg ...interface{}))) error {
+	f, e := system.Create(name)
+	if e != nil {
+		return errors.New(e, "output file")
 	}
 	defer f.Close()
-	logs.Infof("  generate %v", file)
 	cb(func(str string, arg ...interface{}) {
 		fmt.Fprintf(f, strings.TrimSuffix(strings.TrimPrefix(str, "\n"), "\n"), arg...)
 		fmt.Fprintln(f)
 	})
+	return nil
 }
-func Capital(field string) string {
-	return strings.ToUpper(field[:1]) + field[1:]
+func Capital(name string) string {
+	if name == "" {
+		return ""
+	}
+	return strings.ToUpper(name[:1]) + name[1:]
 }
-
-const (
-	PACKAGE = "package"
-	SERVICE = "service"
-	MESSAGE = "message"
-)

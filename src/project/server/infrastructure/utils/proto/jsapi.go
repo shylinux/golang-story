@@ -1,73 +1,40 @@
 package proto
 
 import (
-	"os"
+	"html/template"
 	"path"
 	"strings"
-
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
 func (s *Generate) GenJsAPI() {
-	s.OpenProto(func(file *os.File, name string) {
-		module, serviceList, serviceRequest, requestList := "", map[string][]string{}, map[string]string{}, map[string][]string{}
-		block, service, request, comment, action := "", "", "", "", map[string]string{}
-		s.ScanProto(file, func(ls []string, text string) {
-			if strings.HasPrefix(text, PACKAGE) {
-				module = strings.TrimSuffix(ls[1], ";")
-			} else if strings.HasPrefix(text, SERVICE) {
-				block, service = ls[0], ls[1]
-			} else if strings.HasPrefix(text, MESSAGE) && strings.HasSuffix(text, "Request {") {
-				block, request = ls[0], ls[1]
-			} else if block == "" {
-
-			} else if strings.HasPrefix(text, "}") {
-				block = ""
-			} else if strings.HasPrefix(text, "//") {
-				comment = text
-			} else {
-				if comment != "" && block == MESSAGE {
-					comment, action[ls[1]] = "", strings.TrimSpace(strings.TrimPrefix(comment, "//"))
+	for name, proto := range s.protos {
+		s.Render(path.Join(s.conf.JsPath, name+".js"), _jsapi_client, proto, template.FuncMap{
+			"PackageName": func() string { return proto[PACKAGE].Name },
+			"ServiceList": func() []string { return proto[PACKAGE].List },
+			"MethodList":  func(service string) []string { return proto[service].List },
+			"MethodParams": func(method string) string {
+				list, params := []string{}, proto[proto[method].List[0]]
+				for i := 0; i < len(params.List); i += 3 {
+					list = append(list, params.List[i+2])
 				}
-				if block == SERVICE {
-					serviceList[service] = append(serviceList[service], ls[1])
-					serviceRequest[ls[1]] = strings.TrimPrefix(strings.TrimSuffix(ls[2], ")"), "(")
-				} else {
-					requestList[request] = append(requestList[request], ls[1])
-				}
-			}
+				return strings.Join(list, ", ")
+			},
 		})
-		logs.Infof("  module: %v %+v", module, serviceList)
-		s.Output(path.Join(s.Config.Generate.JsPath, name+".js"), func(echo func(string, ...interface{})) {
-			echo(_jsapi_import)
-			for service, api := range serviceList {
-				echo(s.Template(_jsapi_header, map[string]string{"module": module, SERVICE: service}))
-				for _, api := range api {
-					echo(s.Template(_jsapi_template, map[string]string{
-						"api": api, "params": strings.Join(requestList[serviceRequest[api]], ", "),
-					}))
-				}
-				echo(_jsapi_footer)
-			}
-		})
-	})
+	}
 }
 
 const (
-	_jsapi_import = `
+	_jsapi_client = `
 import request from '@/utils/request'
-
-`
-	_jsapi_header = `
-export default class {{ .service }} {
-  static path = '/api/{{ .module}}.{{ .service }}/'
-`
-	_jsapi_template = `
-  static async {{ .api }}({{ .params }}) {
-    return await request.post(this.path + '{{ .api }}', { {{ .params }} })
+{{ range $index, $service := ServiceList }}
+export class {{ $service }} {
+  static path = '/api/{{ PackageName }}.{{ $service }}/'
+{{ range $index, $method := MethodList $service }}
+  static async {{ $method }}({{ MethodParams $method }}) {
+    return await request.post(this.path + '{{ $method }}', { {{ MethodParams $method }} })
   }
-`
-	_jsapi_footer = `
+{{ end }}
 }
+{{ end }}
 `
 )

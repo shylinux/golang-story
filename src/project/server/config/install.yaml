@@ -23,6 +23,7 @@ install:
       address: https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz
     java:
       address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_macos-x64_bin.tar.gz
+      start: usr/jdk-18.jdk/Contents/Home/bin/java
     node:
       address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-darwin-x64.tar.xz
   windows:

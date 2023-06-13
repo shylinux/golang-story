@@ -10,6 +10,7 @@ func (this *SpaceCreateRequest) Validate() error {
 
 	return nil
 }
+
 func (this *SpaceRemoveRequest) Validate() error {
 
 	if err := proto.Valid(this, this.SpaceID, "spaceID", "required"); err != nil {
@@ -18,6 +19,7 @@ func (this *SpaceRemoveRequest) Validate() error {
 
 	return nil
 }
+
 func (this *SpaceInfoRequest) Validate() error {
 
 	if err := proto.Valid(this, this.SpaceID, "spaceID", "required"); err != nil {
@@ -26,13 +28,14 @@ func (this *SpaceInfoRequest) Validate() error {
 
 	return nil
 }
+
 func (this *SpaceListRequest) Validate() error {
 
-	if err := proto.Valid(this, this.Count, "count", "default 10"); err != nil {
+	if err := proto.Valid(this, this.Page, "page", "default 1"); err != nil {
 		return err
 	}
 
-	if err := proto.Valid(this, this.Page, "page", "default 1"); err != nil {
+	if err := proto.Valid(this, this.Count, "count", "default 10"); err != nil {
 		return err
 	}
 

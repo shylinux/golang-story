@@ -15,8 +15,14 @@ func NewServer(config *config.Config) *grpc.Server {
 	grpc_health_v1.RegisterHealthServer(server, &HealthController{})
 	return server
 }
-func NewConn(ctx context.Context, target string) (*grpc.ClientConn, error) {
+
+type ClientConn struct {
+	*grpc.ClientConn
+}
+
+func NewConn(ctx context.Context, target string) (*ClientConn, error) {
 	defer tracer()()
-	return grpc.DialContext(ctx, target, grpc.WithChainUnaryInterceptor(otelgrpc.UnaryClientInterceptor(), clientInterceptor),
+	conn, err := grpc.DialContext(ctx, target, grpc.WithChainUnaryInterceptor(otelgrpc.UnaryClientInterceptor(), clientInterceptor),
 		grpc.WithDefaultServiceConfig(`{"loadBalancingConfig": [{"round_robin":{}}]}`), grpc.WithInsecure())
+	return &ClientConn{conn}, err
 }
