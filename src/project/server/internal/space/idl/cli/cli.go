@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"shylinux.com/x/golang-story/src/project/server/cmd/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 )
 
 func Init(container *container.Container) {

@@ -10,7 +10,6 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/router"
 	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
@@ -26,9 +25,8 @@ func NewUserController(config *config.Config, server *server.MainServer, service
 		return controller
 	}
 	server.Proxy.Register(controller.name, controller)
+	server.Server.Register(&pb.UserService_ServiceDesc, controller)
 	consul.Tags = append(consul.Tags, controller.name)
-	router.Register(server.Engine, controller.name, controller)
-	pb.RegisterUserServiceServer(server.Server, controller)
 	return controller
 }
 func (s *UserController) Create(ctx context.Context, req *pb.UserCreateRequest) (*pb.UserCreateReply, error) {

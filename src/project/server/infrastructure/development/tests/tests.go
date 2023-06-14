@@ -11,8 +11,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
@@ -47,7 +48,7 @@ func (s *Suite) Conn(ctx context.Context, name string) *grpc.ClientConn {
 	}
 }
 func (s *Suite) ConveySo(i int, ok bool, arg interface{}, res interface{}, err error) {
-	Convey(fmt.Sprintf("%s case: %d %+v %v %v", strings.TrimPrefix(logs.FuncName(2), "command-line-arguments."), i+1, arg, logs.Marshal(res), err), s.T(), func() {
+	Convey(fmt.Sprintf("%s case: %d %+v %v %v", strings.TrimPrefix(errors.FuncName(2), "command-line-arguments."), i+1, arg, logs.Marshal(res), err), s.T(), func() {
 		So(ok && err != nil || !ok && err == nil, ShouldBeFalse)
 	})
 }

@@ -8,14 +8,14 @@ import (
 
 var ch = make(chan os.Signal, 10)
 
-func Watch() {
+func Watch() error {
 	listen(syscall.SIGINT)
 	listen(syscall.SIGQUIT)
 	for {
 		select {
 		case s, ok := <-ch:
 			if !ok {
-				return
+				return nil
 			}
 			switch s {
 			case syscall.SIGINT:
@@ -25,6 +25,7 @@ func Watch() {
 			}
 		}
 	}
+	return nil
 }
 func listen(s syscall.Signal) {
 	signal.Notify(ch, s)

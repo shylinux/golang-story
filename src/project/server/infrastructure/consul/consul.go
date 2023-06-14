@@ -67,17 +67,17 @@ func (s *consul) Register(service Service) error {
 		GRPC: fmt.Sprintf("%s/%s", service.Address(), registration.Name),
 	}
 	if err := s.Client.Agent().ServiceRegister(registration); err != nil {
-		logs.Errorf("consul register service %+v %s %s", service, logs.FileLine(2), err)
+		logs.Errorf("consul register service %+v %s %s", service, errors.FileLine(2), err)
 		return errors.New(err, "consul register service")
 	} else {
-		logs.Infof("consul register service %+v %s", service, logs.FileLine(2))
+		logs.Infof("consul register service %+v %s", service, errors.FileLine(2))
 		return nil
 	}
 }
 func (s *consul) Resolve(name string) (res []Service, err error) {
 	list, err := s.Client.Agent().Services()
 	if err != nil {
-		logs.Errorf("consul resolve service %s %s %s", name, err, logs.FileLine(2))
+		logs.Errorf("consul resolve service %s %s %s", name, err, errors.FileLine(2))
 		return nil, errors.New(err, "consul resolve service")
 	}
 	for _, v := range list {
@@ -85,7 +85,7 @@ func (s *consul) Resolve(name string) (res []Service, err error) {
 			res = append(res, Service{Name: v.ID, Host: v.Address, Port: v.Port})
 		}
 	}
-	logs.Infof("consul resolve service %s %+v %s", name, res, logs.FileLine(2))
+	logs.Infof("consul resolve service %s %+v %s", name, res, errors.FileLine(2))
 	return
 }
 func (s *consul) Address(target string) string {

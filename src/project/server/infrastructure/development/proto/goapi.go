@@ -27,7 +27,7 @@ import (
 
 	"{{ PwdModPath }}/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 )
 {{ range $index, $service := . }}
 func New{{ $service }}Client(ctx context.Context, consul consul.Consul) (pb.{{ $service }}Client, error) {

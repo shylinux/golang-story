@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/metadata"
 )
 
 func serverInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
@@ -45,7 +46,7 @@ func serverInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySer
 func clientInterceptor(ctx context.Context, method string, req, res interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) (err error) {
 	begin := time.Now()
 	logs.Infof("request %s %s", method, logs.Marshal(req), ctx)
-	if err = invoker(ctx, method, req, res, cc, opts...); err != nil && err.Error() != "" {
+	if err = invoker(metadata.Trans(ctx), method, req, res, cc, opts...); err != nil && err.Error() != "" {
 		if status, ok := status.FromError(err); ok {
 			err = errors.NewResp(fmt.Errorf(method), int64(status.Code()), status.Message())
 		} else {

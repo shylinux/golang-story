@@ -6,18 +6,16 @@ import (
 
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/proxy"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/token"
 )
 
 type AuthService struct {
-	proxy *proxy.Proxy
 	token *token.Token
 	user  *UserService
 }
 
-func NewAuthService(proxy *proxy.Proxy, token *token.Token, user *UserService) *AuthService {
-	return &AuthService{proxy: proxy, token: token, user: user}
+func NewAuthService(token *token.Token, user *UserService) *AuthService {
+	return &AuthService{token: token, user: user}
 }
 
 func (s *AuthService) Register(ctx context.Context, username, password string, email, phone string) (string, error) {

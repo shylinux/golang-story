@@ -10,7 +10,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/trace"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/metadata"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/trace"
 )
 
 type queue struct {
@@ -49,7 +50,7 @@ func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (st
 		return echo("", err)
 	}
 	defer p.Close()
-	if msgid, err := p.Send(ctx, &pulsar.ProducerMessage{Key: key, Payload: payload, Properties: trace.Outgoing(ctx)}); err != nil {
+	if msgid, err := p.Send(ctx, &pulsar.ProducerMessage{Key: key, Payload: payload, Properties: metadata.Dumps(ctx)}); err != nil {
 		return echo("", err)
 	} else {
 		return echo(msgid.String(), nil)
@@ -58,17 +59,17 @@ func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (st
 func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte)) error {
 	p, err := s.Client.Subscribe(pulsar.ConsumerOptions{Topic: fmt.Sprintf("persistent://public/default/%s", topic), SubscriptionName: name, Type: pulsar.Shared})
 	if err != nil {
-		logs.Errorf("%s subscribe %s %s %s", name, topic, err, logs.FileLine(2), ctx)
+		logs.Errorf("%s subscribe %s %s %s", name, topic, err, errors.FileLine(2), ctx)
 		return errors.New(err, "pulsar subscribe failure")
 	} else {
-		logs.Infof("%s subscribe %s %s", name, topic, logs.FileLine(2), ctx)
+		logs.Infof("%s subscribe %s %s", name, topic, errors.FileLine(2), ctx)
 	}
 	go func() {
 		for {
 			if msg, err := p.Receive(ctx); err != nil {
 				logs.Errorf("pulsar recv %s %s", topic, err, ctx)
 			} else {
-				trace.ServerAccess(trace.Incoming(ctx, msg.Properties()), func(ctx context.Context) {
+				trace.ServerAccess(metadata.Loads(ctx, msg.Properties()), func(ctx context.Context) {
 					logs.Infof("pulsar recv %s:%s %s %s", topic, msg.Key(), msg.ID().String(), string(msg.Payload()), ctx)
 					cb(ctx, msg.Key(), msg.Payload())
 					p.Ack(msg)

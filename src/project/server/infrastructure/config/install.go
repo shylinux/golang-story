@@ -4,6 +4,7 @@ import "runtime"
 
 const (
 	SOURCE  = "source"
+	BINARY  = "binary"
 	LINUX   = "linux"
 	DARWIN  = "darwin"
 	WINDOWS = "windows"
@@ -39,6 +40,7 @@ func (s Install) GetTarget(name string) Target {
 		}
 	}
 	if target, ok := s.Binary[name]; ok {
+		target.Type = BINARY
 		return target
 	}
 	if target, ok := s.Source[name]; ok {

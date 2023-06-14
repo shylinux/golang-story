@@ -32,8 +32,8 @@ func NewSpaceController(config *config.Config, server *server.MainServer, consum
 		return controller
 	}
 	server.Proxy.Register(controller.name, controller)
-	consul.Tags = append(consul.Tags, pb.SpaceService_ServiceDesc.ServiceName)
-	pb.RegisterSpaceServiceServer(server.Server, controller)
+	server.Server.Register(&pb.SpaceService_ServiceDesc, controller)
+	consul.Tags = append(consul.Tags, controller.name)
 	return controller
 }
 func (s *SpaceController) Create(ctx context.Context, req *pb.SpaceCreateRequest) (*pb.SpaceCreateReply, error) {

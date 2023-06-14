@@ -1,37 +1,38 @@
-install:
-  source:
-    nginx:
-      address: http://download.redis.io/releases/redis-5.0.4.tar.gz
-    redis:
-      address: http://download.redis.io/releases/redis-5.0.4.tar.gz
-  binary:
-    pulsar:
-      address: https://mirrors.tencent.com/apache/pulsar/pulsar-2.10.2/apache-pulsar-2.10.2-bin.tar.gz
-  linux:
-    consul:
-      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_linux_amd64.zip
-    golang:
-      address: https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz
-    java:
-      address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_linux-x64_bin.tar.gz
-    node:
-      address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-linux-x64.tar.xz
-  darwin:
-    consul:
-      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_darwin_amd64.zip
-    golang:
-      address: https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz
-    java:
-      address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_macos-x64_bin.tar.gz
-      start: usr/jdk-18.jdk/Contents/Home/bin/java
-    node:
-      address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-darwin-x64.tar.xz
-  windows:
-    consul:
-      address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_windows_amd64.zip
-    golang:
-      address: https://golang.google.cn/dl/go1.17.13.windows-amd64.zip
-    java:
-      address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_windows-x64_bin.zip
-    node:
-      address: http://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-x64.msi
+matrix:
+  install:
+    source:
+      nginx:
+        address: http://download.redis.io/releases/redis-5.0.4.tar.gz
+      redis:
+        address: http://download.redis.io/releases/redis-5.0.4.tar.gz
+    binary:
+      pulsar:
+        address: https://mirrors.tencent.com/apache/pulsar/pulsar-2.10.2/apache-pulsar-2.10.2-bin.tar.gz
+    linux:
+      consul:
+        address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_linux_amd64.zip
+      golang:
+        address: https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz
+      java:
+        address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_linux-x64_bin.tar.gz
+      node:
+        address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-linux-x64.tar.xz
+    darwin:
+      consul:
+        address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_darwin_amd64.zip
+      golang:
+        address: https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz
+      java:
+        address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_macos-x64_bin.tar.gz
+        start: usr/jdk-18.jdk/Contents/Home/bin/java
+      node:
+        address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-darwin-x64.tar.xz
+    windows:
+      consul:
+        address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_windows_amd64.zip
+      golang:
+        address: https://golang.google.cn/dl/go1.17.13.windows-amd64.zip
+      java:
+        address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_windows-x64_bin.zip
+      node:
+        address: http://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-x64.msi

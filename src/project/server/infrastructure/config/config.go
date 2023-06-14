@@ -6,7 +6,7 @@ import (
 	"path"
 
 	"github.com/spf13/viper"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/check"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 )
 
 type Logs struct {
@@ -24,9 +24,9 @@ type Proxy struct {
 	Port   int
 }
 type Token struct {
-	Expire string
 	Issuer string
 	Secret string
+	Expire string
 }
 type Consul struct {
 	Addr     string
@@ -39,14 +39,6 @@ type Server struct {
 	Main string
 	Host string
 	Port int
-}
-type Generate struct {
-	Path   string
-	PbPath string
-	TsPath string
-	GoPath string
-	ShPath string
-	JsPath string
 }
 type Service struct {
 	Export bool
@@ -88,6 +80,10 @@ type Engine struct {
 	Queue
 	Cache
 }
+type Matrix struct {
+	Generate
+	Install
+}
 type Config struct {
 	file string
 	Logs
@@ -95,10 +91,9 @@ type Config struct {
 	Token
 	Consul
 	Server
-	Generate
 	Internal map[string]Service
 	Engine
-	Install
+	Matrix
 }
 
 var config = &Config{}
@@ -111,16 +106,17 @@ func init() {
 	flag.StringVar(&config.Token.Expire, "token.expire", "24h", "")
 	flag.StringVar(&config.Consul.Addr, "consul.addr", "127.0.0.1:8500", "")
 	flag.IntVar(&config.Consul.WorkID, "consul.workid", 1, "")
-	flag.StringVar(&config.Server.Name, "service.name", path.Base(os.Args[0]), "")
-	flag.StringVar(&config.Server.Main, "service.main", path.Base(os.Args[0]), "")
-	flag.StringVar(&config.Server.Host, "service.host", "127.0.0.1", "")
-	flag.IntVar(&config.Server.Port, "service.port", 9090, "")
+	flag.StringVar(&config.Server.Name, "server.name", path.Base(os.Args[0]), "")
+	flag.StringVar(&config.Server.Main, "server.main", path.Base(os.Args[0]), "")
+	flag.StringVar(&config.Server.Host, "server.host", "127.0.0.1", "")
+	flag.IntVar(&config.Server.Port, "server.port", 9090, "")
 }
 func New() (*Config, error) {
 	flag.Parse()
 	defer flag.Parse()
 	load(config.file)
 	load("config/install.yaml")
+	load("config/generate.yaml")
 	if config.Server.Main != config.Server.Name {
 		if v := config.Internal[config.Server.Main]; v.Port > 0 {
 			config.Server.Port = v.Port
@@ -133,8 +129,8 @@ func load(p string) {
 		return
 	}
 	viper.SetConfigFile(p)
-	check.Assert(viper.ReadInConfig())
-	check.Assert(viper.Unmarshal(config))
+	errors.Assert(viper.ReadInConfig())
+	errors.Assert(viper.Unmarshal(config))
 }
 func (config *Config) WithDef(val, def string) string {
 	if val == "" {

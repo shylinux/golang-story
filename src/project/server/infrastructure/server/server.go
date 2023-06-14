@@ -2,18 +2,19 @@ package server
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/proxy"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/gin"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/goroutine"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
 type MainServer struct {
@@ -22,10 +23,11 @@ type MainServer struct {
 	*proxy.Proxy
 	*grpc.Server
 	*gin.Engine
+	*goroutine.Pool
 }
 
-func New(config *config.Config, logger logs.Logger, consul consul.Consul, proxy *proxy.Proxy, server *grpc.Server, engine *gin.Engine) *MainServer {
-	return &MainServer{config, consul, proxy, server, engine}
+func New(config *config.Config, logger logs.Logger, consul consul.Consul, proxy *proxy.Proxy, server *grpc.Server, engine *gin.Engine, pool *goroutine.Pool) *MainServer {
+	return &MainServer{config, consul, proxy, server, engine, pool}
 }
 func (s *MainServer) registerService(key string, name string, host string, port int) {
 	name = config.WithDef(name, s.Config.Server.Name+"."+key)
@@ -39,16 +41,16 @@ func (s *MainServer) Run() error {
 				s.registerService(k, v.Name, server.Host, server.Port)
 			}
 		}
-		if conf := s.Config.Proxy; conf.Export {
-			go s.Proxy.Run(conf)
+		if s.Config.Proxy.Export {
+			s.Pool.Go(s.Proxy.Run)
 		}
 	} else {
 		v := s.Config.Internal[k]
 		s.registerService(k, v.Name, server.Host, server.Port)
 	}
 	if s.Config.Logs.Pid != "" {
-		ioutil.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
-		go logs.Watch()
+		system.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
+		s.Pool.Go(logs.Watch)
 	}
 	addr := fmt.Sprintf("%s:%d", server.Host, server.Port)
 	logs.Infof("server start %s %s %s", server.Name, server.Type, addr)

@@ -1,6 +1,6 @@
 package pb
 
-import "shylinux.com/x/golang-story/src/project/server/infrastructure/utils/proto"
+import "shylinux.com/x/golang-story/src/project/server/infrastructure/development/proto"
 
 func (this *AuthRegisterRequest) Validate() error {
 

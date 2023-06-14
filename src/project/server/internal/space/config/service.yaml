@@ -11,13 +11,6 @@ consul:
 server:
   name: demo
   port: 9090
-generate:
-  path: "idl/"
-  pbPath: "idl/pb/"
-  tsPath: "idl/ts/"
-  shPath: "idl/cli/"
-  goPath: "idl/api/"
-  jsPath: "usr/vue-element-admin/src/api/"
 internal:
   auth:
     export: true
@@ -33,16 +26,6 @@ engine:
     name: pulsar
     host: 127.0.0.1
     port: 6650
-  cache:
-    name: redis
-    password: demo
-    host: 127.0.0.1
-    port: 6379
-  search:
-    name: elasticsearch
-    index: demo
-    host: 127.0.0.1
-    port: 9200
   storage:
     name: mysql
     username: demo

@@ -2,13 +2,14 @@ package errors
 
 import (
 	"fmt"
+	"path"
+	"runtime"
 	"strconv"
 	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
 type ErrorResp struct {
@@ -38,7 +39,7 @@ func newResp(err error, code int64, str string, arg ...interface{}) *ErrorResp {
 	case *ErrorResp:
 		return err
 	}
-	return &ErrorResp{Code: code, Info: fmt.Sprintf(str, arg...), fileline: logs.FileLine(3), funcname: logs.FuncName(3), last: err}
+	return &ErrorResp{Code: code, Info: fmt.Sprintf(str, arg...), fileline: FileLine(3), funcname: FuncName(3), last: err}
 }
 func ParseResp(err error, str string) *ErrorResp {
 	switch err := err.(type) {
@@ -114,7 +115,7 @@ func newError(err error, str string, arg ...interface{}) error {
 	case *ErrorResp:
 		return err
 	}
-	return &errors{last: err, info: fmt.Sprintf(str, arg...), fileline: logs.FileLine(3), funcname: logs.FuncName(3)}
+	return &errors{last: err, info: fmt.Sprintf(str, arg...), fileline: FileLine(3), funcname: FuncName(3)}
 }
 func New(err error, str string, arg ...interface{}) error {
 	return newError(err, str, arg...)
@@ -125,3 +126,22 @@ func NewModifyFail(err error) error { return newError(err, "storage modify failu
 func NewSearchFail(err error) error { return newError(err, "storage search failure") }
 func NewInfoFail(err error) error   { return newError(err, "storage info failure") }
 func NewListFail(err error) error   { return newError(err, "storage list failure") }
+
+func Assert(err error) {
+	if err == nil {
+		return
+	}
+	panic(err)
+}
+func FileLine(skip int) string {
+	_, file, line, _ := runtime.Caller(skip)
+	list := strings.Split(file, "/")
+	if len(list) > 2 {
+		list = list[len(list)-2:]
+	}
+	return fmt.Sprintf("%s:%d", path.Join(list[:]...), line)
+}
+func FuncName(skip int) string {
+	fun, _, _, _ := runtime.Caller(skip)
+	return path.Base(runtime.FuncForPC(fun).Name())
+}

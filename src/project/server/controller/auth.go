@@ -11,7 +11,6 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/metadata"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/router"
 	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
@@ -28,9 +27,8 @@ func NewAuthController(config *config.Config, server *server.MainServer, service
 	}
 	server.Proxy.Auth = controller.auth
 	server.Proxy.Register(controller.name, controller)
+	server.Server.Register(&pb.AuthService_ServiceDesc, controller)
 	consul.Tags = append(consul.Tags, controller.name)
-	router.Register(server.Engine, controller.name, controller)
-	pb.RegisterAuthServiceServer(server.Server, controller)
 	return controller
 }
 func (s *AuthController) auth(ctx context.Context, api string, token string) (context.Context, error) {

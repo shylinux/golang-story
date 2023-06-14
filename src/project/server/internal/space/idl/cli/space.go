@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
 

@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
@@ -82,7 +82,7 @@ func (s *Generate) Render(name string, tmpl string, data interface{}, funcs temp
 }
 func (s *Generate) Template(tmpl string, data interface{}, funcs template.FuncMap) string {
 	buf := bytes.NewBuffer(make([]byte, 0, 1024))
-	system.NewTemplate(logs.FileLine(2), tmpl, funcs, buf, data)
+	system.NewTemplate(errors.FileLine(2), tmpl, funcs, buf, data)
 	return string(buf.Bytes())
 }
 func (s *Generate) Output(name string, cb func(func(str string, arg ...interface{}))) error {

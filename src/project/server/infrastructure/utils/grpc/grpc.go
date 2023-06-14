@@ -9,11 +9,18 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 )
 
-func NewServer(config *config.Config) *grpc.Server {
+type Server struct {
+	*grpc.Server
+}
+
+func NewServer(config *config.Config) *Server {
 	defer tracer()()
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), serverInterceptor))
 	grpc_health_v1.RegisterHealthServer(server, &HealthController{})
-	return server
+	return &Server{server}
+}
+func (s *Server) Register(desc *grpc.ServiceDesc, controller interface{}) {
+	s.Server.RegisterService(desc, controller)
 }
 
 type ClientConn struct {

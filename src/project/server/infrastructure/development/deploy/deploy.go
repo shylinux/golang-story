@@ -18,8 +18,8 @@ import (
 
 	"github.com/schollz/progressbar/v3"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
 )
 
 type Deploy struct {

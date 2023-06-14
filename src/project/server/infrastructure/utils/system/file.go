@@ -44,10 +44,10 @@ func ReadDir(name string) ([]os.DirEntry, error) {
 }
 func NewTemplate(name string, tmpl string, funcs template.FuncMap, f io.Writer, data interface{}) error {
 	if t, e := template.New(name).Funcs(funcs).Parse(tmpl); e != nil {
-		logs.Errorf("file render %s %s %s:%s", name, e, logs.FileLine(2), logs.FuncName(2))
+		logs.Errorf("file render %s %s %s:%s", name, e, errors.FileLine(2), errors.FuncName(2))
 		return e
 	} else if e := t.Execute(f, data); e != nil {
-		logs.Errorf("file render %s %s %s %s %s:%s", name, e, f, data, logs.FileLine(2), logs.FuncName(2))
+		logs.Errorf("file render %s %s %s %s %s:%s", name, e, f, data, errors.FileLine(2), errors.FuncName(2))
 		return e
 	} else {
 		return nil

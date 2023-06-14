@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
 

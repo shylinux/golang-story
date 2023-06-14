@@ -25,3 +25,29 @@ func GetValue(ctx context.Context, key string) string {
 	}
 	return ""
 }
+func Trans(ctx context.Context, key ...string) context.Context {
+	meta := map[string]string{}
+	if len(key) == 0 {
+		meta = Dumps(ctx)
+	} else if md, ok := metadata.FromIncomingContext(ctx); ok {
+		for _, key := range key {
+			meta[key] = md.Get(key)[0]
+		}
+	}
+	return metadata.NewOutgoingContext(ctx, metadata.New(meta))
+}
+func Dumps(ctx context.Context) map[string]string {
+	md, _ := metadata.FromIncomingContext(ctx)
+	meta := map[string]string{}
+	for k, v := range md {
+		meta[k] = v[0]
+	}
+	return meta
+}
+func Loads(ctx context.Context, meta map[string]string) context.Context {
+	kv := []string{}
+	for k, v := range meta {
+		kv = append(kv, k, v)
+	}
+	return metadata.NewIncomingContext(ctx, metadata.Pairs(kv...))
+}

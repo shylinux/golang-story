@@ -5,7 +5,7 @@ import (
 
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 )
 
 func NewUserServiceClient(ctx context.Context, consul consul.Consul) (pb.UserServiceClient, error) {

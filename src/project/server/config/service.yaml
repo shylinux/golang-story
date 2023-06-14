@@ -19,13 +19,6 @@ consul:
 server:
   name: demo
   port: 9090
-generate:
-  path: "idl/"
-  pbPath: "idl/pb/"
-  tsPath: "idl/ts/"
-  shPath: "idl/cli/"
-  goPath: "idl/api/"
-  jsPath: "usr/vue-element-admin/src/api/"
 internal:
   auth:
     export: true

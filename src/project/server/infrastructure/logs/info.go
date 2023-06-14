@@ -47,18 +47,6 @@ func ModPath(skip int) string {
 	}
 	return file
 }
-func FileLine(skip int) string {
-	_, file, line, _ := runtime.Caller(skip)
-	list := strings.Split(file, "/")
-	if len(list) > 2 {
-		list = list[len(list)-2:]
-	}
-	return fmt.Sprintf("%s:%d", path.Join(list[:]...), line)
-}
-func FuncName(skip int) string {
-	fun, _, _, _ := runtime.Caller(skip)
-	return path.Base(runtime.FuncForPC(fun).Name())
-}
 func Size(size int64) string {
 	if size > 1<<30 {
 		return fmt.Sprintf("%.2fG", float64(size)/(1<<30))

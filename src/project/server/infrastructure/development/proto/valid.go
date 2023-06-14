@@ -82,7 +82,7 @@ var (
 	_valid_template = `
 package pb
 
-import "shylinux.com/x/golang-story/src/project/server/infrastructure/utils/proto"
+import "shylinux.com/x/golang-story/src/project/server/infrastructure/development/proto"
 
 {{ range $index, $request := RequestList }}
 func (this *{{ $request }}) Validate() error {

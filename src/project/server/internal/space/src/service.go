@@ -3,7 +3,6 @@ package space
 import (
 	"context"
 
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/uuid"
@@ -11,13 +10,13 @@ import (
 )
 
 type SpaceService struct {
-	storage repository.Storage
 	*uuid.Generate
+	storage repository.Storage
 }
 
-func NewSpaceService(config *config.Config, storage repository.Storage) *SpaceService {
+func NewSpaceService(generate *uuid.Generate, storage repository.Storage) *SpaceService {
 	storage.AutoMigrate(&Space{})
-	return &SpaceService{storage, uuid.New(config.Consul.WorkID)}
+	return &SpaceService{generate, storage}
 }
 func (s *SpaceService) Create(ctx context.Context, name string) (*Space, error) {
 	space := &Space{SpaceID: s.Generate.GenID(), Name: name}

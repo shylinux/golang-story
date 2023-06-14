@@ -6,7 +6,6 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/domain/model"
 	"shylinux.com/x/golang-story/src/project/server/domain/trans"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/uuid"
@@ -20,9 +19,9 @@ type UserService struct {
 	storage repository.Storage
 }
 
-func NewUserService(config *config.Config, cache repository.Cache, queue repository.Queue, search repository.Search, storage repository.Storage) (*UserService, error) {
+func NewUserService(generate *uuid.Generate, cache repository.Cache, queue repository.Queue, search repository.Search, storage repository.Storage) (*UserService, error) {
 	storage.AutoMigrate(&model.User{})
-	return &UserService{uuid.New(config.Consul.WorkID), cache, queue, search, storage}, nil
+	return &UserService{generate, cache, queue, search, storage}, nil
 }
 func (s *UserService) Create(ctx context.Context, username, password, email, phone string) (*model.User, error) {
 	user := &model.User{UserID: s.Generate.GenID(), Username: username, Password: password, Email: email, Phone: phone}

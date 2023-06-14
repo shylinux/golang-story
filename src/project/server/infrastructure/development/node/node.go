@@ -1,10 +1,10 @@
-package cmds
+package node
 
 import (
 	"context"
 
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/deploy"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/deploy"
 )
 
 const NODE = "node"

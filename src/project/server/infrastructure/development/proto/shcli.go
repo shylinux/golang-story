@@ -34,9 +34,9 @@ import (
 
 	"{{ PwdModPath }}/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/grpc"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/cmds"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 )
 {{ range $index, $service := ServiceList }}
 type {{ $service }}Cmds struct {
@@ -76,8 +76,8 @@ func (s *{{ $service }}Cmds) {{ $method }}(ctx context.Context, req *pb.{{ Metho
 package cli
 
 import (
-	"shylinux.com/x/golang-story/src/project/server/cmd/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 )
 
 func Init(container *container.Container) {

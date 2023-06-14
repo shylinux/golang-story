@@ -3,6 +3,8 @@ package uuid
 import (
 	"sync"
 	"time"
+
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 )
 
 var baseTime = int64(0)
@@ -18,8 +20,8 @@ type Generate struct {
 	mu       sync.Mutex
 }
 
-func New(workid int) *Generate {
-	return &Generate{workid: int64(workid)}
+func New(config *config.Config) *Generate {
+	return &Generate{workid: int64(config.Consul.WorkID)}
 }
 func (s *Generate) GenID() int64 {
 	s.mu.Lock()
