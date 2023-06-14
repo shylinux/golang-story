@@ -30,6 +30,17 @@ func Valid(req interface{}, value interface{}, name string, rule string) error {
 			}
 			v.SetString(ls[1])
 		}
+	case "value":
+		switch value := value.(type) {
+		case int64:
+			val, _ := strconv.ParseInt(ls[2], 10, 64)
+			if ls[1] == ">" && value > val {
+				break
+			} else if ls[1] == ">=" && value >= val {
+				break
+			}
+			return errors.NewInvalidParams(fmt.Errorf("%s need %s", name, rule))
+		}
 	case "length":
 		switch value := value.(type) {
 		case string:

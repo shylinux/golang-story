@@ -22,7 +22,7 @@ message UserCreateReply {
 }
 
 message UserRemoveRequest {
-    // required
+    // value > 0
     int64 userID = 1;
 }
 message UserRemoveReply {
@@ -30,9 +30,9 @@ message UserRemoveReply {
 }
 
 message UserRenameRequest {
-    // required
+    // value > 0
     int64 userID = 1;
-    // required
+    // length >= 6
     string username = 2;
 }
 message UserRenameReply {

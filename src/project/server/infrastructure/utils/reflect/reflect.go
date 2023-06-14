@@ -7,6 +7,18 @@ import (
 	"unicode"
 )
 
+type Field struct{ reflect.Value }
+
+func FieldList(target interface{}, cb func(string, Field)) {
+	t, v := reflect.TypeOf(target).Elem(), reflect.ValueOf(target).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		if unicode.IsLower(rune(t.Field(i).Name[0])) {
+			continue
+		}
+		cb(t.Field(i).Name, Field{v.Field(i)})
+	}
+}
+
 type Method struct{ reflect.Value }
 
 func MethodList(target interface{}, cb func(string, Method)) {
@@ -46,7 +58,7 @@ func Bind(req interface{}, arg ...string) interface{} {
 		}
 	}
 	for i := 0; i < len(arg); i += 2 {
-		if fv := rv.FieldByName(trans[arg[i]]); fv.CanSet() {
+		if fv := rv.FieldByName(trans[strings.ToLower(arg[i])]); fv.CanSet() {
 			switch fv.Type().Kind() {
 			case reflect.String:
 				fv.SetString(arg[i+1])

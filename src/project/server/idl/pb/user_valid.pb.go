@@ -13,7 +13,7 @@ func (this *UserCreateRequest) Validate() error {
 
 func (this *UserRemoveRequest) Validate() error {
 
-	if err := proto.Valid(this, this.UserID, "userID", "required"); err != nil {
+	if err := proto.Valid(this, this.UserID, "userID", "value > 0"); err != nil {
 		return err
 	}
 
@@ -22,11 +22,11 @@ func (this *UserRemoveRequest) Validate() error {
 
 func (this *UserRenameRequest) Validate() error {
 
-	if err := proto.Valid(this, this.UserID, "userID", "required"); err != nil {
+	if err := proto.Valid(this, this.UserID, "userID", "value > 0"); err != nil {
 		return err
 	}
 
-	if err := proto.Valid(this, this.Username, "username", "required"); err != nil {
+	if err := proto.Valid(this, this.Username, "username", "length >= 6"); err != nil {
 		return err
 	}
 

@@ -3,7 +3,7 @@ logs:
   path: log/service.log
   maxsize: 10 # 10M
   maxage: 30  # 30days
-  stdout: true
+  stdout: false
 proxy:
   export: true
   root: "usr/vue-element-admin/dist/"

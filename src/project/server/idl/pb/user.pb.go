@@ -136,7 +136,7 @@ type UserRemoveRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// required
+	// value > 0
 	UserID int64 `protobuf:"varint,1,opt,name=userID,proto3" json:"userID,omitempty"`
 }
 
@@ -231,9 +231,9 @@ type UserRenameRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// required
+	// value > 0
 	UserID int64 `protobuf:"varint,1,opt,name=userID,proto3" json:"userID,omitempty"`
-	// required
+	// length >= 6
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 }
 

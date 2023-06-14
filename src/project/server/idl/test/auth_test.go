@@ -7,7 +7,7 @@ import (
 
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/tests"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/tests"
 )
 
 type AuthTestSuite struct {

@@ -39,7 +39,12 @@ func (s *Cmds) Add(name string, info string, cb func(ctx context.Context, arg ..
 func (s *Cmds) Register(name string, help string, obj interface{}) *Cmds {
 	cmds := s.Add(name, help, func(ctx context.Context, arg ...string) {})
 	reflect.MethodList(obj, func(name string, method reflect.Method) {
-		cmds.Add(name, name, func(ctx context.Context, arg ...string) {
+		name = strings.ToLower(name)
+		help := name
+		reflect.FieldList(method.NewParam(1), func(name string, field reflect.Field) {
+			help += " " + name
+		})
+		cmds.Add(name, help, func(ctx context.Context, arg ...string) {
 			method.Call(ctx, reflect.Bind(method.NewParam(1), arg...))
 		})
 	})
