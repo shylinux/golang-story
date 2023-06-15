@@ -17,9 +17,9 @@ import (
 func main() {
 	c := container.New(controller.Init, internal.Init, service.Init, api.Init, infrastructure.Init)
 	c.Provide(redis.New)
+	c.Provide(mysql.New)
 	c.Provide(pulsar.New)
 	c.Provide(elasticsearch.New)
-	c.Provide(mysql.New)
 	c.Invoke(func(s *controller.MainController, _ *internal.InternalController) error { return s.Run() })
 }
 func init() {

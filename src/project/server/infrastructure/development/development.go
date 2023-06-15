@@ -10,11 +10,11 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/server"
 )
 
-func Init(container *container.Container) {
-	container.Provide(cmds.New)
-	container.Provide(node.NewNodeCmds)
-	container.Provide(java.NewJavaCmds)
-	container.Provide(server.NewServerCmds)
-	container.Provide(proto.NewGenerate)
-	container.Provide(deploy.New)
+func Init(c *container.Container) {
+	c.Provide(cmds.New)
+	c.Provide(deploy.New)
+	c.Provide(proto.NewGenerate)
+	c.Provide(server.NewServerCmds)
+	c.Provide(java.NewJavaCmds)
+	c.Provide(node.NewNodeCmds)
 }

@@ -12,9 +12,9 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
 
-func Init(container *container.Container) {
-	container.Provide(NewAuthService)
-	container.Provide(NewUserService)
+func Init(c *container.Container) {
+	c.Provide(NewAuthService)
+	c.Provide(NewUserService)
 }
 
 func Clause(cond bool, stmt string, arg ...interface{}) (string, []interface{}) {

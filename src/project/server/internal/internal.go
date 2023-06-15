@@ -5,9 +5,9 @@ import (
 	space "shylinux.com/x/golang-story/src/project/server/internal/space/src"
 )
 
-func Init(container *container.Container) {
-	container.Provide(NewInternalController)
-	space.Init(container)
+func Init(c *container.Container) {
+	c.Provide(NewInternalController)
+	space.Init(c)
 }
 
 type InternalController struct{}

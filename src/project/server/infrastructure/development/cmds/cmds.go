@@ -17,9 +17,19 @@ type Cmds struct {
 
 func New(config *config.Config) *Cmds {
 	return &Cmds{&cobra.Command{
-		Use:   config.Server.Name,
-		Short: config.Server.Name + " command",
-		Long:  config.Server.Name + " command",
+		Use:   "matrix",
+		Short: "matrix devops command",
+		Long: `matrix devops command
+command
+  deploy enviroment
+  server controll
+service
+  auth client
+  user client
+runtime
+  java language
+  node language
+`,
 		Run: func(cmd *cobra.Command, arg []string) {
 			fmt.Println(logs.MarshalIndent(config))
 		},
@@ -48,6 +58,5 @@ func (s *Cmds) Register(name string, help string, obj interface{}) *Cmds {
 			method.Call(ctx, reflect.Bind(method.NewParam(1), arg...))
 		})
 	})
-
 	return cmds
 }

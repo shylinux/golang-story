@@ -7,11 +7,46 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
+func AbsPath(dir string) string {
+	if strings.HasPrefix(dir, "/") {
+		return dir
+	}
+	pwd, _ := os.Getwd()
+	return path.Join(pwd, dir)
+}
+func PwdPath(dir string) string {
+	if !strings.HasPrefix(dir, "/") {
+		return dir
+	}
+	pwd, _ := os.Getwd()
+	return strings.TrimPrefix(dir, pwd+"/")
+}
+func Exists(name string) bool {
+	if _, e := os.Stat(name); e == nil {
+		return true
+	}
+	return false
+}
+func ReadDir(name string) ([]os.DirEntry, error) {
+	if list, err := os.ReadDir(name); err != nil {
+		logs.Errorf("dir read %s failure %s", name, err)
+		return nil, err
+	} else {
+		logs.Infof("dir read %s", name)
+		return list, nil
+	}
+}
+func Remove(name string) error {
+	logs.Infof("file remove %s", name)
+	os.Remove(name)
+	return nil
+}
 func Create(name string) (*os.File, error) {
 	if _, e := os.Stat(path.Dir(name)); os.IsNotExist(e) {
 		os.MkdirAll(path.Dir(name), 0755)
@@ -33,13 +68,31 @@ func Open(name string) (*os.File, error) {
 		return f, nil
 	}
 }
-func ReadDir(name string) ([]os.DirEntry, error) {
-	if list, err := os.ReadDir(name); err != nil {
-		logs.Errorf("dir read %s failure %s", name, err)
+func OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
+	if _, e := os.Stat(path.Dir(name)); os.IsNotExist(e) {
+		os.MkdirAll(path.Dir(name), 0755)
+	}
+	if f, err := os.OpenFile(name, flag, perm); err != nil {
+		logs.Errorf("file open %s failure %s", name, err)
 		return nil, err
 	} else {
-		logs.Infof("dir read %s", name)
-		return list, nil
+		return f, nil
+	}
+}
+func ReadFile(name string) ([]byte, error) {
+	buf, err := ioutil.ReadFile(name)
+	return buf, err
+}
+func WriteFile(name string, data []byte, perm fs.FileMode) error {
+	if _, e := os.Stat(path.Dir(name)); os.IsNotExist(e) {
+		os.MkdirAll(path.Dir(name), 0755)
+	}
+	if err := ioutil.WriteFile(name, data, perm); err != nil {
+		logs.Errorf("file write %s %s", name, err)
+		return err
+	} else {
+		logs.Infof("file write %s %s", name, string(data))
+		return nil
 	}
 }
 func NewTemplate(name string, tmpl string, funcs template.FuncMap, f io.Writer, data interface{}) error {
@@ -52,14 +105,4 @@ func NewTemplate(name string, tmpl string, funcs template.FuncMap, f io.Writer, 
 	} else {
 		return nil
 	}
-}
-func WriteFile(name string, data []byte, perm fs.FileMode) error {
-	if _, e := os.Stat(path.Dir(name)); os.IsNotExist(e) {
-		os.MkdirAll(path.Dir(name), 0755)
-	}
-	if err := ioutil.WriteFile(name, data, perm); err != nil {
-		logs.Errorf("file write %s %s", name, err)
-		return err
-	}
-	return nil
 }

@@ -30,7 +30,7 @@ func (this *AuthLoginRequest) Validate() error {
 
 func (this *AuthLogoutRequest) Validate() error {
 
-	if err := proto.Valid(this, this.Token, "token", "length >= 6"); err != nil {
+	if err := proto.Valid(this, this.Token, "token", "required"); err != nil {
 		return err
 	}
 
@@ -39,10 +39,18 @@ func (this *AuthLogoutRequest) Validate() error {
 
 func (this *AuthRefreshRequest) Validate() error {
 
+	if err := proto.Valid(this, this.Token, "token", "required"); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (this *AuthVerifyRequest) Validate() error {
+
+	if err := proto.Valid(this, this.Token, "token", "required"); err != nil {
+		return err
+	}
 
 	return nil
 }

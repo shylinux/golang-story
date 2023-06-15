@@ -17,6 +17,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/metadata"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/reflect"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/response"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/trace"
 )
 
@@ -111,7 +112,9 @@ func (s *Proxy) Run() error {
 			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))
 		}
 	})
-	logs.Infof("proxy start %s:%d root %s", conf.Host, conf.Port, conf.Root)
-	errors.Assert(engine.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port)))
+	addr := config.Address(conf.Host, conf.Port)
+	logs.Infof("proxy start %s root %s", addr, conf.Root)
+	system.Printfln("proxy start %s", addr)
+	errors.Assert(engine.Run(addr))
 	return nil
 }

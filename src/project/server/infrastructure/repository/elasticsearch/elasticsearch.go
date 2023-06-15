@@ -24,18 +24,12 @@ func New(config *config.Config, consul consul.Consul) (repository.Search, error)
 	return &search{config}, nil
 }
 func (s *search) Update(ctx context.Context, mapping string, id int64, data interface{}) error {
-	_, err := s.request(ctx, http.MethodPost, s.address("%s/%d", mapping, id), data)
-	return err
+	return s.request(ctx, http.MethodPost, s.address("%s/%d", mapping, id), data, nil)
 }
 func (s *search) Delete(ctx context.Context, mapping string, id int64) error {
-	_, err := s.request(ctx, http.MethodDelete, s.address("%s/%d", mapping, id), nil)
-	return err
+	return s.request(ctx, http.MethodDelete, s.address("%s/%d", mapping, id), nil, nil)
 }
 func (s *search) Query(ctx context.Context, mapping string, res interface{}, page, count int64, key, value string) (total int64, err error) {
-	buf, err := s.request(ctx, http.MethodGet, s.address("%s/_search?q=%s:%s", mapping, key, value), nil)
-	if err != nil {
-		return 0, err
-	}
 	var data struct {
 		Hits struct {
 			Total struct{ Value int64 }
@@ -48,12 +42,16 @@ func (s *search) Query(ctx context.Context, mapping string, res interface{}, pag
 			}
 		}
 	}
-	json.Unmarshal(buf, &data)
+	if err := s.request(ctx, http.MethodGet, s.address("%s/_search?q=%s:%s", mapping, key, value), nil, &data); err != nil {
+		return 0, err
+	}
 	list := []map[string]interface{}{}
 	for _, v := range data.Hits.Hits {
 		list = append(list, v.Source)
 	}
-	buf, err = json.Marshal(list)
-	json.Unmarshal(buf, res)
-	return data.Hits.Total.Value, nil
+	buf, err := json.Marshal(list)
+	if err == nil {
+		err = json.Unmarshal(buf, res)
+	}
+	return data.Hits.Total.Value, err
 }

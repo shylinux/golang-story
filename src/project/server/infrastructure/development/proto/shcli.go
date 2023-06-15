@@ -13,10 +13,12 @@ func (s *Generate) GenShCLI() {
 	for name, proto := range s.protos {
 		serviceList = append(serviceList, proto[PACKAGE].List...)
 		s.Render(path.Join(s.conf.ShPath, name+".go"), _shcmd_client, proto, template.FuncMap{
-			"PwdModPath":    func() string { return logs.PwdModPath() },
-			"ServiceList":   func() []string { return proto[PACKAGE].List },
-			"ServiceCmds":   func(service string) string { return strings.ToLower(strings.TrimSuffix(service, "Service")) },
-			"ServiceHelp":   func(service string) string { return strings.ToLower(strings.TrimSuffix(service, "Service")) },
+			"PwdModPath":  func() string { return logs.PwdModPath() },
+			"ServiceList": func() []string { return proto[PACKAGE].List },
+			"ServiceCmds": func(service string) string { return strings.ToLower(strings.TrimSuffix(service, "Service")) },
+			"ServiceHelp": func(service string) string {
+				return strings.ToLower(strings.TrimSuffix(service, "Service")) + " service client"
+			},
 			"MethodList":    func(service string) []string { return proto[service].List },
 			"MethodRequest": func(method string) string { return proto[method].List[0] },
 		})

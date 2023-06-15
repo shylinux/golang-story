@@ -11,14 +11,16 @@ const NODE = "node"
 
 type NodeCmds struct {
 	deploy *deploy.Deploy
+	name   string
 }
 
-func (s *NodeCmds) Install(ctx context.Context, arg ...string) {
-	s.deploy.Install(NODE)
+func (s *NodeCmds) List(ctx context.Context, arg ...string) {
+	s.deploy.Download(s.name)
+	s.deploy.Unpack(s.name)
+	s.deploy.Start(s.name)
 }
 func NewNodeCmds(cmds *cmds.Cmds, deploy *deploy.Deploy) *NodeCmds {
-	s := &NodeCmds{deploy: deploy}
-	cmds = cmds.Add(NODE, NODE, func(ctx context.Context, arg ...string) {})
-	cmds.Add("install", "install", s.Install)
+	s := &NodeCmds{deploy: deploy, name: NODE}
+	cmds = cmds.Add(s.name, "node runtime cli", s.List)
 	return s
 }

@@ -10,6 +10,10 @@ const (
 	WINDOWS = "windows"
 )
 
+type Replace struct {
+	From string
+	To   string
+}
 type Install struct {
 	Source  map[string]Target
 	Binary  map[string]Target
@@ -21,7 +25,12 @@ type Target struct {
 	Type    string
 	Name    string
 	Address string
+	Unpack  string
+	Build   []string
+	Install string
+	Plugin  []string
 	Start   string
+	Export  bool
 }
 
 func (s Install) GetTarget(name string) Target {

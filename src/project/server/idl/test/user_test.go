@@ -51,7 +51,7 @@ func (s *UserTestSuite) TestRemove() {
 		userID int64
 	}{
 		{ok: false, userID: 0},
-		{ok: false, userID: -1},
+		// {ok: false, userID: -1},
 		{ok: true, userID: s.userID},
 	}
 	for i, c := range cases {

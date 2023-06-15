@@ -2,10 +2,10 @@ package api
 
 import "shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 
-func Init(container *container.Container) {
+func Init(c *container.Container) {
 
-	container.Provide(NewAuthServiceClient)
+	c.Provide(NewAuthServiceClient)
 
-	container.Provide(NewUserServiceClient)
+	c.Provide(NewUserServiceClient)
 
 }

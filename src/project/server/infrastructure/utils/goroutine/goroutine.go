@@ -15,14 +15,19 @@ type Pool struct {
 func New() *Pool {
 	return &Pool{}
 }
-func (s *Pool) Go(cb func() error) {
+func (s *Pool) Go(name string, cb func() error) {
 	p := reflect.ValueOf(cb).Pointer()
 	file, line := runtime.FuncForPC(p).FileLine(p)
-	name := fmt.Sprintf("%s:%d", path.Base(file), line)
+	fileline := fmt.Sprintf("%s:%d", path.Base(file), line)
 	go func() {
-		logs.Infof("goroutine %s", name)
+		defer func() {
+			if err := recover(); err != nil {
+				logs.Errorf("goroutine %s %s", fileline, err)
+			}
+		}()
+		logs.Infof("goroutine %s %s", name, fileline)
 		if err := cb(); err != nil {
-			logs.Errorf("goroutine %s %s", name, err)
+			logs.Errorf("goroutine %s %s", fileline, err)
 		}
 	}()
 }

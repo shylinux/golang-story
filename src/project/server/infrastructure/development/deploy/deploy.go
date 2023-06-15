@@ -1,206 +1,106 @@
 package deploy
 
 import (
-	"archive/tar"
-	"archive/zip"
-	"compress/gzip"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
-	"os/exec"
 	"path"
-	"strconv"
+	"runtime"
 	"strings"
-	"time"
 
-	"github.com/schollz/progressbar/v3"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-type Deploy struct {
-	*config.Config
-}
+type Deploy struct{ *config.Config }
 
-func New(cmds *cmds.Cmds, config *config.Config, logger logs.Logger) *Deploy {
-	s := &Deploy{config}
-	cmds.Add("install", "install", func(ctx context.Context, arg ...string) {
+func New(conf *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Deploy {
+	s := &Deploy{conf}
+	check := func(arg []string, action ...func(string) error) {
 		if len(arg) == 0 {
-			buf, _ := json.MarshalIndent(config.Install, "", "  ")
-			fmt.Println(string(buf))
+			system.Printfln(system.MarshalIndent(conf.Install))
 		} else {
-			s.Install(arg[0])
+			for _, action := range action {
+				if err := action(arg[0]); err != nil {
+					break
+				}
+			}
 		}
+	}
+	cmds.Add("download", "deploy download", func(ctx context.Context, arg ...string) {
+		check(arg, s.Download)
 	})
-	cmds.Add("unpack", "unpack", func(ctx context.Context, arg ...string) {
-		if len(arg) == 0 {
-			buf, _ := json.MarshalIndent(config.Install, "", "  ")
-			fmt.Println(string(buf))
-		} else {
-			s.Install(arg[0])
-			s.Unpack(arg[0])
-		}
+	cmds.Add("unpack", "deploy unpack", func(ctx context.Context, arg ...string) {
+		check(arg, s.Download, s.Unpack)
 	})
-	cmds.Add("start", "start", func(ctx context.Context, arg ...string) {
-		if len(arg) == 0 {
-			buf, _ := json.MarshalIndent(config.Install, "", "  ")
-			fmt.Println(string(buf))
-		} else {
-			s.Install(arg[0])
-			s.Unpack(arg[0])
-			s.Start(arg[0])
+	cmds.Add("build", "deploy build", func(ctx context.Context, arg ...string) {
+		check(arg, s.Download, s.Unpack, s.Build)
+	})
+	cmds.Add("start", "deploy start", func(ctx context.Context, arg ...string) {
+		check(arg, s.Download, s.Unpack, s.Build, s.Start)
+	})
+	cmds.Add("stop", "deploy stop", func(ctx context.Context, arg ...string) {
+		check(arg, s.Stop)
+	})
+	cmds.Add("env", "deploy env", func(ctx context.Context, arg ...string) {
+		list := []string{}
+		push := func(repos map[string]config.Target) {
+			for _, v := range repos {
+				if !v.Export {
+					continue
+				}
+				if _, e := os.Stat(path.Join(USR, v.Install, v.Start)); e == nil {
+					list = append(list, path.Dir(system.AbsPath(path.Join(USR, v.Install, v.Start))))
+				}
+			}
 		}
+		push(s.Config.Install.Source)
+		push(s.Config.Install.Binary)
+		switch runtime.GOOS {
+		case "linux":
+			push(s.Config.Install.Linux)
+		case "darwin":
+			push(s.Config.Install.Darwin)
+		case "windows":
+			push(s.Config.Install.Windows)
+		}
+		fmt.Println(strings.Join(list, "\n"))
+		fmt.Println("export PATH=" + strings.Join(list, ":") + ":$PATH")
+	})
+	cmds.Add("deploy", "deploy command", func(ctx context.Context, arg ...string) {
+		args := []string{"-lh"}
+		for _, v := range arg {
+			check([]string{v}, s.Download, s.Unpack, s.Build)
+			args = append(args, s.BinFile(v))
+		}
+		res, _ := system.Command("", "ls", args...)
+		fmt.Printf(res)
 	})
 	return s
 }
-func (s *Deploy) Install(name string) {
+func (s *Deploy) Path(name string) string {
 	target := s.Config.Install.GetTarget(name)
-	_target := path.Join("usr", path.Base(target.Address))
-	if _, e := os.Stat(_target); e == nil {
-		return
-	}
-	logs.Infof("download prepare %s %s", name, target.Address)
-	req, err := http.NewRequest(http.MethodGet, target.Address, nil)
-	if err != nil {
-		logs.Errorf("download failure %s %s %s", name, target.Address, err)
-		return
-	}
-	begin := time.Now()
-	req.Header.Set("User-Agent", "curl/7.87.0")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		logs.Errorf("download failure %s %s %s", name, target.Address, err)
-		return
-	}
-	defer res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		logs.Errorf("download failure %s", res.Status)
-		return
-	}
-	os.MkdirAll(path.Dir(_target), 0755)
-	f, e := os.Create(_target)
-	if e != nil {
-		logs.Errorf("download failure %s %s %s", name, target.Address, e)
-		return
-	}
-	defer f.Close()
-	length, _ := strconv.Atoi(res.Header.Get("Content-Length"))
-	if length == 0 {
-		length = -1
-	}
-	logs.Infof("download start %s %s %s", name, target.Address, logs.Size(int64(length)))
-	if n, e := io.Copy(io.MultiWriter(f, progressbar.DefaultBytes(res.ContentLength, "正在下载")), res.Body); e != nil {
-		logs.Errorf("download failure %s %s %s", name, target.Address, e)
-	} else {
-		logs.Infof("download success %s %s %s %s", name, target.Address, logs.Size(n), logs.Cost(begin))
-	}
+	return path.Join(USR, path.Base(target.Address))
 }
-func (s *Deploy) Unpack(name string) {
+func (s *Deploy) SrcPath(name string) string {
 	target := s.Config.Install.GetTarget(name)
-	if _, e := os.Stat(target.Start); e == nil {
-		return
-	}
-	if strings.HasSuffix(target.Address, ".tar.gz") {
-		s.UnpackGZIP(name)
-	} else if strings.HasSuffix(target.Address, ".zip") {
-		s.UnpackZIP(name)
-	}
+	return path.Join(USR, strings.Split(target.Install, "/")[0])
 }
-func (s *Deploy) UnpackGZIP(name string) {
+func (s *Deploy) BinPath(name string) string {
 	target := s.Config.Install.GetTarget(name)
-	r, e := os.Open(path.Join("usr", path.Base(target.Address)))
-	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
-		return
-	}
-	g, e := gzip.NewReader(r)
-	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
-		return
-	}
-	t := tar.NewReader(g)
-	count := 0
-	for {
-		_, e := t.Next()
-		if e != nil {
-			break
-		}
-		count++
-	}
-	r.Seek(0, 0)
-	g, e = gzip.NewReader(r)
-	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
-		return
-	}
-	t = tar.NewReader(g)
-	bar := progressbar.Default(int64(count), "正在解压")
-	for i := 0; i < count; i++ {
-		h, e := t.Next()
-		if e != nil {
-			logs.Errorf("unpack failure %s %s", h.Name, e)
-			continue
-		}
-		bar.Add(1)
-		_name := path.Base(h.Name)
-		if len(_name) < 10 {
-			_name += strings.Repeat(" ", 10-len(_name))
-		} else {
-			_name = _name[:10]
-		}
-		bar.Describe(_name)
-		if h.FileInfo().IsDir() {
-			os.MkdirAll(path.Join("usr", h.Name), h.FileInfo().Mode())
-			continue
-		}
-		func() {
-			f, e := os.OpenFile(path.Join("usr", h.Name), os.O_CREATE|os.O_WRONLY, h.FileInfo().Mode())
-			if e != nil {
-				logs.Errorf("unpack failure %s %s", h.Name, e)
-				return
-			}
-			io.Copy(f, t)
-			defer f.Close()
-		}()
-	}
+	return path.Join(USR, target.Install)
 }
-func (s *Deploy) UnpackZIP(name string) {
+func (s *Deploy) BinFile(name string) string {
 	target := s.Config.Install.GetTarget(name)
-	r, e := zip.OpenReader(path.Join("usr", path.Base(target.Address)))
-	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
-		return
-	}
-	for _, file := range r.File {
-		func() {
-			r, e := file.Open()
-			if e != nil {
-				logs.Errorf("unpack failure %s %s", file.Name, e)
-				return
-			}
-			defer r.Close()
-			w, e := os.OpenFile(file.Name, os.O_CREATE|os.O_WRONLY, file.Mode())
-			if e != nil {
-				logs.Errorf("unpack failure %s %s", file.Name, e)
-				return
-			}
-			defer w.Close()
-			n, e := io.Copy(w, r)
-			if e != nil {
-				logs.Errorf("unpack failure %s %s", file.Name, e)
-				return
-			}
-			logs.Infof("unpack %s %s", file.Name, logs.Size(n))
-		}()
-	}
+	return path.Join(USR, target.Install, strings.Split(target.Start, " ")[0])
 }
-func (s *Deploy) Start(name string) {
-	target := s.Config.Install.GetTarget(name)
-	cmd := exec.Command(target.Start)
-	buf, _ := cmd.CombinedOutput()
-	fmt.Println(string(buf))
-}
+
+const (
+	CMD = "cmd"
+	IDL = "idl"
+	SRC = "src"
+	USR = "usr"
+	LOG = "log"
+)

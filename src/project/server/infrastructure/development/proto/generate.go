@@ -24,9 +24,10 @@ type Generate struct {
 
 func NewGenerate(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Generate {
 	s := &Generate{conf: config.Generate}
-	cmds.Add("generate", "generate", func(ctx context.Context, arg ...string) {
+	cmds.Add("generate", "proto generate", func(ctx context.Context, arg ...string) {
 		s.protos = map[string]map[string]*Item{}
 		s.OpenProto(func(file *os.File, name string) { s.protos[name] = s.ParseProto(file) })
+		s.GenProto()
 		s.GenValid()
 		s.GenTests()
 		s.GenGoAPI()
@@ -75,7 +76,7 @@ func (s *Generate) Render(name string, tmpl string, data interface{}, funcs temp
 		return errors.New(e, "render file")
 	} else {
 		if strings.HasSuffix(name, ".go") {
-			system.Command("gofmt", "-w", name)
+			system.Command("", "gofmt", "-w", name)
 		}
 		return nil
 	}

@@ -2,16 +2,13 @@ package server
 
 import (
 	"fmt"
-	"net"
 	"os"
 
-	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/proxy"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/gin"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/goroutine"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/grpc"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
@@ -22,12 +19,11 @@ type MainServer struct {
 	consul.Consul
 	*proxy.Proxy
 	*grpc.Server
-	*gin.Engine
 	*goroutine.Pool
 }
 
-func New(config *config.Config, logger logs.Logger, consul consul.Consul, proxy *proxy.Proxy, server *grpc.Server, engine *gin.Engine, pool *goroutine.Pool) *MainServer {
-	return &MainServer{config, consul, proxy, server, engine, pool}
+func New(config *config.Config, logger logs.Logger, proxy *proxy.Proxy, consul consul.Consul, server *grpc.Server, pool *goroutine.Pool) *MainServer {
+	return &MainServer{config, consul, proxy, server, pool}
 }
 func (s *MainServer) registerService(key string, name string, host string, port int) {
 	name = config.WithDef(name, s.Config.Server.Name+"."+key)
@@ -42,7 +38,7 @@ func (s *MainServer) Run() error {
 			}
 		}
 		if s.Config.Proxy.Export {
-			s.Pool.Go(s.Proxy.Run)
+			s.Pool.Go("proxy", s.Proxy.Run)
 		}
 	} else {
 		v := s.Config.Internal[k]
@@ -50,13 +46,12 @@ func (s *MainServer) Run() error {
 	}
 	if s.Config.Logs.Pid != "" {
 		system.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
-		s.Pool.Go(logs.Watch)
+		s.Pool.Go("signal", system.Watch)
 	}
-	addr := fmt.Sprintf("%s:%d", server.Host, server.Port)
+	addr := config.Address(server.Host, server.Port)
 	logs.Infof("server start %s %s %s", server.Name, server.Type, addr)
-	if server.Type == enums.Service.HTTP {
-		return errors.New(s.Engine.Run(addr), "server start gin failure")
-	} else if l, e := net.Listen("tcp", addr); e != nil {
+	system.Printfln("server start %s", addr)
+	if l, e := system.Listen("tcp", addr); e != nil {
 		return errors.New(e, "server start tcp failure")
 	} else {
 		return errors.New(s.Server.Serve(l), "server start rpc failure")

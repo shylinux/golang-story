@@ -5,10 +5,10 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 )
 
-func Init(container *container.Container) {
-	container.Provide(NewMainController)
-	container.Provide(NewAuthController)
-	container.Provide(NewUserController)
+func Init(c *container.Container) {
+	c.Provide(NewMainController)
+	c.Provide(NewAuthController)
+	c.Provide(NewUserController)
 }
 
 type MainController struct{ *server.MainServer }

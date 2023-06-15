@@ -44,9 +44,9 @@ package api
 
 import "shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 
-func Init(container *container.Container) {
+func Init(c *container.Container) {
 {{ range $index, $service := . }}
-	container.Provide(New{{ $service }}Client)
+	c.Provide(New{{ $service }}Client)
 {{ end }}
 }
 `

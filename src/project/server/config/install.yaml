@@ -2,32 +2,111 @@ matrix:
   install:
     source:
       nginx:
-        address: http://download.redis.io/releases/redis-5.0.4.tar.gz
+        address: http://mirrors.tencent.com/macports/distfiles/nginx/nginx-1.19.1.tar.gz
+        build:
+          - ./configure --prefix=$PWD/_install
+          - make -j8
+          - make install
+        install: nginx-1.19.1/_install/
+        start: sbin/nginx
       redis:
         address: http://download.redis.io/releases/redis-5.0.4.tar.gz
+        build:
+          - make -j8
+          - make PREFIX=$PWD/_install install
+        install: redis-5.0.4/_install/
+        start: bin/redis-server
+        export: true
+      git:
+        address: http://mirrors.tencent.com/macports/distfiles/git-cinnabar/git-2.31.1.tar.gz
+        build:
+          - ./configure --prefix=$PWD/_install
+          - make -j8
+          - make install
+        install: git-2.31.1/_install/
+        start: bin/git
+        export: true
+      vim:
+        address: http://mirrors.tencent.com/macports/distfiles/vim/vim-8.2.2681.tar.gz
+        build:
+          - ./configure --prefix=$PWD/_install --enable-multibyte=yes
+          - make -j8
+          - make install
+        install: vim-vim-12be734/_install/
+        start: bin/vim
+        export: true
     binary:
       pulsar:
         address: https://mirrors.tencent.com/apache/pulsar/pulsar-2.10.2/apache-pulsar-2.10.2-bin.tar.gz
+        install: apache-pulsar-2.10.2/
+        start: bin/pulsar standalone
     linux:
+      protoc:
+        address: https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-linux-x86_64.zip
+        unpack: protoc/
+        install: protoc/
+        plugin:
+          - go install google.golang.org/protobuf/cmd/protoc-gen-go
+          - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+        start: bin/protoc
+        export: true
       consul:
         address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_linux_amd64.zip
+        unpack: consul/bin
+        install: consul/
+        start: bin/consul agent -dev
       golang:
-        address: https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz
+        address: https://golang.google.cn/dl/go1.20.3.linux-amd64.tar.gz
+        install: go/
+        start: bin/go
+        export: true
       java:
         address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_linux-x64_bin.tar.gz
+        export: true
       node:
         address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-linux-x64.tar.xz
+        export: true
     darwin:
+      protoc:
+        address: https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-osx-x86_64.zip
+        unpack: protoc/
+        install: protoc/
+        plugin:
+          - go install google.golang.org/protobuf/cmd/protoc-gen-go
+          - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+        start: bin/protoc
+        export: true
       consul:
         address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_darwin_amd64.zip
+        unpack: consul/bin
+        install: consul/
+        start: bin/consul agent -dev
+      es:
+        address: https://mirrors.huaweicloud.com/elasticsearch/7.6.2/elasticsearch-7.6.2-darwin-x86_64.tar.gz
+        install: elasticsearch-7.6.2/
+        start: bin/elasticsearch
       golang:
-        address: https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz
+        address: https://golang.google.cn/dl/go1.20.3.darwin-amd64.tar.gz
+        install: go/
+        start: bin/go
+        export: true
       java:
         address: https://mirrors.huaweicloud.com/openjdk/18/openjdk-18_macos-x64_bin.tar.gz
-        start: usr/jdk-18.jdk/Contents/Home/bin/java
+        install: jdk-18.jdk/Contents/Home/
+        start: bin/java
+        export: true
       node:
         address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-darwin-x64.tar.xz
+        install: node-v16.15.1-darwin-x64/
+        start: bin/node
+        export: true
     windows:
+      protoc:
+        address: https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-win64.zip
+        unpack: protoc/
+        install: protoc/
+        start: bin/protoc
+        export: true
       consul:
         address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_windows_amd64.zip
       golang:

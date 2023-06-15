@@ -11,7 +11,7 @@ import (
 
 func main() {
 	c := container.New(space.Init, api.Init, infrastructure.Init)
-	c.Provide(pulsar.New)
 	c.Provide(mysql.New)
+	c.Provide(pulsar.New)
 	c.Invoke(func(s *space.SpaceController) error { return s.Main.Run() })
 }

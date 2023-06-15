@@ -35,7 +35,7 @@ message AuthLoginReply {
 }
 
 message AuthLogoutRequest {
-    // length >= 6
+    // required
     string token = 1;
 }
 message AuthLogoutReply {
@@ -43,6 +43,7 @@ message AuthLogoutReply {
 }
 
 message AuthRefreshRequest {
+    // required
     string token = 1;
 }
 message AuthRefreshReply {
@@ -51,6 +52,7 @@ message AuthRefreshReply {
 }
 
 message AuthVerifyRequest {
+    // required
     string token = 1;
 }
 message AuthVerifyReply {

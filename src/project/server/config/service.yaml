@@ -7,6 +7,7 @@ logs:
 proxy:
   export: true
   root: "usr/vue-element-admin/dist/"
+  local: true
   port: 8081
 token:
   issuer: "demo.auth"
@@ -36,7 +37,6 @@ engine:
     port: 6650
   cache:
     name: redis
-    password: demo
     host: 127.0.0.1
     port: 6379
   search:

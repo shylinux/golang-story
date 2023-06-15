@@ -18,7 +18,7 @@ type AuthServiceCmds struct {
 
 func NewAuthServiceCmds(cmds *cmds.Cmds, consul consul.Consul) (*AuthServiceCmds, error) {
 	_cmds := &AuthServiceCmds{consul: consul}
-	cmds.Register("auth", "auth", _cmds)
+	cmds.Register("auth", "auth service client", _cmds)
 	return _cmds, nil
 }
 

@@ -26,15 +26,17 @@ func GetValue(ctx context.Context, key string) string {
 	return ""
 }
 func Trans(ctx context.Context, key ...string) context.Context {
-	meta := map[string]string{}
+	kv := []string{}
 	if len(key) == 0 {
-		meta = Dumps(ctx)
+		for k, v := range Dumps(ctx) {
+			kv = append(kv, k, v)
+		}
 	} else if md, ok := metadata.FromIncomingContext(ctx); ok {
-		for _, key := range key {
-			meta[key] = md.Get(key)[0]
+		for _, k := range key {
+			kv = append(kv, k, md.Get(k)[0])
 		}
 	}
-	return metadata.NewOutgoingContext(ctx, metadata.New(meta))
+	return metadata.AppendToOutgoingContext(ctx, kv...)
 }
 func Dumps(ctx context.Context) map[string]string {
 	md, _ := metadata.FromIncomingContext(ctx)

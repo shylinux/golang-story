@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path"
 
@@ -94,6 +95,8 @@ type Config struct {
 	Internal map[string]Service
 	Engine
 	Matrix
+	Replace    []Replace
+	ReplaceMap map[string]string
 }
 
 var config = &Config{}
@@ -104,11 +107,10 @@ func init() {
 	flag.StringVar(&config.Logs.Path, "logs.path", "log/service.log", "")
 	flag.StringVar(&config.Token.Issuer, "token.issuer", "demo.auth", "")
 	flag.StringVar(&config.Token.Expire, "token.expire", "24h", "")
-	flag.StringVar(&config.Consul.Addr, "consul.addr", "127.0.0.1:8500", "")
+	flag.StringVar(&config.Consul.Addr, "consul.addr", Address("", 8500), "")
 	flag.IntVar(&config.Consul.WorkID, "consul.workid", 1, "")
 	flag.StringVar(&config.Server.Name, "server.name", path.Base(os.Args[0]), "")
 	flag.StringVar(&config.Server.Main, "server.main", path.Base(os.Args[0]), "")
-	flag.StringVar(&config.Server.Host, "server.host", "127.0.0.1", "")
 	flag.IntVar(&config.Server.Port, "server.port", 9090, "")
 }
 func New() (*Config, error) {
@@ -116,7 +118,12 @@ func New() (*Config, error) {
 	defer flag.Parse()
 	load(config.file)
 	load("config/install.yaml")
+	load("config/replace.yaml")
 	load("config/generate.yaml")
+	config.ReplaceMap = map[string]string{}
+	for _, v := range config.Replace {
+		config.ReplaceMap[v.From] = v.To
+	}
 	if config.Server.Main != config.Server.Name {
 		if v := config.Internal[config.Server.Main]; v.Port > 0 {
 			config.Server.Port = v.Port
@@ -143,4 +150,7 @@ func WithDef(val, def string) string {
 		return def
 	}
 	return val
+}
+func Address(host string, port int) string {
+	return fmt.Sprintf("%s:%d", WithDef(host, "127.0.0.1"), port)
 }

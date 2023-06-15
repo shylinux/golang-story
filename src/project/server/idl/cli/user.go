@@ -18,7 +18,7 @@ type UserServiceCmds struct {
 
 func NewUserServiceCmds(cmds *cmds.Cmds, consul consul.Consul) (*UserServiceCmds, error) {
 	_cmds := &UserServiceCmds{consul: consul}
-	cmds.Register("user", "user", _cmds)
+	cmds.Register("user", "user service client", _cmds)
 	return _cmds, nil
 }
 

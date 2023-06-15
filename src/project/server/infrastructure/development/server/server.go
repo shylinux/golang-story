@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
-	"syscall"
 
 	"shylinux.com/x/golang-story/src/project/server/controller"
 	"shylinux.com/x/golang-story/src/project/server/idl/api"
@@ -42,12 +41,12 @@ func (s *ServerCmds) Restart(ctx context.Context, arg ...string) {
 	} else if p, e := os.FindProcess(int(pid)); e != nil {
 		logs.Errorf("restart failure %s", e)
 	} else {
-		p.Signal(syscall.SIGINT)
+		p.Kill()
 	}
 }
 func NewServerCmds(container *container.Container, config *config.Config, cmds *cmds.Cmds, _ *proto.Generate, _ *deploy.Deploy, _ *java.JavaCmds, _ *node.NodeCmds) *ServerCmds {
 	s := &ServerCmds{cmds, config, container}
-	cmds.Add("server", "server", s.Start)
+	cmds = cmds.Add("server", "server command", s.Start)
 	cmds.Add("restart", "restart", s.Restart)
 	return s
 }

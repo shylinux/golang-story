@@ -26,7 +26,7 @@ type SpaceController struct {
 	name    string
 }
 
-func NewSpaceController(config *config.Config, server *server.MainServer, consumer *UserConsumer, service *SpaceService) *SpaceController {
+func NewSpaceController(config *config.Config, server *server.MainServer, service *SpaceService, consumer *UserConsumer) *SpaceController {
 	controller := &SpaceController{Main: server, service: service, name: pb.SpaceService_ServiceDesc.ServiceName}
 	if !config.Internal[enums.Service.User].Export {
 		return controller
