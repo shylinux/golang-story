@@ -1,0 +1,3 @@
+replace:
+  - from: protoc-23.1-osx-x86_64.zip
+    to: http://2021.shylinux.com:9020/publish/protoc-23.1-osx-x86_64.zip
