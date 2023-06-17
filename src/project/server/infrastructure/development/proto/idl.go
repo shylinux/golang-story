@@ -1,6 +1,12 @@
 package proto
 
 const (
+	_config_template = `
+internal:
+{{ range $index, $service := . }}  {{ $service }}:
+    export: true
+{{ end }}
+`
 	_idl_template = `
 package idl
 

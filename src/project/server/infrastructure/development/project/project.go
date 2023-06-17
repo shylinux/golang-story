@@ -57,11 +57,12 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/server"
+	"{{ PwdModPath }}/idl/cli"
 )
 
 func main() {
-	c := container.New(development.Init, infrastructure.Init)
-	c.Invoke(func(s *cmds.Cmds, _ *server.ServerCmds) error { return s.Run() })
+	c := container.New(cli.Init, development.Init, infrastructure.Init)
+	c.Invoke(func(s *cmds.Cmds, _ *server.ServerCmds, _ *cli.MainServiceCmds) error { return s.Run() })
 }
 `},
 	{Path: "cmd/main.go", Text: `
@@ -96,10 +97,6 @@ consul:
 server:
   name: demo
   port: 9090
-internal:
-  space:
-    export: true
-    port: 9093
 engine:
   storage:
     name: mysql
@@ -108,6 +105,40 @@ engine:
     database: demo
     host: 127.0.0.1
     port: 3306
+`},
+	{Path: "idl/idl.go", Text: `
+package idl
+
+import (
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+)
+
+func Init(c *container.Container) {
+	c.Provide(NewMainController)
+}
+
+type MainController struct{}
+
+func NewMainController() *MainController {
+	return &MainController{}
+}
+`},
+	{Path: "idl/cli/cli.go", Text: `
+package cli
+
+import (
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+)
+
+func Init(c *container.Container) {
+	c.Provide(NewMainServiceCmds)
+}
+
+type MainServiceCmds struct{}
+
+func NewMainServiceCmds() *MainServiceCmds {
+	return &MainServiceCmds{}
+}
 `},
 	{Path: "Makefile", Text: `
 def: matrix idl server restart

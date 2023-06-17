@@ -21,14 +21,12 @@ func (s *MachineServiceTestSuite) SetupTest() {
 
 func (s *MachineServiceTestSuite) TestCreate() {
 	cases := []struct {
-		OK     bool   `yaml:"ok"`
-		Name   string `yaml:"name"`
-		Repos  string `yaml:"repos"`
-		Binary string `yaml:"binary"`
+		OK   bool   `yaml:"ok"`
+		Name string `yaml:"name"`
 	}{}
 	s.Load("testdata/MachineService/Create.yaml", &cases)
 	for i, c := range cases {
-		res, err := s.client.Create(s.ctx, &pb.MachineCreateRequest{Name: c.Name, Repos: c.Repos, Binary: c.Binary})
+		res, err := s.client.Create(s.ctx, &pb.MachineCreateRequest{Name: c.Name})
 		s.ConveySo(i, c.OK, c, res, err)
 	}
 }

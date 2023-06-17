@@ -18,12 +18,13 @@ import (
 )
 
 type GenerateCmds struct {
+	config *config.Config
 	conf   config.Generate
 	protos map[string]map[string]*Item
 }
 
 func NewGenerateCmds(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *GenerateCmds {
-	s := &GenerateCmds{conf: config.Generate}
+	s := &GenerateCmds{config: config, conf: config.Generate}
 	cmds.Add("generate", "proto generate", func(ctx context.Context, arg ...string) {
 		s.protos = map[string]map[string]*Item{}
 		s.OpenProto(func(file *os.File, name string) { s.protos[name] = s.ParseProto(file) })

@@ -8,8 +8,8 @@ import (
 
 type Machine struct {
 	model.Common
-	MachineID   int64
-	Name string
+	MachineID int64
+	Name      string
 }
 
 func (s Machine) TableName() string { return "machine" }

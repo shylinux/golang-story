@@ -24,6 +24,13 @@ func (s *GenerateCmds) GenGoAPI() {
 		"PwdModPath": func() string { return logs.PwdModPath() },
 		"HasService": func() bool { return len(serviceList) > 0 },
 	})
+	for i, v := range serviceList {
+		serviceList[i] = strings.ToLower(strings.TrimPrefix(v, s.config.Server.Name+"."))
+	}
+	s.Render(path.Join("config/internal.yaml"), _config_template, serviceList, template.FuncMap{
+		"PwdModPath": func() string { return logs.PwdModPath() },
+		"HasService": func() bool { return len(serviceList) > 0 },
+	})
 }
 
 const (

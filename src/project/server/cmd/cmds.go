@@ -11,5 +11,5 @@ import (
 
 func main() {
 	c := container.New(cli.Init, development.Init, infrastructure.Init)
-	c.Invoke(func(s *cmds.Cmds, _ *cli.MainServiceCmds, _ *server.ServerCmds) error { return s.Run() })
+	c.Invoke(func(s *cmds.Cmds, _ *server.ServerCmds, _ *cli.MainServiceCmds) error { return s.Run() })
 }

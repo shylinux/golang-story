@@ -6,8 +6,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/uuid"
-	"shylinux.com/x/golang-story/src/project/server/service"
 	"shylinux.com/x/golang-story/src/project/server/internal/mesh/domain/model"
+	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
 type MachineService struct {

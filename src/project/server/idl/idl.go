@@ -10,11 +10,11 @@ import (
 func Init(c *container.Container) {
 	c.Provide(NewMainController)
 
-	c.Provide(controller.NewUserController)
-	c.Provide(service.NewUserService)
-
 	c.Provide(controller.NewAuthController)
 	c.Provide(service.NewAuthService)
+
+	c.Provide(controller.NewUserController)
+	c.Provide(service.NewUserService)
 
 }
 
@@ -22,9 +22,9 @@ type MainController struct{}
 
 func NewMainController(
 
-	_ controller.UserController,
+	_ *controller.AuthController,
 
-	_ controller.AuthController,
+	_ *controller.UserController,
 
 ) *MainController {
 	return &MainController{}

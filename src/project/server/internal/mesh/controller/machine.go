@@ -9,8 +9,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"shylinux.com/x/golang-story/src/project/server/internal/mesh/domain/trans"
-	"shylinux.com/x/golang-story/src/project/server/internal/mesh/service"
 	"shylinux.com/x/golang-story/src/project/server/internal/mesh/idl/pb"
+	"shylinux.com/x/golang-story/src/project/server/internal/mesh/service"
 )
 
 type MachineController struct {

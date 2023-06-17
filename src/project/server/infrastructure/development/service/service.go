@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/proto"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
@@ -15,7 +16,8 @@ import (
 const SERVICE = "service"
 
 type ServiceCmds struct {
-	name string
+	config *config.Config
+	name   string
 }
 
 func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
@@ -31,18 +33,18 @@ func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
 		system.NewTemplateFile(file.Path, file.Text, template.FuncMap{
 			"PwdModPath": func() string { return logs.PwdModPath() },
 		}, map[string]string{
-			"name":    proto.Capital(arg[0]),
-			"package": "demo." + arg[0],
+			"package": s.config.Server.Name + "." + arg[0],
 			"service": proto.Capital(arg[0]) + "Service",
+			"name":    proto.Capital(arg[0]),
 			"table":   arg[0],
 		})
+		system.Command("", "gofmt", "-w", file.Path)
 	}
 
 }
-func (s *ServiceCmds) List(ctx context.Context, arg ...string) {
-}
-func NewServiceCmds(cmds *cmds.Cmds) *ServiceCmds {
-	s := &ServiceCmds{name: SERVICE}
+func (s *ServiceCmds) List(ctx context.Context, arg ...string) {}
+func NewServiceCmds(cmds *cmds.Cmds, config *config.Config) *ServiceCmds {
+	s := &ServiceCmds{name: SERVICE, config: config}
 	cmds = cmds.Add(s.name, "service command", s.List)
 	cmds.Add("create", "create path", s.Create)
 	return s
@@ -67,8 +69,6 @@ service {{ .service }} {
 message {{ .name }}CreateRequest {
     // length > 6
     string name = 1;
-    string repos = 2;
-    string binary = 3;
 }
 message {{ .name }}CreateReply {
 	{{ .name }}Error error = 1;
@@ -109,8 +109,6 @@ message {{ .name }}ListReply {
 message {{ .name }} {
     int64 {{ .name }}ID = 1;
     string name = 2;
-    string repos = 3;
-    string binary = 4;
 }
 
 message {{ .name }}Error {
@@ -130,8 +128,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"{{ PwdModPath }}/domain/trans"
-	"{{ PwdModPath }}/service"
 	"{{ PwdModPath }}/idl/pb"
+	"{{ PwdModPath }}/service"
 )
 
 type {{ .name }}Controller struct {
@@ -178,8 +176,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/uuid"
-	"shylinux.com/x/golang-story/src/project/server/service"
 	"{{ PwdModPath }}/domain/model"
+	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
 type {{ .name }}Service struct {

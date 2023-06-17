@@ -12,10 +12,6 @@ consul:
 server:
   name: demo
   port: 9093
-internal:
-  machine:
-    export: true
-    port: 9093
 engine:
   storage:
     name: mysql

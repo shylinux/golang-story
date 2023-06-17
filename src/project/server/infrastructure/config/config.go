@@ -124,10 +124,11 @@ func init() {
 func New() (*Config, error) {
 	flag.Parse()
 	defer flag.Parse()
-	load(config.file)
 	load("config/install.yaml")
 	load("config/replace.yaml")
 	load("config/generate.yaml")
+	load("config/internal.yaml")
+	load(config.file)
 	config.ReplaceMap = map[string]string{}
 	for _, v := range config.Replace {
 		config.ReplaceMap[v.From] = v.To

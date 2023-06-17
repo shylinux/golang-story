@@ -8,5 +8,9 @@ import (
 
 func (s *GenerateCmds) GenProto() {
 	list, _ := filepath.Glob("./idl/*.proto")
-	system.Command("", "usr/protoc/bin/protoc", append([]string{"--go_out=./idl", "--go-grpc_out=./idl"}, list...)...)
+	cmd := "protoc"
+	if system.Exists("usr/protoc/bin/protoc") {
+		cmd = "usr/protoc/bin/protoc"
+	}
+	system.Command("", cmd, append([]string{"--go_out=./idl", "--go-grpc_out=./idl"}, list...)...)
 }

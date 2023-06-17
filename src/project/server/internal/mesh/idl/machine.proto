@@ -12,8 +12,6 @@ service MachineService {
 message MachineCreateRequest {
     // length > 6
     string name = 1;
-    string repos = 2;
-    string binary = 3;
 }
 message MachineCreateReply {
 	MachineError error = 1;
@@ -54,8 +52,6 @@ message MachineListReply {
 message Machine {
     int64 MachineID = 1;
     string name = 2;
-    string repos = 3;
-    string binary = 4;
 }
 
 message MachineError {
