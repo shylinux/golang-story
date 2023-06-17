@@ -6,16 +6,10 @@ import (
 	"fmt"
 
 	"shylinux.com/x/golang-story/src/project/server/domain/model"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
 )
-
-func Init(c *container.Container) {
-	c.Provide(NewAuthService)
-	c.Provide(NewUserService)
-}
 
 func Clause(cond bool, stmt string, arg ...interface{}) (string, []interface{}) {
 	if cond {

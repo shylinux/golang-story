@@ -3,9 +3,8 @@ package deploy
 import (
 	"context"
 	"fmt"
-	"os"
 	"path"
-	"runtime"
+	"strconv"
 	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
@@ -14,10 +13,10 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-type Deploy struct{ *config.Config }
+type DeployCmds struct{ *config.Config }
 
-func New(conf *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Deploy {
-	s := &Deploy{conf}
+func NewDeployCmds(conf *config.Config, logger logs.Logger, cmds *cmds.Cmds) *DeployCmds {
+	s := &DeployCmds{conf}
 	check := func(arg []string, action ...func(string) error) {
 		if len(arg) == 0 {
 			system.Printfln(system.MarshalIndent(conf.Install))
@@ -46,30 +45,26 @@ func New(conf *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Deploy {
 	})
 	cmds.Add("env", "deploy env", func(ctx context.Context, arg ...string) {
 		list := []string{}
-		push := func(repos map[string]config.Target) {
-			for _, v := range repos {
-				if !v.Export {
-					continue
-				}
-				if _, e := os.Stat(path.Join(USR, v.Install, v.Start)); e == nil {
-					list = append(list, path.Dir(system.AbsPath(path.Join(USR, v.Install, v.Start))))
-				}
+		s.Config.Install.ForEach(func(name string, target config.Target) {
+			if p := s.BinFile(name); target.Export && system.Exists(p) {
+				list = append(list, path.Dir(system.AbsPath(p)))
 			}
-		}
-		push(s.Config.Install.Source)
-		push(s.Config.Install.Binary)
-		switch runtime.GOOS {
-		case "linux":
-			push(s.Config.Install.Linux)
-		case "darwin":
-			push(s.Config.Install.Darwin)
-		case "windows":
-			push(s.Config.Install.Windows)
-		}
+		})
 		fmt.Println(strings.Join(list, "\n"))
 		fmt.Println("export PATH=" + strings.Join(list, ":") + ":$PATH")
 	})
 	cmds.Add("deploy", "deploy command", func(ctx context.Context, arg ...string) {
+		if len(arg) == 0 {
+			s.Config.Install.ForEach(func(name string, target config.Target) {
+				buf, err := system.ReadFile(path.Join(s.BinPath(name), "log/service.pid"))
+				if err != nil {
+					return
+				}
+				pid, _ := strconv.ParseInt(string(buf), 10, 64)
+				system.Printfln("%s %d", name, pid)
+			})
+			return
+		}
 		args := []string{"-lh"}
 		for _, v := range arg {
 			check([]string{v}, s.Download, s.Unpack, s.Build)
@@ -80,19 +75,19 @@ func New(conf *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Deploy {
 	})
 	return s
 }
-func (s *Deploy) Path(name string) string {
+func (s *DeployCmds) Path(name string) string {
 	target := s.Config.Install.GetTarget(name)
 	return path.Join(USR, path.Base(target.Address))
 }
-func (s *Deploy) SrcPath(name string) string {
+func (s *DeployCmds) SrcPath(name string) string {
 	target := s.Config.Install.GetTarget(name)
 	return path.Join(USR, strings.Split(target.Install, "/")[0])
 }
-func (s *Deploy) BinPath(name string) string {
+func (s *DeployCmds) BinPath(name string) string {
 	target := s.Config.Install.GetTarget(name)
 	return path.Join(USR, target.Install)
 }
-func (s *Deploy) BinFile(name string) string {
+func (s *DeployCmds) BinFile(name string) string {
 	target := s.Config.Install.GetTarget(name)
 	return path.Join(USR, target.Install, strings.Split(target.Start, " ")[0])
 }

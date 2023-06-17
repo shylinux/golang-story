@@ -54,7 +54,7 @@ func Valid(req interface{}, value interface{}, name string, rule string) error {
 	return nil
 }
 
-func (s *Generate) GenValid() {
+func (s *GenerateCmds) GenValid() {
 	for name, proto := range s.protos {
 		s.Render(path.Join(s.conf.PbPath, name+"_valid.pb.go"), _valid_template, proto, template.FuncMap{
 			"RequestList": func() (res []string) {

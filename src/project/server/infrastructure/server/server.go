@@ -25,28 +25,33 @@ type MainServer struct {
 func New(config *config.Config, logger logs.Logger, proxy *proxy.Proxy, consul consul.Consul, server *grpc.Server, pool *goroutine.Pool) *MainServer {
 	return &MainServer{config, consul, proxy, server, pool}
 }
-func (s *MainServer) registerService(key string, name string, host string, port int) {
+func (s *MainServer) register(key string, name string, host string, port int) {
 	name = config.WithDef(name, s.Config.Server.Name+"."+key)
 	s.Consul.Register(consul.Service{Name: name, Host: host, Port: port})
 }
 func (s *MainServer) Run() error {
-	server := s.Config.Server
-	if k := server.Main; k == server.Name || k == "server" {
-		for k, v := range s.Config.Internal {
-			if v.Export {
-				s.registerService(k, v.Name, server.Host, server.Port)
-			}
-		}
-		if s.Config.Proxy.Export {
-			s.Pool.Go("proxy", s.Proxy.Run)
-		}
-	} else {
-		v := s.Config.Internal[k]
-		s.registerService(k, v.Name, server.Host, server.Port)
-	}
 	if s.Config.Logs.Pid != "" {
 		system.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
 		s.Pool.Go("signal", system.Watch)
+	}
+	if s.Config.Proxy.Local {
+		return s.Proxy.Run()
+	}
+	server := s.Config.Server
+	if k := server.Main; k == server.Name || k == "server" {
+		if s.Config.Proxy.Export {
+			s.Pool.Go("proxy", s.Proxy.Run)
+		}
+		if !s.Config.Proxy.Simple {
+			for k, v := range s.Config.Internal {
+				if v.Export {
+					s.register(k, v.Name, server.Host, server.Port)
+				}
+			}
+		}
+	} else {
+		v := s.Config.Internal[k]
+		s.register(k, v.Name, server.Host, server.Port)
 	}
 	addr := config.Address(server.Host, server.Port)
 	logs.Infof("server start %s %s %s", server.Name, server.Type, addr)

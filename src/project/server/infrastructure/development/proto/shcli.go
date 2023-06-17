@@ -8,7 +8,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-func (s *Generate) GenShCLI() {
+func (s *GenerateCmds) GenShCLI() {
 	serviceList := []string{}
 	for name, proto := range s.protos {
 		serviceList = append(serviceList, proto[PACKAGE].List...)
@@ -79,22 +79,20 @@ package cli
 
 import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 )
 
-func Init(container *container.Container) {
-	container.Provide(NewMainServiceCmds)
+func Init(c *container.Container) {
+	c.Provide(NewMainServiceCmds)
 {{ range $index, $service := . }}
-	container.Provide(New{{ $service }}Cmds)
+	c.Provide(New{{ $service }}Cmds)
 {{ end }}
 }
 
-type MainServiceCmds struct {
-	*cmds.Cmds
-}
+type MainServiceCmds struct {}
 
-func NewMainServiceCmds(cmds *cmds.Cmds{{ range $index, $service := . }}, _ *{{ $service }}Cmds{{ end }}) *MainServiceCmds {
-	return &MainServiceCmds{cmds}
+func NewMainServiceCmds({{ range $index, $service := . }}_ *{{ $service }}Cmds, {{ end }}) *MainServiceCmds {
+	return &MainServiceCmds{}
 } 
+
 `
 )

@@ -26,10 +26,11 @@ type Target struct {
 	Name    string
 	Address string
 	Unpack  string
-	Build   []string
 	Install string
 	Plugin  []string
+	Build   []string
 	Start   string
+	Daemon  bool
 	Export  bool
 }
 
@@ -57,4 +58,21 @@ func (s Install) GetTarget(name string) Target {
 		return target
 	}
 	return Target{}
+}
+func (s Install) ForEach(cb func(string, Target)) {
+	each := func(list map[string]Target) {
+		for k, v := range list {
+			cb(k, v)
+		}
+	}
+	switch runtime.GOOS {
+	case LINUX:
+		each(s.Linux)
+	case DARWIN:
+		each(s.Darwin)
+	case WINDOWS:
+		each(s.Windows)
+	}
+	each(s.Binary)
+	each(s.Source)
 }

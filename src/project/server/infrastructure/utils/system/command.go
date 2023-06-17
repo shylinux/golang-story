@@ -45,7 +45,7 @@ func CommandStart(dir, name string, arg ...string) (int, error) {
 	logs.Infof("cmd %s %s %s", dir, name, strings.Join(arg, " "))
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = f
-	cmd.Stdout = f
+	cmd.Stderr = f
 	cmd.Dir = dir
 	if err := cmd.Start(); err != nil {
 		logs.Errorf("cmd failure %s %s %s", name, arg, err)

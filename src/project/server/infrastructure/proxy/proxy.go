@@ -42,11 +42,34 @@ func (s *Proxy) Register(service string, controller interface{}) {
 		s.proxy[path.Join(service, name)] = method
 	})
 }
+func (s *Proxy) Run() error {
+	conf := s.Config.Proxy
+	gin.SetMode(gin.ReleaseMode)
+	engine := gin.New()
+	engine.POST("/*s", s.handler)
+	engine.GET("/*s", func(ctx *gin.Context) {
+		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
+			s.handler(ctx)
+			return
+		}
+		logs.Infof("static %v", ctx.Request.URL.Path)
+		if ctx.Request.URL.Path == "/" {
+			ctx.File(path.Join(conf.Root, "index.html"))
+		} else {
+			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))
+		}
+	})
+	addr := config.Address(conf.Host, conf.Port)
+	logs.Infof("proxy start %s root %s", addr, conf.Root)
+	system.Printfln("proxy start %s", addr)
+	errors.Assert(engine.Run(addr))
+	return nil
+}
 func (s *Proxy) handler(ctx *gin.Context) {
 	trace.ServerAccess(context.Background(), func(_ctx context.Context) {
 		var err error
 		var res interface{}
-		ctx.Writer.Header().Add("TraceID", logs.TraceID(_ctx))
+		ctx.Writer.Header().Add("TraceID", trace.TraceID(_ctx))
 		begin, api := time.Now(), strings.TrimPrefix(ctx.Request.URL.Path, "/api/")
 		echo := func(res interface{}, err error) {
 			if err != nil && err.Error() != "" {
@@ -94,27 +117,4 @@ func (s *Proxy) parse(ctx *gin.Context, method reflect.Method) (interface{}, err
 		}
 	}
 	return req, nil
-}
-func (s *Proxy) Run() error {
-	conf := s.Config.Proxy
-	gin.SetMode(gin.ReleaseMode)
-	engine := gin.New()
-	engine.POST("/*s", s.handler)
-	engine.GET("/*s", func(ctx *gin.Context) {
-		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
-			s.handler(ctx)
-			return
-		}
-		logs.Infof("static %v", ctx.Request.URL.Path)
-		if ctx.Request.URL.Path == "/" {
-			ctx.File(path.Join(conf.Root, "index.html"))
-		} else {
-			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))
-		}
-	})
-	addr := config.Address(conf.Host, conf.Port)
-	logs.Infof("proxy start %s root %s", addr, conf.Root)
-	system.Printfln("proxy start %s", addr)
-	errors.Assert(engine.Run(addr))
-	return nil
 }

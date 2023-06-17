@@ -17,8 +17,8 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-func (s *Deploy) Unpack(name string) error {
-	if system.Exists(s.BinPath(name)) {
+func (s *DeployCmds) Unpack(name string) error {
+	if system.Exists(s.SrcPath(name)) {
 		return nil
 	} else if p := s.Path(name); strings.HasSuffix(p, ".tar.xz") {
 		_, err := system.Command("", "tar", "xf", p, "-C", path.Dir(p))
@@ -31,7 +31,7 @@ func (s *Deploy) Unpack(name string) error {
 		return errors.New(fmt.Errorf("not implement unpack"), p)
 	}
 }
-func (s *Deploy) UnpackGZIP(name string) error {
+func (s *DeployCmds) UnpackGZIP(name string) error {
 	count, err := s.UnpackGZIPCount(name)
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (s *Deploy) UnpackGZIP(name string) error {
 	}
 	return nil
 }
-func (s *Deploy) UnpackGZIPCount(name string) (int, error) {
+func (s *DeployCmds) UnpackGZIPCount(name string) (int, error) {
 	f, e := system.Open(s.Path(name))
 	if e != nil {
 		logs.Errorf("unpack failure %s %s", name, e)
@@ -83,7 +83,7 @@ func (s *Deploy) UnpackGZIPCount(name string) (int, error) {
 	}
 	return count, nil
 }
-func (s *Deploy) UnpackZIP(name string) error {
+func (s *DeployCmds) UnpackZIP(name string) error {
 	r, e := zip.OpenReader(s.Path(name))
 	if e != nil {
 		logs.Errorf("unpack failure %s %s", name, e)
@@ -102,7 +102,7 @@ func (s *Deploy) UnpackZIP(name string) error {
 	}
 	return nil
 }
-func (s *Deploy) UnpackFile(target config.Target, name string, perm os.FileMode, f io.Reader) error {
+func (s *DeployCmds) UnpackFile(target config.Target, name string, perm os.FileMode, f io.Reader) error {
 	if f, ok := f.(io.Closer); ok {
 		defer f.Close()
 	}

@@ -27,9 +27,8 @@ func Init(c *container.Container) {
 	c.Provide(goroutine.New)
 	c.Provide(context.Background)
 	c.Provide(grpc.NewServer)
-	c.Provide(tests.New)
 	c.Provide(uuid.New)
 }
 func Test(t *testing.T, cb func(*tests.Suite) interface{}) {
-	container.New(Init).Invoke(func(s *tests.Suite) { s.Run(t, cb(s)) })
+	container.New(Init).Provide(tests.New).Invoke(func(s *tests.Suite) { s.Run(t, cb(s)) })
 }

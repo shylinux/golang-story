@@ -15,12 +15,18 @@ import (
 )
 
 type queue struct {
-	*config.Config
+	conf config.Queue
 	pulsar.Client
 }
 
 func New(config *config.Config, consul consul.Consul) (repository.Queue, error) {
 	conf := config.Engine.Queue
+	if config.Proxy.Simple {
+		conf.Enable = false
+	}
+	if !conf.Enable {
+		return &queue{conf, nil}, nil
+	}
 	if list, err := consul.Resolve(config.WithDef(conf.Name, "pulsar")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
@@ -33,10 +39,13 @@ func New(config *config.Config, consul consul.Consul) (repository.Queue, error) 
 		return nil, errors.New(err, "engine connect pulsar failure")
 	} else {
 		logs.Infof("engine connect pulsar %s:%d", conf.Host, conf.Port)
-		return &queue{config, client}, nil
+		return &queue{conf, client}, nil
 	}
 }
 func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (string, error) {
+	if !s.conf.Enable {
+		return "", nil
+	}
 	echo := func(res string, err error) (string, error) {
 		if err != nil && err.Error() != "" {
 			logs.Errorf("pulsar send %s:%s %s %s", topic, key, err, string(payload), ctx)
@@ -57,6 +66,9 @@ func (s *queue) Send(ctx context.Context, topic, key string, payload []byte) (st
 	}
 }
 func (s *queue) Recv(ctx context.Context, name, topic string, cb func(ctx context.Context, key string, payload []byte)) error {
+	if !s.conf.Enable {
+		return nil
+	}
 	p, err := s.Client.Subscribe(pulsar.ConsumerOptions{Topic: fmt.Sprintf("persistent://public/default/%s", topic), SubscriptionName: name, Type: pulsar.Shared})
 	if err != nil {
 		logs.Errorf("%s subscribe %s %s %s", name, topic, err, errors.FileLine(2), ctx)

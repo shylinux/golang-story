@@ -11,7 +11,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-func (s *Generate) GenTests() {
+func (s *GenerateCmds) GenTests() {
 	for name, proto := range s.protos {
 		s.Render(path.Join(s.conf.TsPath, name+"_test.go"), _ts_cases, proto, template.FuncMap{
 			"PwdModPath":  func() string { return logs.PwdModPath() },

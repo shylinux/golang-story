@@ -1,0 +1,26 @@
+logs:
+  pid: log/service.pid
+  path: log/service.log
+  maxsize: 10 # 10M
+  maxage: 30  # 30days
+  stdout: false
+consul:
+  enable: false
+  addr: ":8500"
+  interval: 10s
+  workid: 2
+server:
+  name: demo
+  port: 9093
+internal:
+  machine:
+    export: true
+    port: 9093
+engine:
+  storage:
+    name: mysql
+    username: demo
+    password: demo
+    database: demo
+    host: 127.0.0.1
+    port: 3306

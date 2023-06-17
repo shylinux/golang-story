@@ -17,13 +17,13 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-type Generate struct {
+type GenerateCmds struct {
 	conf   config.Generate
 	protos map[string]map[string]*Item
 }
 
-func NewGenerate(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Generate {
-	s := &Generate{conf: config.Generate}
+func NewGenerateCmds(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *GenerateCmds {
+	s := &GenerateCmds{conf: config.Generate}
 	cmds.Add("generate", "proto generate", func(ctx context.Context, arg ...string) {
 		s.protos = map[string]map[string]*Item{}
 		s.OpenProto(func(file *os.File, name string) { s.protos[name] = s.ParseProto(file) })
@@ -37,7 +37,7 @@ func NewGenerate(config *config.Config, logger logs.Logger, cmds *cmds.Cmds) *Ge
 	})
 	return s
 }
-func (s *Generate) OpenProto(cb func(*os.File, string)) error {
+func (s *GenerateCmds) OpenProto(cb func(*os.File, string)) error {
 	list, err := system.ReadDir(s.conf.Path)
 	if err != nil {
 		return errors.New(err, "read proto dir failure")
@@ -53,7 +53,7 @@ func (s *Generate) OpenProto(cb func(*os.File, string)) error {
 	}
 	return nil
 }
-func (s *Generate) ScanProto(f *os.File, cb func([]string, string)) {
+func (s *GenerateCmds) ScanProto(f *os.File, cb func([]string, string)) {
 	for bio := bufio.NewScanner(f); bio.Scan(); {
 		text := strings.TrimSpace(bio.Text())
 		if text == "" {
@@ -66,7 +66,7 @@ func (s *Generate) ScanProto(f *os.File, cb func([]string, string)) {
 	}
 }
 
-func (s *Generate) Render(name string, tmpl string, data interface{}, funcs template.FuncMap) error {
+func (s *GenerateCmds) Render(name string, tmpl string, data interface{}, funcs template.FuncMap) error {
 	f, e := system.Create(name)
 	if e != nil {
 		return errors.New(e, "render file")
@@ -81,12 +81,12 @@ func (s *Generate) Render(name string, tmpl string, data interface{}, funcs temp
 		return nil
 	}
 }
-func (s *Generate) Template(tmpl string, data interface{}, funcs template.FuncMap) string {
+func (s *GenerateCmds) Template(tmpl string, data interface{}, funcs template.FuncMap) string {
 	buf := bytes.NewBuffer(make([]byte, 0, 1024))
 	system.NewTemplate(errors.FileLine(2), tmpl, funcs, buf, data)
 	return string(buf.Bytes())
 }
-func (s *Generate) Output(name string, cb func(func(str string, arg ...interface{}))) error {
+func (s *GenerateCmds) Output(name string, cb func(func(str string, arg ...interface{}))) error {
 	f, e := system.Create(name)
 	if e != nil {
 		return errors.New(e, "output file")

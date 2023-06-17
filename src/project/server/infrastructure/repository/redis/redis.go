@@ -13,18 +13,28 @@ import (
 )
 
 type cache struct {
+	conf config.Cache
 	*redis.Client
 }
 
 func New(config *config.Config, consul consul.Consul) repository.Cache {
 	conf := config.Engine.Cache
+	if config.Proxy.Simple {
+		conf.Enable = false
+	}
+	if !conf.Enable {
+		return &cache{conf, nil}
+	}
 	if list, err := consul.Resolve(config.WithDef(conf.Name, "redis")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	logs.Infof("engine connect redis %s:%d", conf.Host, conf.Port)
-	return &cache{redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}
+	return &cache{conf, redis.NewClient(&redis.Options{Addr: fmt.Sprintf("%s:%d", conf.Host, conf.Port), Password: conf.Password})}
 }
 func (s *cache) Set(ctx context.Context, key string, value string) error {
+	if !s.conf.Enable {
+		return nil
+	}
 	if err := s.Client.Set(ctx, key, value, 0).Err(); err != nil {
 		logs.Warnf("redis set %s %s %s", key, value, err, ctx)
 		return errors.New(err, "redis set")
@@ -34,6 +44,9 @@ func (s *cache) Set(ctx context.Context, key string, value string) error {
 	}
 }
 func (s *cache) Get(ctx context.Context, key string) (string, error) {
+	if !s.conf.Enable {
+		return "", errors.New(fmt.Errorf("not found"), "")
+	}
 	if res, err := s.Client.Get(ctx, key).Result(); err != nil {
 		logs.Warnf("redis get %s %s", key, err, ctx)
 		return res, errors.New(err, "redis get")
@@ -43,6 +56,9 @@ func (s *cache) Get(ctx context.Context, key string) (string, error) {
 	}
 }
 func (s *cache) Del(ctx context.Context, key string) error {
+	if !s.conf.Enable {
+		return nil
+	}
 	if err := s.Client.Del(ctx, key).Err(); err != nil {
 		logs.Warnf("redis del %s %s", key, err, ctx)
 		return errors.New(err, "redis del")

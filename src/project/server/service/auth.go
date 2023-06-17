@@ -32,8 +32,8 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (str
 	if password != list[0].Password {
 		return "", errors.NewIncorrectPassword(fmt.Errorf("password incorrect"))
 	}
-	return s.token.Signed(username)
+	return s.token.Signed(token.Info{username})
 }
-func (s *AuthService) Verify(ctx context.Context, token string) (string, error) {
+func (s *AuthService) Verify(ctx context.Context, token string) (token.Info, error) {
 	return s.token.Verify(token)
 }

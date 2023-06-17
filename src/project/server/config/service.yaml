@@ -6,20 +6,24 @@ logs:
   stdout: false
 proxy:
   export: true
+  simple: false
+  local: false
   root: "usr/vue-element-admin/dist/"
-  local: true
   port: 8081
 token:
   issuer: "demo.auth"
   secret: "demo.auth"
-  expire: "24h"
+  expire: "72h"
 consul:
+  enable: true
   addr: ":8500"
   interval: 10s
-  workid: 1
 server:
   name: demo
   port: 9090
+consumer:
+  user:
+    enable: true
 internal:
   auth:
     export: true
@@ -31,15 +35,18 @@ internal:
     export: true
     port: 9093
 engine:
-  queue:
-    name: pulsar
-    host: 127.0.0.1
-    port: 6650
   cache:
+    enable: true
     name: redis
     host: 127.0.0.1
     port: 6379
+  queue:
+    enable: true
+    name: pulsar
+    host: 127.0.0.1
+    port: 6650
   search:
+    enable: true
     name: elasticsearch
     index: demo
     host: 127.0.0.1

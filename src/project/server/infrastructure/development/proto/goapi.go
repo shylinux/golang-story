@@ -3,11 +3,12 @@ package proto
 import (
 	"html/template"
 	"path"
+	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-func (s *Generate) GenGoAPI() {
+func (s *GenerateCmds) GenGoAPI() {
 	serviceList := []string{}
 	for name, proto := range s.protos {
 		serviceList = append(serviceList, proto[PACKAGE].List...)
@@ -16,6 +17,13 @@ func (s *Generate) GenGoAPI() {
 		})
 	}
 	s.Render(path.Join(s.conf.GoPath, path.Base(s.conf.GoPath)+".go"), _goapi_init, serviceList, nil)
+	for i, v := range serviceList {
+		serviceList[i] = strings.TrimSuffix(v, "Service")
+	}
+	s.Render(path.Join(s.conf.Path, "idl.go"), _idl_template, serviceList, template.FuncMap{
+		"PwdModPath": func() string { return logs.PwdModPath() },
+		"HasService": func() bool { return len(serviceList) > 0 },
+	})
 }
 
 const (

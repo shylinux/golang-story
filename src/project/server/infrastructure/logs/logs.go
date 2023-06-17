@@ -9,10 +9,10 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/trace"
 )
 
 type Logger interface {
-	With(args ...interface{}) Logger
 	Infof(str string, arg ...interface{})
 	Warnf(str string, arg ...interface{})
 	Errorf(str string, arg ...interface{})
@@ -20,9 +20,6 @@ type Logger interface {
 }
 type logger struct{ *zap.SugaredLogger }
 
-func (s *logger) With(arg ...interface{}) Logger {
-	return &logger{s.SugaredLogger.With(arg...).WithOptions(zap.AddCallerSkip(1))}
-}
 func (s *logger) Infof(str string, arg ...interface{}) {
 	s.SugaredLogger.Infof(s.format(str, arg...))
 }
@@ -38,7 +35,7 @@ func (s *logger) Debugf(str string, arg ...interface{}) {
 func (s *logger) format(str string, arg ...interface{}) string {
 	if len(arg) > 0 {
 		if ctx, ok := arg[len(arg)-1].(context.Context); ok {
-			return TraceID(ctx) + " " + fmt.Sprintf(str, arg[:len(arg)-1]...)
+			return trace.TraceID(ctx) + " " + fmt.Sprintf(str, arg[:len(arg)-1]...)
 		}
 	}
 	return fmt.Sprintf(str, arg...)
@@ -63,7 +60,6 @@ func New(config *config.Config) (Logger, error) {
 	l = &logger{log.SugaredLogger.WithOptions(zap.AddCallerSkip(2))}
 	return l, nil
 }
-func With(arg ...interface{}) Logger        { return log.With(arg...) }
 func Infof(str string, arg ...interface{})  { l.Infof(str, arg...) }
 func Warnf(str string, arg ...interface{})  { l.Warnf(str, arg...) }
 func Errorf(str string, arg ...interface{}) { l.Errorf(str, arg...) }

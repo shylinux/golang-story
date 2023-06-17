@@ -106,3 +106,14 @@ func NewTemplate(name string, tmpl string, funcs template.FuncMap, f io.Writer, 
 		return nil
 	}
 }
+func NewTemplateFile(name string, tmpl string, funcs template.FuncMap, data interface{}) error {
+	f, e := Create(name)
+	if e != nil {
+		return errors.New(e, "render file")
+	}
+	defer f.Close()
+	if e := NewTemplate(name, strings.TrimPrefix(tmpl, "\n"), funcs, f, data); e != nil {
+		return errors.New(e, "render file")
+	}
+	return nil
+}

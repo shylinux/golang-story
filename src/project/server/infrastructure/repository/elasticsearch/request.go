@@ -10,8 +10,7 @@ import (
 )
 
 func (s *search) address(str string, arg ...interface{}) string {
-	conf := s.Config.Engine.Search
-	return fmt.Sprintf("http://%s:%d/%s/", conf.Host, conf.Port, conf.Index) + fmt.Sprintf(str, arg...)
+	return fmt.Sprintf("http://%s:%d/%s/", s.conf.Host, s.conf.Port, s.conf.Index) + fmt.Sprintf(str, arg...)
 }
 func (s *search) request(ctx context.Context, method string, url string, data interface{}, res interface{}) error {
 	begin := time.Now()

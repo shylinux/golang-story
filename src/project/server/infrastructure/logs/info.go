@@ -2,7 +2,6 @@ package logs
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,16 +10,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
-
-	"go.opentelemetry.io/otel/trace"
 )
 
-func TraceID(ctx context.Context) string {
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
-		return fmt.Sprintf("%s-%s", span.TraceID().String(), span.SpanID())
-	}
-	return ""
-}
 func PwdModPath() string {
 	file, _ := os.Getwd()
 	ls := strings.Split(file, "/")

@@ -10,8 +10,8 @@ func Init(c *container.Container) {
 	space.Init(c)
 }
 
-type InternalController struct{}
+type MainController struct{}
 
-func NewInternalController(space *space.SpaceController) *InternalController {
-	return &InternalController{}
+func NewInternalController(space *space.SpaceController) *MainController {
+	return &MainController{}
 }

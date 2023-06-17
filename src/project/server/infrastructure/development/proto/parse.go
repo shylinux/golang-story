@@ -23,7 +23,7 @@ type Item struct {
 	List    []string
 }
 
-func (s *Generate) ParseProto(file *os.File) map[string]*Item {
+func (s *GenerateCmds) ParseProto(file *os.File) map[string]*Item {
 	items := map[string]*Item{}
 	comment, block, name := "", "", ""
 	s.ScanProto(file, func(ls []string, text string) {

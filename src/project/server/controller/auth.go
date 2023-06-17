@@ -34,8 +34,8 @@ func NewAuthController(config *config.Config, server *server.MainServer, service
 func (s *AuthController) auth(ctx context.Context, api string, token string) (context.Context, error) {
 	if strings.Contains(api, s.name) {
 		return ctx, nil
-	} else if username, err := s.service.Verify(ctx, token); err == nil {
-		return metadata.SetValue(ctx, metadata.USERNAME, username), nil
+	} else if info, err := s.service.Verify(ctx, token); err == nil {
+		return metadata.SetValue(ctx, metadata.USERNAME, info.Username), nil
 	} else {
 		return ctx, err
 	}
@@ -52,6 +52,6 @@ func (s *AuthController) Logout(ctx context.Context, req *pb.AuthLogoutRequest) 
 	return &pb.AuthLogoutReply{}, errors.NewRemoveFailResp(nil)
 }
 func (s *AuthController) Verify(ctx context.Context, req *pb.AuthVerifyRequest) (*pb.AuthVerifyReply, error) {
-	username, err := s.service.Verify(ctx, req.Token)
-	return &pb.AuthVerifyReply{Username: username}, errors.NewInfoFailResp(err)
+	info, err := s.service.Verify(ctx, req.Token)
+	return &pb.AuthVerifyReply{Username: info.Username}, errors.NewInfoFailResp(err)
 }

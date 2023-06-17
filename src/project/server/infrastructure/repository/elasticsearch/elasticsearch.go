@@ -12,24 +12,39 @@ import (
 )
 
 type search struct {
-	*config.Config
+	conf config.Search
 }
 
 func New(config *config.Config, consul consul.Consul) (repository.Search, error) {
 	conf := config.Engine.Search
+	if config.Proxy.Simple {
+		conf.Enable = false
+	}
+	if !conf.Enable {
+		return &search{conf}, nil
+	}
 	if list, err := consul.Resolve(config.WithDef(conf.Name, "elasticsearch")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	logs.Infof("engine connect elasticsearch %s:%d/%s", conf.Host, conf.Port, conf.Index)
-	return &search{config}, nil
+	return &search{conf}, nil
 }
 func (s *search) Update(ctx context.Context, mapping string, id int64, data interface{}) error {
+	if !s.conf.Enable {
+		return nil
+	}
 	return s.request(ctx, http.MethodPost, s.address("%s/%d", mapping, id), data, nil)
 }
 func (s *search) Delete(ctx context.Context, mapping string, id int64) error {
+	if !s.conf.Enable {
+		return nil
+	}
 	return s.request(ctx, http.MethodDelete, s.address("%s/%d", mapping, id), nil, nil)
 }
 func (s *search) Query(ctx context.Context, mapping string, res interface{}, page, count int64, key, value string) (total int64, err error) {
+	if !s.conf.Enable {
+		return 0, nil
+	}
 	var data struct {
 		Hits struct {
 			Total struct{ Value int64 }

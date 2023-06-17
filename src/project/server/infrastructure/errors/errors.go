@@ -46,9 +46,6 @@ func ParseResp(err error, str string) *ErrorResp {
 	case nil:
 		return nil
 	case *ErrorResp:
-		if err == nil {
-			return nil
-		}
 		return err
 	}
 	if ls := strings.SplitN(err.Error(), ":", 2); len(ls) > 1 {
@@ -80,22 +77,22 @@ func NewAlreadyExists(err error) *ErrorResp {
 	return newResp(err, enums.Errors.AlreadyExists, "already exists")
 }
 func NewCreateFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelCreate, "model create failure")
+	return newResp(err, enums.Errors.ModelCreate, "service create failure")
 }
 func NewRemoveFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelRemove, "model remove failure")
+	return newResp(err, enums.Errors.ModelRemove, "service remove failure")
 }
 func NewModifyFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelModify, "model modify failure")
+	return newResp(err, enums.Errors.ModelModify, "service modify failure")
 }
 func NewSearchFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelSearch, "model search failure")
+	return newResp(err, enums.Errors.ModelSearch, "service search failure")
 }
 func NewInfoFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelInfo, "model info failure")
+	return newResp(err, enums.Errors.ModelInfo, "service info failure")
 }
 func NewListFailResp(err error) *ErrorResp {
-	return newResp(err, enums.Errors.ModelList, "model list failure")
+	return newResp(err, enums.Errors.ModelList, "service list failure")
 }
 
 type errors struct {
@@ -115,7 +112,7 @@ func newError(err error, str string, arg ...interface{}) error {
 	case *ErrorResp:
 		return err
 	}
-	return &errors{last: err, info: fmt.Sprintf(str, arg...), fileline: FileLine(3), funcname: FuncName(3)}
+	return &errors{info: fmt.Sprintf(str, arg...), fileline: FileLine(3), funcname: FuncName(3), last: err}
 }
 func New(err error, str string, arg ...interface{}) error {
 	return newError(err, str, arg...)

@@ -8,6 +8,9 @@ import (
 )
 
 func Bind(req interface{}, arg ...string) interface{} {
+	if len(arg) == 0 {
+		return req
+	}
 	rt, rv := reflect.TypeOf(req).Elem(), reflect.ValueOf(req).Elem()
 	trans := map[string]string{}
 	for i := 0; i < rv.NumField(); i++ {

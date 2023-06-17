@@ -27,8 +27,8 @@ func (s Method) Call(arg ...interface{}) (res []interface{}) {
 	}
 	return
 }
-func (s Method) NewParam(n int) interface{} {
-	return reflect.New(s.Type().In(n).Elem()).Interface()
+func (s Method) NewParam(n int, arg ...string) interface{} {
+	return Bind(reflect.New(s.Type().In(n).Elem()).Interface(), arg...)
 }
 func (s Method) NewResult(n int) interface{} {
 	return reflect.New(s.Type().Out(n).Elem()).Interface()

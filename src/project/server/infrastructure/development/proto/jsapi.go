@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (s *Generate) GenJsAPI() {
+func (s *GenerateCmds) GenJsAPI() {
 	for name, proto := range s.protos {
 		s.Render(path.Join(s.conf.JsPath, name+".js"), _jsapi_client, proto, template.FuncMap{
 			"PackageName": func() string { return proto[PACKAGE].Name },

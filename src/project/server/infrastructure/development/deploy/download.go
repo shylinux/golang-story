@@ -14,7 +14,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-func (s *Deploy) Download(name string) error {
+func (s *DeployCmds) Download(name string) error {
 	if system.Exists(s.Path(name)) {
 		return nil
 	}
@@ -24,6 +24,9 @@ func (s *Deploy) Download(name string) error {
 		logs.Infof("download replace %s => %s", target.Address, address)
 		target.Address = address
 	} else if address, ok := s.Config.ReplaceMap[path.Base(target.Address)]; ok {
+		if strings.HasSuffix(address, "/") {
+			address += path.Base(target.Address)
+		}
 		logs.Infof("download replace %s => %s", target.Address, address)
 		target.Address = address
 	}
@@ -49,10 +52,6 @@ func (s *Deploy) Download(name string) error {
 		return e
 	} else {
 		logs.Infof("download success %s %s %s %s", name, target.Address, logs.Size(n), logs.Cost(begin))
-		for _, p := range target.Plugin {
-			args := strings.Split(p, " ")
-			system.CommandBuild("", args[0], args[1:]...)
-		}
 		return nil
 	}
 }
