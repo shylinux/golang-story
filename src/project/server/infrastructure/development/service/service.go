@@ -29,7 +29,7 @@ func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
 	for _, file := range templateList {
 		file.Path = strings.ReplaceAll(file.Path, "name", name)
 		if system.Exists(file.Path) {
-			// continue
+			continue
 		}
 		system.NewTemplateFile(file.Path, file.Text, template.FuncMap{
 			"PwdModPath": func() string { return logs.PwdModPath() },
@@ -39,7 +39,9 @@ func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
 			"name":    proto.Capital(name),
 			"table":   name,
 		})
-		system.Command("", "gofmt", "-w", file.Path)
+		if strings.HasSuffix(file.Path, ".go") {
+			system.Command("", "gofmt", "-w", file.Path)
+		}
 	}
 
 }

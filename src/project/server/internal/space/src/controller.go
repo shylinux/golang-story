@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
-	"shylinux.com/x/golang-story/src/project/server/domain/trans"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/reflect"
 	"shylinux.com/x/golang-story/src/project/server/internal/space/idl/pb"
 )
 
@@ -50,6 +50,6 @@ func (s *SpaceController) Info(ctx context.Context, req *pb.SpaceInfoRequest) (*
 func (s *SpaceController) List(ctx context.Context, req *pb.SpaceListRequest) (*pb.SpaceListReply, error) {
 	list, total, err := s.service.List(ctx, req.Page, req.Count, req.Key, req.Value)
 	data := []*pb.Space{}
-	trans.ListDTO(list, SpaceDTO, &data)
+	reflect.TransList(list, SpaceDTO, &data)
 	return &pb.SpaceListReply{Data: data, Total: total}, errors.NewListFailResp(err)
 }

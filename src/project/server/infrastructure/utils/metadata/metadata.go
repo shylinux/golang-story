@@ -8,6 +8,7 @@ import (
 
 const (
 	USERNAME = "username"
+	PRELOAD  = "preload"
 )
 
 func SetValue(ctx context.Context, key, value string) context.Context {

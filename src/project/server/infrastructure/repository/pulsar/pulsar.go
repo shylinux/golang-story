@@ -27,7 +27,7 @@ func New(config *config.Config, consul consul.Consul) (repository.Queue, error) 
 	if !conf.Enable {
 		return &queue{conf, nil}, nil
 	}
-	if list, err := consul.Resolve(config.WithDef(conf.Name, "pulsar")); err == nil && len(list) > 0 {
+	if list, err := consul.Resolve(config.WithDef(conf.Type, "pulsar")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	options := pulsar.ClientOptions{URL: fmt.Sprintf("pulsar://%s:%d", conf.Host, conf.Port), Logger: &logger{}}

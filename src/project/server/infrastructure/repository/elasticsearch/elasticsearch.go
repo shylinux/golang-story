@@ -23,7 +23,7 @@ func New(config *config.Config, consul consul.Consul) (repository.Search, error)
 	if !conf.Enable {
 		return &search{conf}, nil
 	}
-	if list, err := consul.Resolve(config.WithDef(conf.Name, "elasticsearch")); err == nil && len(list) > 0 {
+	if list, err := consul.Resolve(config.WithDef(conf.Type, "elasticsearch")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	logs.Infof("engine connect elasticsearch %s:%d/%s", conf.Host, conf.Port, conf.Index)

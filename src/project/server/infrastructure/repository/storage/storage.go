@@ -14,6 +14,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/metadata"
 )
 
 const (
@@ -48,6 +49,7 @@ func New(config *config.Config, consul consul.Consul) (repository.Storage, error
 			"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 			conf.Username, conf.Password, conf.Host, conf.Port, conf.Database,
 		)), &gorm.Config{})
+
 		if err != nil {
 			logs.Errorf("engine connect mysql %s:%d/%s %s", conf.Host, conf.Port, conf.Database, err)
 			return nil, errors.New(err, "engine connect mysql failure")
@@ -61,11 +63,13 @@ func New(config *config.Config, consul consul.Consul) (repository.Storage, error
 	}
 }
 func (s storage) Insert(ctx context.Context, obj model.Model) error {
-	err := s.DB.WithContext(ctx).Create(obj).Error
-	if err != nil && strings.Contains(err.Error(), "Duplicate entry") {
+	if err := s.DB.WithContext(ctx).Create(obj).Error; err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		return errors.NewAlreadyExists(err)
+	} else if err != nil && strings.Contains(err.Error(), "UNIQUE constraint") {
+		return errors.NewAlreadyExists(err)
+	} else {
+		return errors.New(err, "storage insert failure")
 	}
-	return errors.New(err, "storage insert failure")
 }
 func (s storage) Delete(ctx context.Context, obj model.Model) error {
 	return errors.New(s.DB.WithContext(ctx).Model(obj).Where(obj.GetKey()+" = ?", obj.GetID()).Update("deleted", "1").Error, "storage delete failure")
@@ -83,6 +87,11 @@ func (s storage) SelectOne(ctx context.Context, obj model.Model) error {
 func (s storage) SelectList(ctx context.Context, obj model.Model, res interface{}, page, count int64, condition string, arg ...interface{}) (total int64, err error) {
 	db := s.DB.WithContext(ctx).Model(obj).Where(condition+" deleted = 0", arg...)
 	db.Count(&total)
+	if preload := metadata.GetValue(ctx, metadata.PRELOAD); preload != "" {
+		for _, preload := range strings.Split(preload, ",") {
+			db = db.Preload(preload)
+		}
+	}
 	return total, errors.New(db.Offset(int((page-1)*count)).Limit(int(count)).Find(res).Error, "storage select failure")
 }
 func (s *storage) AutoMigrate(obj ...interface{}) error {

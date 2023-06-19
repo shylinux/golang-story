@@ -2,6 +2,7 @@ package development
 
 import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/agent"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/deploy"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/java"
@@ -21,6 +22,7 @@ func Init(c *container.Container) {
 	c.Provide(proto.NewGenerateCmds)
 	c.Provide(deploy.NewDeployCmds)
 	c.Provide(server.NewServerCmds)
+	c.Provide(agent.NewAgentCmds)
 	c.Provide(java.NewJavaCmds)
 	c.Provide(node.NewNodeCmds)
 }

@@ -25,7 +25,7 @@ func New(config *config.Config, consul consul.Consul) repository.Cache {
 	if !conf.Enable {
 		return &cache{conf, nil}
 	}
-	if list, err := consul.Resolve(config.WithDef(conf.Name, "redis")); err == nil && len(list) > 0 {
+	if list, err := consul.Resolve(config.WithDef(conf.Type, "redis")); err == nil && len(list) > 0 {
 		conf.Host, conf.Port = list[0].Host, list[0].Port
 	}
 	logs.Infof("engine connect redis %s:%d", conf.Host, conf.Port)

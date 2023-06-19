@@ -5,6 +5,9 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
 func Bind(req interface{}, arg ...string) interface{} {
@@ -30,4 +33,37 @@ func Bind(req interface{}, arg ...string) interface{} {
 		}
 	}
 	return req
+}
+func Trans(dst interface{}, src interface{}) interface{} {
+	if src == nil {
+		return dst
+	}
+	t, v := reflect.TypeOf(src).Elem(), reflect.ValueOf(src).Elem()
+	call := errors.FileLine(2)
+	FieldList(dst, func(name string, field Field) {
+		if _, ok := t.FieldByName(name); ok {
+			switch field.Kind() {
+			case reflect.String:
+				field.SetString(v.FieldByName(name).String())
+			case reflect.Int64:
+				field.SetInt(v.FieldByName(name).Int())
+			case reflect.Int32:
+				field.SetInt(v.FieldByName(name).Int())
+			default:
+				logs.Errorf("not implement covert %s %s", name, call)
+			}
+		} else {
+			logs.Errorf("not found field %s %s", name, call)
+		}
+	})
+	return dst
+}
+func TransList(list interface{}, trans interface{}, data interface{}) {
+	v := reflect.ValueOf(list)
+	cb := reflect.ValueOf(trans)
+	target := reflect.ValueOf(data).Elem()
+	for i := 0; i < v.Len(); i++ {
+		res := cb.Call([]reflect.Value{v.Index(i)})
+		target.Set(reflect.Append(target, res[0]))
+	}
 }

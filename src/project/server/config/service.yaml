@@ -7,7 +7,6 @@ logs:
 proxy:
   export: true
   simple: false
-  local: true
   target: http://localhost:8082
   root: "usr/vue-element-admin/dist/"
   port: 8081
@@ -27,30 +26,30 @@ consumer:
 internal:
   auth:
     export: true
-    port: 9091
+    port: 9090
   user:
     export: true
-    port: 9092
+    port: 9090
   mesh:
     export: true
-    port: 9093
+    port: 9090
   space:
     export: true
     port: 9094
 engine:
   queue:
-    enable: true
-    name: pulsar
+    enable: false
+    type: pulsar
     host: 127.0.0.1
     port: 6650
   cache:
-    enable: true
-    name: redis
+    enable: false
+    type: redis
     host: 127.0.0.1
     port: 6379
   search:
-    enable: true
-    name: elasticsearch
+    enable: false
+    type: elasticsearch
     index: demo
     host: 127.0.0.1
     port: 9200

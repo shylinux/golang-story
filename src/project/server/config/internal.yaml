@@ -1,6 +1,8 @@
 internal:
   auth:
     export: true
+  mesh:
+    export: true
   user:
     export: true
 

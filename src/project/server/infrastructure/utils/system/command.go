@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
@@ -17,7 +18,7 @@ func Command(dir, name string, arg ...string) (string, error) {
 	cmd.Dir = dir
 	buf, err := cmd.CombinedOutput()
 	if err != nil {
-		logs.Errorf("cmd failure %s %s %s %s", name, arg, string(buf), err)
+		logs.Errorf("cmd failure %s %s %s %s %s", name, arg, string(buf), err, errors.FileLine(2))
 		return string(buf), err
 	} else {
 		return string(buf), nil

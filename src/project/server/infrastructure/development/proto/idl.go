@@ -3,7 +3,7 @@ package proto
 const (
 	_config_template = `
 internal:
-{{ range $index, $service := . }}  {{ $service }}:
+{{ range $package, $serviceList := . }}  {{ $package }}:
     export: true
 {{ end }}
 `

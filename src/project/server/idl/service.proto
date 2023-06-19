@@ -1,0 +1,106 @@
+syntax = "proto3";
+option go_package ="./pb";
+package mesh;
+import "idl/machine.proto";
+
+service ServiceService {
+    rpc Create (ServiceCreateRequest) returns (ServiceCreateReply);
+    rpc Remove (ServiceRemoveRequest) returns (ServiceRemoveReply);
+    rpc Inputs (ServiceInputsRequest) returns (ServiceInputsReply);
+    rpc Deploy (ServiceDeployRequest) returns (ServiceDeployReply);
+    rpc Info (ServiceInfoRequest) returns (ServiceInfoReply);
+    rpc List (ServiceListRequest) returns (ServiceListReply);
+}
+
+message ServiceCreateRequest {
+    // required
+    int64 machineID = 1;
+    // required
+    string mirror = 2;
+    string config = 3;
+    string dir = 4;
+    // required
+    string cmd = 5;
+    string arg = 6;
+    string env = 7;
+}
+message ServiceCreateReply {
+	ServiceError error = 1;
+	Service data = 2;
+}
+
+message ServiceRemoveRequest {
+    // required
+    int64 serviceID = 1;
+}
+message ServiceRemoveReply {
+	ServiceError error = 1;
+}
+
+message ServiceInputsRequest {
+    // required
+    string key = 1;
+    string value = 2;
+}
+message ServiceInputsReply {
+	ServiceError error = 1;
+    repeated ServiceInputsItem data = 2;
+}
+
+message ServiceDeployRequest {
+    // required
+    int64 serviceID = 1;
+}
+message ServiceDeployReply {
+	ServiceError error = 1;
+}
+
+message ServiceInfoRequest {
+    // required
+    int64 serviceID = 1;
+}
+message ServiceInfoReply {
+	ServiceError error = 1;
+	Service data = 2;
+}
+
+message ServiceListRequest {
+    // default 1
+    int64 page = 1;
+    // default 10
+    int64 count = 2;
+    string key = 3;
+    string value = 4;
+    int64 machineID = 5;
+}
+message ServiceListReply {
+	ServiceError error = 1;
+    repeated Service data = 2;
+    int64 total = 3;
+}
+
+message ServiceInputsItem {
+    string value = 1;
+}
+enum ServiceStatus {
+    SERVICE_UNKNOWN = 0;
+    SERVICE_DEPLOY = 1;
+    SERVICE_START = 2;
+    SERVICE_ERROR = 3;
+}
+message Service {
+    int64 machineID = 1;
+    int64 serviceID = 2;
+    ServiceStatus status = 3;
+    string mirror = 4;
+    string config = 5;
+    string dir = 6;
+    string cmd = 7;
+    string arg = 8;
+    string env = 9;
+    Machine machine = 10;
+}
+message ServiceError {
+    int64 code = 1;
+    string info = 2;
+}

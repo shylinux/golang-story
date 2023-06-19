@@ -33,9 +33,10 @@ func (s *MainServer) Run() error {
 		system.WriteFile(s.Config.Logs.Pid, []byte(fmt.Sprintf("%d", os.Getpid())), 0755)
 		s.Pool.Go("signal", system.Watch)
 	}
-	if s.Config.Proxy.Local {
-		return s.Proxy.Run()
-	} else if s.Config.Proxy.Export {
+	// if !s.Config.Consul.Enable {
+	// 	return s.Proxy.Run()
+	// } else
+	if s.Config.Proxy.Export {
 		s.Pool.Go("proxy", s.Proxy.Run)
 	}
 	server := s.Config.Server

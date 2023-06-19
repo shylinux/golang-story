@@ -10,6 +10,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/errors"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/reflect"
 	"shylinux.com/x/golang-story/src/project/server/service"
 )
 
@@ -42,7 +43,7 @@ func (s *UserController) Rename(ctx context.Context, req *pb.UserRenameRequest) 
 func (s *UserController) Search(ctx context.Context, req *pb.UserSearchRequest) (*pb.UserSearchReply, error) {
 	list, total, err := s.service.Search(ctx, req.Page, req.Count, req.Key, req.Value)
 	data := []*pb.User{}
-	trans.ListDTO(list, trans.UserDTO, &data)
+	reflect.TransList(list, trans.UserDTO, &data)
 	return &pb.UserSearchReply{Data: data, Total: total}, errors.NewSearchFailResp(err)
 }
 func (s *UserController) Info(ctx context.Context, req *pb.UserInfoRequest) (*pb.UserInfoReply, error) {
@@ -52,6 +53,6 @@ func (s *UserController) Info(ctx context.Context, req *pb.UserInfoRequest) (*pb
 func (s *UserController) List(ctx context.Context, req *pb.UserListRequest) (*pb.UserListReply, error) {
 	list, total, err := s.service.List(ctx, req.Page, req.Count, req.Key, req.Value)
 	data := []*pb.User{}
-	trans.ListDTO(list, trans.UserDTO, &data)
+	reflect.TransList(list, trans.UserDTO, &data)
 	return &pb.UserListReply{Data: data, Total: total}, errors.NewListFailResp(err)
 }

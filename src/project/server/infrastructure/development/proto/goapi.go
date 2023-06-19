@@ -10,7 +10,9 @@ import (
 
 func (s *GenerateCmds) GenGoAPI() {
 	serviceList := []string{}
+	packageList := map[string][]string{}
 	for name, proto := range s.protos {
+		packageList[proto[PACKAGE].Name] = proto[PACKAGE].List
 		serviceList = append(serviceList, proto[PACKAGE].List...)
 		s.Render(path.Join(s.conf.GoPath, name+".go"), _goapi_client, proto[PACKAGE].List, template.FuncMap{
 			"PwdModPath": func() string { return logs.PwdModPath() },
@@ -24,13 +26,7 @@ func (s *GenerateCmds) GenGoAPI() {
 		"PwdModPath": func() string { return logs.PwdModPath() },
 		"HasService": func() bool { return len(serviceList) > 0 },
 	})
-	for i, v := range serviceList {
-		serviceList[i] = strings.ToLower(v)
-	}
-	s.Render(path.Join("config/internal.yaml"), _config_template, serviceList, template.FuncMap{
-		"PwdModPath": func() string { return logs.PwdModPath() },
-		"HasService": func() bool { return len(serviceList) > 0 },
-	})
+	s.Render(path.Join("config/internal.yaml"), _config_template, packageList, nil)
 }
 
 const (

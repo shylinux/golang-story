@@ -54,6 +54,8 @@ func (s *Proxy) Run() error {
 			ctx.JSON(http.StatusOK, s.Config.Product)
 		} else if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
 			s.handler(ctx)
+		} else if strings.HasPrefix(ctx.Request.URL.Path, "/usr/") {
+			ctx.File(path.Join(strings.TrimPrefix(ctx.Request.URL.Path, "/")))
 		} else if logs.Infof("static %v", ctx.Request.URL.Path); conf.Target != "" {
 			if url, err := url.Parse(conf.Target); err != nil {
 				logs.Errorf("Target %s %s", conf.Target, err)
@@ -65,7 +67,6 @@ func (s *Proxy) Run() error {
 		} else {
 			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))
 		}
-
 	})
 	addr := config.Address(conf.Host, conf.Port)
 	logs.Infof("proxy start %s root %s", addr, conf.Root)
@@ -93,16 +94,16 @@ func (s *Proxy) handler(ctx *gin.Context) {
 			echo(nil, errors.NewNotFoundProxy(fmt.Errorf(api)))
 		} else if arg, err := s.parse(ctx, method); err != nil {
 			echo(nil, errors.NewInvalidParams(err))
-		} else if logs.Infof("proxy access %s %s username:%s %s %s", api, logs.Marshal(arg), metadata.GetValue(_ctx, metadata.USERNAME), ctx.RemoteIP(), ctx.GetHeader("User-Agent"), _ctx); s.Config.Proxy.Local {
-			res := method.Call(_ctx, arg)
-			echo(res[0], errors.ParseResp(res[1].(error), api))
-		} else {
+		} else if logs.Infof("proxy access %s %s username:%s %s %s", api, logs.Marshal(arg), metadata.GetValue(_ctx, metadata.USERNAME), ctx.RemoteIP(), ctx.GetHeader("User-Agent"), _ctx); s.Config.Consul.Enable {
 			conn, err := grpc.NewConn(_ctx, s.Consul.Address(strings.Split(api, "/")[0]))
 			if err == nil {
 				res = method.NewResult(0)
 				err = conn.Invoke(_ctx, api, arg, res)
 			}
 			echo(res, errors.ParseResp(err, api))
+		} else {
+			res := method.Call(_ctx, arg)
+			echo(res[0], errors.ParseResp(res[1].(error), api))
 		}
 	})
 }

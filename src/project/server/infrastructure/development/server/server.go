@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/agent"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/deploy"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/java"
@@ -43,6 +44,7 @@ func NewServerCmds(
 	_ *product.ProductCmds,
 	_ *proto.GenerateCmds,
 	_ *deploy.DeployCmds,
+	_ *agent.AgentCmds,
 	_ *java.JavaCmds,
 	_ *node.NodeCmds,
 	cmds *cmds.Cmds,

@@ -7,16 +7,21 @@ product:
       redirect: /mesh/machine1/list1
       display: "portal/admin/layout/index.vue"
       views:
-        - name: machine1
+        - name: machine
           icon: user
           title: "机器列表1"
           service: mesh.machine
           view:
-            - name: list1
+            - name: machine
               icon: user
-              title: "机器列表1"
+              title: "机器列表"
               display: "portal/mesh/views/machine/MachineList.vue"
-              source: internal/mesh
+              service: mesh.machine
+            - name: service
+              icon: user
+              title: "服务列表"
+              display: "portal/mesh/views/service/ServiceList.vue"
+              service: mesh.service
             - name: list2
               icon: user
               title: "用户列表"

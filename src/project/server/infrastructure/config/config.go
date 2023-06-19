@@ -19,7 +19,6 @@ type Logs struct {
 type Proxy struct {
 	Export bool
 	Simple bool
-	Local  bool
 	Target string
 	Root   string
 	Host   string
@@ -53,21 +52,21 @@ type Service struct {
 }
 type Queue struct {
 	Enable bool
-	Name   string
+	Type   string
 	Token  string
 	Host   string
 	Port   int
 }
 type Cache struct {
 	Enable   bool
-	Name     string
+	Type     string
 	Password string
 	Host     string
 	Port     int
 }
 type Search struct {
 	Enable   bool
-	Name     string
+	Type     string
 	Username string
 	Password string
 	Index    string

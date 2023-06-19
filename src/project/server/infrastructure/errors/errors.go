@@ -76,6 +76,15 @@ func NewIncorrectPassword(err error) *ErrorResp {
 func NewAlreadyExists(err error) *ErrorResp {
 	return newResp(err, enums.Errors.AlreadyExists, "already exists")
 }
+func IsError(err error, code int64) bool {
+	if err == nil {
+		return false
+	} else if err, ok := err.(*ErrorResp); ok && err.Code == code {
+		return true
+	} else {
+		return false
+	}
+}
 func NewCreateFailResp(err error) *ErrorResp {
 	return newResp(err, enums.Errors.ModelCreate, "service create failure")
 }

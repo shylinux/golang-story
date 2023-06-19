@@ -6,6 +6,10 @@ func Init(c *container.Container) {
 
 	c.Provide(NewAuthServiceClient)
 
+	c.Provide(NewMachineServiceClient)
+
+	c.Provide(NewServiceServiceClient)
+
 	c.Provide(NewUserServiceClient)
 
 }
