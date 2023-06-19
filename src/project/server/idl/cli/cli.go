@@ -7,14 +7,14 @@ import (
 func Init(c *container.Container) {
 	c.Provide(NewMainServiceCmds)
 
-	c.Provide(NewAuthServiceCmds)
-
 	c.Provide(NewUserServiceCmds)
+
+	c.Provide(NewAuthServiceCmds)
 
 }
 
 type MainServiceCmds struct{}
 
-func NewMainServiceCmds(_ *AuthServiceCmds, _ *UserServiceCmds) *MainServiceCmds {
+func NewMainServiceCmds(_ *UserServiceCmds, _ *AuthServiceCmds) *MainServiceCmds {
 	return &MainServiceCmds{}
 }

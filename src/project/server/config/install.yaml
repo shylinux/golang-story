@@ -35,6 +35,8 @@ install:
       install: elasticsearch-7.6.2/
       start: bin/elasticsearch
       daemon: true
+    sqlite3:
+      address: https://sqlite.org/2023/sqlite-tools-linux-x86-3420000.zip
   darwin:
     node:
       address: https://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-darwin-x64.tar.xz
@@ -71,6 +73,11 @@ install:
       install: elasticsearch-7.6.2/
       start: bin/elasticsearch
       daemon: true
+    sqlite3:
+      address: https://sqlite.org/2023/sqlite-tools-osx-x86-3420000.zip
+      install: sqlite-tools-osx-x86-3420000/
+      start: sqlite3
+      export: true
   windows:
     node:
       address: http://mirrors.tencent.com/nodejs-release/v16.15.1/node-v16.15.1-x64.msi
@@ -84,6 +91,8 @@ install:
       address: https://releases.hashicorp.com/consul/1.15.2/consul_1.15.2_windows_amd64.zip
     es:
       address: https://mirrors.huaweicloud.com/elasticsearch/7.6.2/elasticsearch-7.6.2-windows-x86_64.zip
+    sqlite3:
+      address: https://sqlite.org/2023/sqlite-tools-win32-x86-3420000.zip
   binary:
     pulsar:
       address: https://mirrors.tencent.com/apache/pulsar/pulsar-2.10.2/apache-pulsar-2.10.2-bin.tar.gz

@@ -25,6 +25,7 @@ func Command(dir, name string, arg ...string) (string, error) {
 }
 func CommandBuild(dir, name string, arg ...string) error {
 	logs.Infof("cmd %s %s %s", dir, name, strings.Join(arg, " "))
+	fmt.Printf("%s %s\n", name, strings.Join(arg, " "))
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout

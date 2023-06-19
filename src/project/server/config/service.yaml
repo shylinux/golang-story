@@ -7,7 +7,8 @@ logs:
 proxy:
   export: true
   simple: false
-  local: false
+  local: true
+  target: http://localhost:8082
   root: "usr/vue-element-admin/dist/"
   port: 8081
 token:
@@ -15,7 +16,7 @@ token:
   secret: "auth"
   expire: "72h"
 consul:
-  enable: true
+  enable: false
   addr: ":8500"
   interval: 10s
 server:
@@ -54,7 +55,7 @@ engine:
     host: 127.0.0.1
     port: 9200
   storage:
-    type: mysql
+    type: sqlite
     username: demo
     password: demo
     database: demo

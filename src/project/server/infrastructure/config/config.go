@@ -20,6 +20,7 @@ type Proxy struct {
 	Export bool
 	Simple bool
 	Local  bool
+	Target string
 	Root   string
 	Host   string
 	Port   int

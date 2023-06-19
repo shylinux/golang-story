@@ -4,6 +4,7 @@ import (
 	"context"
 	"html/template"
 	"path"
+	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
@@ -23,8 +24,16 @@ func (s *ProductCmds) Create(ctx context.Context, arg ...string) {
 	for _, portal := range conf.Portal {
 		for _, views := range portal.Views {
 			for _, view := range views.View {
-				file := path.Join(view.Source, dir, view.FilePath)
 				service := config.WithDef(view.Service, views.Service)
+				if view.Source != "" && !system.Exists(path.Join(view.Source)) {
+					system.CommandBuild("", "./bin/matrix", "project", "create", view.Source)
+					system.CommandBuild(view.Source, "go", "build", "-v", "-o", "bin/matrix", "cmd/cmds.go")
+					system.CommandBuild(view.Source, "./bin/matrix", "service", "create", service)
+					system.CommandBuild(view.Source, "make")
+				}
+				ls := strings.Split(service, ".")
+				service = ls[len(ls)-1]
+				file := path.Join(view.Source, dir, view.Display)
 				if !system.Exists(file) {
 					system.NewTemplateFile(file, viewTemplate, template.FuncMap{
 						"Views": func() config.Views { return views },
@@ -35,7 +44,7 @@ func (s *ProductCmds) Create(ctx context.Context, arg ...string) {
 					})
 				}
 				if view.Source != "" {
-					copyFile(file, path.Join(dir, view.FilePath))
+					copyFile(file, path.Join(dir, view.Display))
 					copyFile(path.Join(view.Source, dir, "api/"+service+".js"), path.Join(dir, "api/"+service+".js"))
 				}
 			}
@@ -92,7 +101,7 @@ var viewTemplate = `
       </el-form-item>
     </el-form>
   </el-drawer>
-  <el-drawer v-model="isModify" title="编辑用户">
+  <el-drawer v-model="isModify" title="编辑">
     <el-form>
       <el-form-item prop="name" label="名称">
         <el-input v-model="form.name"></el-input>

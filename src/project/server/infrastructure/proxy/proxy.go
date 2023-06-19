@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"path"
 	"strings"
 	"time"
@@ -52,11 +54,18 @@ func (s *Proxy) Run() error {
 			ctx.JSON(http.StatusOK, s.Config.Product)
 		} else if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
 			s.handler(ctx)
-		} else if logs.Infof("static %v", ctx.Request.URL.Path); ctx.Request.URL.Path == "/" {
+		} else if logs.Infof("static %v", ctx.Request.URL.Path); conf.Target != "" {
+			if url, err := url.Parse(conf.Target); err != nil {
+				logs.Errorf("Target %s %s", conf.Target, err)
+			} else {
+				httputil.NewSingleHostReverseProxy(url).ServeHTTP(ctx.Writer, ctx.Request)
+			}
+		} else if ctx.Request.URL.Path == "/" {
 			ctx.File(path.Join(conf.Root, "index.html"))
 		} else {
 			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))
 		}
+
 	})
 	addr := config.Address(conf.Host, conf.Port)
 	logs.Infof("proxy start %s root %s", addr, conf.Root)

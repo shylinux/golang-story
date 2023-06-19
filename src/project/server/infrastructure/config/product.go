@@ -7,7 +7,9 @@ type Product struct {
 }
 type Portal struct {
 	Name     string
-	FilePath string
+	Title    string
+	Redirect string
+	Display  string
 	Views    []Views
 }
 type Views struct {
@@ -18,10 +20,10 @@ type Views struct {
 	View    []View
 }
 type View struct {
-	Name     string
-	Icon     string
-	Title    string
-	Source   string
-	Service  string
-	FilePath string
+	Name    string
+	Icon    string
+	Title   string
+	Source  string
+	Service string
+	Display string
 }
