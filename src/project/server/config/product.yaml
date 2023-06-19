@@ -1,0 +1,45 @@
+product:
+  name: vue-element-admin
+  repos: https://shylinux.com/x/vue-element-admin
+  portal:
+    - name: mesh
+      title: "机器列表1"
+      filePath: "portal/admin/layout/index.vue"
+      views:
+        - name: machine1
+          icon: user
+          title: "机器列表1"
+          service: machine
+          view:
+            - name: list1
+              icon: user
+              title: "机器列表1"
+              filePath: "portal/mesh/views/machine/MachineList.vue"
+              source: internal/mesh
+            - name: list2
+              icon: user
+              title: "用户列表"
+              filePath: "portal/admin/views/user/UserList.vue"
+              service: user
+            - name: list3
+              icon: user
+              title: "空间列表"
+              filePath: "portal/admin/views/space/SpaceList.vue"
+              service: space
+        - name: machine2
+          icon: user
+          title: "机器列表2"
+          service: machine
+          view:
+            - name: list1
+              icon: user
+              title: "机器列表1"
+              filePath: "portal/mesh/views/machine/MachineList.vue"
+            - name: list2
+              icon: user
+              title: "机器列表2"
+              filePath: "portal/mesh/views/machine/MachineList.vue"
+            - name: list3
+              icon: user
+              title: "机器列表3"
+              filePath: "portal/mesh/views/machine/MachineList.vue"

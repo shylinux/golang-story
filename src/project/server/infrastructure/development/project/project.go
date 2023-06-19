@@ -6,41 +6,40 @@ import (
 	"path"
 	"text/template"
 
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-const PROJECT = "project"
-
-type ProjectCmds struct {
-	name string
-}
+type ProjectCmds struct{ config *config.Config }
 
 func (s *ProjectCmds) Create(ctx context.Context, arg ...string) {
-	if len(arg) == 0 {
-		fmt.Println(fmt.Errorf("need params path"))
-		return
-	} else if system.Exists(arg[0]) {
-		fmt.Println(fmt.Errorf("project already exists"))
+	if !system.Exists("go.mod") {
+		fmt.Println("please run go mod init")
 		return
 	}
+	dir := ""
+	if len(arg) > 0 {
+		dir = arg[0]
+	}
+	mod := path.Join(logs.PwdModPath(), dir)
 	for _, file := range templateList {
-		if system.Exists(path.Join(arg[0], file.Path)) {
+		if system.Exists(path.Join(dir, file.Path)) {
 			continue
 		}
-		system.NewTemplateFile(path.Join(arg[0], file.Path), file.Text, template.FuncMap{
-			"PwdModPath": func() string { return path.Join(logs.PwdModPath(), arg[0]) },
-		}, nil)
+		system.NewTemplateFile(path.Join(dir, file.Path), file.Text, template.FuncMap{
+			"PwdModPath": func() string { return mod },
+		}, map[string]interface{}{})
 	}
 
 }
 func (s *ProjectCmds) List(ctx context.Context, arg ...string) {
 }
-func NewProjectCmds(cmds *cmds.Cmds) *ProjectCmds {
-	s := &ProjectCmds{name: PROJECT}
-	cmds = cmds.Add(s.name, "project command", s.List)
-	cmds = cmds.Add("create", "create path", s.Create)
+func NewProjectCmds(config *config.Config, cmds *cmds.Cmds) *ProjectCmds {
+	s := &ProjectCmds{config: config}
+	cmds = cmds.Add("project", "project command", s.List)
+	cmds.Add("create", "create path", s.Create)
 	return s
 }
 
@@ -71,14 +70,12 @@ package main
 import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/mysql"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"{{ PwdModPath }}/idl"
 )
 
 func main() {
 	c := container.New(idl.Init, infrastructure.Init)
-	c.Provide(mysql.New)
 	c.Invoke(func(s *server.MainServer, _ *idl.MainController) error { return s.Run() })
 }
 `},
@@ -89,17 +86,51 @@ logs:
   maxsize: 10 # 10M
   maxage: 30  # 30days
   stdout: false
+proxy:
+  export: true
+  simple: false
+  local: true
+  root: "usr/vue-element-admin/dist/"
+  port: 8081
+token:
+  issuer: "auth"
+  secret: "auth"
+  expire: "72h"
 consul:
-  enable: true
+  enable: false
   addr: ":8500"
   interval: 10s
-  workid: 2
 server:
-  name: demo
   port: 9090
+consumer:
+  user:
+    enable: true
+internal:
+  auth:
+    export: true
+    port: 9091
+  user:
+    export: true
+    port: 9092
 engine:
+  queue:
+    enable: true
+    name: pulsar
+    host: 127.0.0.1
+    port: 6650
+  cache:
+    enable: true
+    name: redis
+    host: 127.0.0.1
+    port: 6379
+  search:
+    enable: true
+    name: elasticsearch
+    index: demo
+    host: 127.0.0.1
+    port: 9200
   storage:
-    name: mysql
+    type: mysql
     username: demo
     password: demo
     database: demo
@@ -141,6 +172,7 @@ func NewMainServiceCmds() *MainServiceCmds {
 }
 `},
 	{Path: "Makefile", Text: `
+export CGO_ENABLED=1
 def: matrix idl server restart
 all: matrix idl server deploy restart test pack
 matrix:

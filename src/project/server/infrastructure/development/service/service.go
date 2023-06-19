@@ -13,30 +13,31 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-const SERVICE = "service"
-
-type ServiceCmds struct {
-	config *config.Config
-	name   string
-}
+type ServiceCmds struct{ config *config.Config }
 
 func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
 	if len(arg) == 0 {
-		fmt.Println(fmt.Errorf("need params name"))
+		fmt.Println(fmt.Errorf("need service name"))
 		return
 	}
+	name := arg[0]
+	if strings.Contains(name, ".") {
+		ls := strings.Split(name, ".")
+		name = ls[len(ls)-1]
+		arg[0] = strings.Join(ls[:len(ls)-1], ".")
+	}
 	for _, file := range templateList {
-		file.Path = strings.ReplaceAll(file.Path, "name", arg[0])
+		file.Path = strings.ReplaceAll(file.Path, "name", name)
 		if system.Exists(file.Path) {
 			// continue
 		}
 		system.NewTemplateFile(file.Path, file.Text, template.FuncMap{
 			"PwdModPath": func() string { return logs.PwdModPath() },
 		}, map[string]string{
-			"package": s.config.Server.Name + "." + arg[0],
-			"service": proto.Capital(arg[0]) + "Service",
-			"name":    proto.Capital(arg[0]),
-			"table":   arg[0],
+			"package": arg[0],
+			"service": proto.Capital(name) + "Service",
+			"name":    proto.Capital(name),
+			"table":   name,
 		})
 		system.Command("", "gofmt", "-w", file.Path)
 	}
@@ -44,9 +45,9 @@ func (s *ServiceCmds) Create(ctx context.Context, arg ...string) {
 }
 func (s *ServiceCmds) List(ctx context.Context, arg ...string) {}
 func NewServiceCmds(cmds *cmds.Cmds, config *config.Config) *ServiceCmds {
-	s := &ServiceCmds{name: SERVICE, config: config}
-	cmds = cmds.Add(s.name, "service command", s.List)
-	cmds.Add("create", "create path", s.Create)
+	s := &ServiceCmds{config: config}
+	cmds = cmds.Add("service", "service command", s.List)
+	cmds.Add("create", "create name", s.Create)
 	return s
 }
 
@@ -62,12 +63,13 @@ package {{ .package }};
 service {{ .service }} {
     rpc Create ({{ .name }}CreateRequest) returns ({{ .name }}CreateReply);
     rpc Remove ({{ .name }}RemoveRequest) returns ({{ .name }}RemoveReply);
+    rpc Rename ({{ .name }}RenameRequest) returns ({{ .name }}RenameReply);
     rpc Info ({{ .name }}InfoRequest) returns ({{ .name }}InfoReply);
     rpc List ({{ .name }}ListRequest) returns ({{ .name }}ListReply);
 }
 
 message {{ .name }}CreateRequest {
-    // length > 6
+    // length >= 6
     string name = 1;
 }
 message {{ .name }}CreateReply {
@@ -80,6 +82,15 @@ message {{ .name }}RemoveRequest {
     int64 {{ .name }}ID = 1;
 }
 message {{ .name }}RemoveReply {
+	{{ .name }}Error error = 1;
+}
+
+message {{ .name }}RenameRequest {
+    // required
+    int64 {{ .name }}ID = 1;
+    string name = 2;
+}
+message {{ .name }}RenameReply {
 	{{ .name }}Error error = 1;
 }
 
@@ -141,7 +152,7 @@ type {{ .name }}Controller struct {
 
 func New{{ .name }}Controller(config *config.Config, server *server.MainServer, service *service.{{ .name }}Service) *{{ .name }}Controller {
 	controller := &{{ .name }}Controller{Main: server, service: service, name: pb.{{ .name }}Service_ServiceDesc.ServiceName}
-	if !config.Internal["{{ .table }}"].Export {
+	if !config.Internal["{{ .package }}"].Export {
 		return controller
 	}
 	server.Proxy.Register(controller.name, controller)
@@ -155,6 +166,9 @@ func (s *{{ .name }}Controller) Create(ctx context.Context, req *pb.{{ .name }}C
 }
 func (s *{{ .name }}Controller) Remove(ctx context.Context, req *pb.{{ .name }}RemoveRequest) (*pb.{{ .name }}RemoveReply, error) {
 	return &pb.{{ .name }}RemoveReply{}, errors.NewRemoveFailResp(s.service.Remove(ctx, req.{{ .name }}ID))
+}
+func (s *{{ .name }}Controller) Rename(ctx context.Context, req *pb.{{ .name }}RenameRequest) (*pb.{{ .name }}RenameReply, error) {
+	return &pb.{{ .name }}RenameReply{}, errors.NewModifyFailResp(s.service.Rename(ctx, req.{{ .name }}ID, req.Name))
 }
 func (s *{{ .name }}Controller) Info(ctx context.Context, req *pb.{{ .name }}InfoRequest) (*pb.{{ .name }}InfoReply, error) {
 	space, err := s.service.Info(ctx, req.{{ .name }}ID)
@@ -195,16 +209,25 @@ func (s *{{ .name }}Service) Create(ctx context.Context, name string) (*model.{{
 	}
 	return space, errors.NewCreateFail(s.storage.Insert(ctx, space))
 }
-func (s *{{ .name }}Service) Remove(ctx context.Context, spaceID int64) error {
+func (s *{{ .name }}Service) Remove(ctx context.Context, {{ .table }}ID int64) error {
 	return errors.NewRemoveFail(s.storage.Delete(ctx, &model.{{ .name }}{
-		{{ .name }}ID: spaceID,
+		{{ .name }}ID: {{ .table }}ID,
 	}))
 }
-func (s *{{ .name }}Service) Info(ctx context.Context, spaceID int64) (*model.{{ .name }}, error) {
-	space := &model.{{ .name }}{
-		{{ .name }}ID: spaceID,
+func (s *{{ .name }}Service) Rename(ctx context.Context, {{ .table }}ID int64, name string) error {
+	{{ .table }} := &model.{{ .name }}{
+		{{ .name }}ID: {{ .table }}ID, Name: name,
 	}
-	return space, errors.NewInfoFail(s.storage.SelectOne(ctx, space))
+	if err := s.storage.Update(ctx, {{ .table }}); err != nil {
+		return errors.NewModifyFail(err)
+	}
+	return nil
+}
+func (s *{{ .name }}Service) Info(ctx context.Context, {{ .table }}ID int64) (*model.{{ .name }}, error) {
+	{{ .table }} := &model.{{ .name }}{
+		{{ .name }}ID: {{ .table }}ID,
+	}
+	return {{ .table }}, errors.NewInfoFail(s.storage.SelectOne(ctx, {{ .table }}))
 }
 func (s *{{ .name }}Service) List(ctx context.Context, page, count int64, key, value string) (list []*model.{{ .name }}, total int64, err error) {
 	condition, arg := service.Clause(key != "" && value != "", key+" = ? and ", key, value)
@@ -245,6 +268,7 @@ func {{ .name }}DTO({{ .table }} *model.{{ .name }}) *pb.{{ .name }} {
 	}
 	return &pb.{{ .name }}{
 		{{ .name }}ID: {{ .table }}.{{ .name }}ID,
+		Name: {{ .table }}.Name,
 	}
 }
 `},

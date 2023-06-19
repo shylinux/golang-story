@@ -18,7 +18,7 @@ type SpaceServiceCmds struct {
 
 func NewSpaceServiceCmds(cmds *cmds.Cmds, consul consul.Consul) (*SpaceServiceCmds, error) {
 	_cmds := &SpaceServiceCmds{consul: consul}
-	cmds.Register("space", "space", _cmds)
+	cmds.Register("space", "space service client", _cmds)
 	return _cmds, nil
 }
 

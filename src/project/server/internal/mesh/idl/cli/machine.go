@@ -51,6 +51,15 @@ func (s *MachineServiceCmds) Remove(ctx context.Context, req *pb.MachineRemoveRe
 	}
 }
 
+func (s *MachineServiceCmds) Rename(ctx context.Context, req *pb.MachineRenameRequest) {
+	s.conn(ctx)
+	if res, err := s.client.Rename(ctx, req); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("%v\n", logs.MarshalIndent(res))
+	}
+}
+
 func (s *MachineServiceCmds) Info(ctx context.Context, req *pb.MachineInfoRequest) {
 	s.conn(ctx)
 	if res, err := s.client.Info(ctx, req); err != nil {

@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MachineService_Create_FullMethodName = "/demo.machine.MachineService/Create"
-	MachineService_Remove_FullMethodName = "/demo.machine.MachineService/Remove"
-	MachineService_Info_FullMethodName   = "/demo.machine.MachineService/Info"
-	MachineService_List_FullMethodName   = "/demo.machine.MachineService/List"
+	MachineService_Create_FullMethodName = "/mesh.MachineService/Create"
+	MachineService_Remove_FullMethodName = "/mesh.MachineService/Remove"
+	MachineService_Rename_FullMethodName = "/mesh.MachineService/Rename"
+	MachineService_Info_FullMethodName   = "/mesh.MachineService/Info"
+	MachineService_List_FullMethodName   = "/mesh.MachineService/List"
 )
 
 // MachineServiceClient is the client API for MachineService service.
@@ -31,6 +32,7 @@ const (
 type MachineServiceClient interface {
 	Create(ctx context.Context, in *MachineCreateRequest, opts ...grpc.CallOption) (*MachineCreateReply, error)
 	Remove(ctx context.Context, in *MachineRemoveRequest, opts ...grpc.CallOption) (*MachineRemoveReply, error)
+	Rename(ctx context.Context, in *MachineRenameRequest, opts ...grpc.CallOption) (*MachineRenameReply, error)
 	Info(ctx context.Context, in *MachineInfoRequest, opts ...grpc.CallOption) (*MachineInfoReply, error)
 	List(ctx context.Context, in *MachineListRequest, opts ...grpc.CallOption) (*MachineListReply, error)
 }
@@ -61,6 +63,15 @@ func (c *machineServiceClient) Remove(ctx context.Context, in *MachineRemoveRequ
 	return out, nil
 }
 
+func (c *machineServiceClient) Rename(ctx context.Context, in *MachineRenameRequest, opts ...grpc.CallOption) (*MachineRenameReply, error) {
+	out := new(MachineRenameReply)
+	err := c.cc.Invoke(ctx, MachineService_Rename_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *machineServiceClient) Info(ctx context.Context, in *MachineInfoRequest, opts ...grpc.CallOption) (*MachineInfoReply, error) {
 	out := new(MachineInfoReply)
 	err := c.cc.Invoke(ctx, MachineService_Info_FullMethodName, in, out, opts...)
@@ -85,6 +96,7 @@ func (c *machineServiceClient) List(ctx context.Context, in *MachineListRequest,
 type MachineServiceServer interface {
 	Create(context.Context, *MachineCreateRequest) (*MachineCreateReply, error)
 	Remove(context.Context, *MachineRemoveRequest) (*MachineRemoveReply, error)
+	Rename(context.Context, *MachineRenameRequest) (*MachineRenameReply, error)
 	Info(context.Context, *MachineInfoRequest) (*MachineInfoReply, error)
 	List(context.Context, *MachineListRequest) (*MachineListReply, error)
 	mustEmbedUnimplementedMachineServiceServer()
@@ -99,6 +111,9 @@ func (UnimplementedMachineServiceServer) Create(context.Context, *MachineCreateR
 }
 func (UnimplementedMachineServiceServer) Remove(context.Context, *MachineRemoveRequest) (*MachineRemoveReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
+}
+func (UnimplementedMachineServiceServer) Rename(context.Context, *MachineRenameRequest) (*MachineRenameReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Rename not implemented")
 }
 func (UnimplementedMachineServiceServer) Info(context.Context, *MachineInfoRequest) (*MachineInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
@@ -155,6 +170,24 @@ func _MachineService_Remove_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MachineService_Rename_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MachineRenameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MachineServiceServer).Rename(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MachineService_Rename_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MachineServiceServer).Rename(ctx, req.(*MachineRenameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MachineService_Info_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MachineInfoRequest)
 	if err := dec(in); err != nil {
@@ -195,7 +228,7 @@ func _MachineService_List_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var MachineService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "demo.machine.MachineService",
+	ServiceName: "mesh.MachineService",
 	HandlerType: (*MachineServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -205,6 +238,10 @@ var MachineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Remove",
 			Handler:    _MachineService_Remove_Handler,
+		},
+		{
+			MethodName: "Rename",
+			Handler:    _MachineService_Rename_Handler,
 		},
 		{
 			MethodName: "Info",

@@ -70,6 +70,19 @@ func (s *MachineServiceTestSuite) TestRemove() {
 	}
 }
 
+func (s *MachineServiceTestSuite) TestRename() {
+	cases := []struct {
+		OK        bool   `yaml:"ok"`
+		MachineID int64  `yaml:"MachineID"`
+		Name      string `yaml:"name"`
+	}{}
+	s.Load("testdata/MachineService/Rename.yaml", &cases)
+	for i, c := range cases {
+		res, err := s.client.Rename(s.ctx, &pb.MachineRenameRequest{MachineID: c.MachineID, Name: c.Name})
+		s.ConveySo(i, c.OK, c, res, err)
+	}
+}
+
 func TestMachineServiceTestSuite(t *testing.T) {
 	infrastructure.Test(t, func(suite *tests.Suite) interface{} {
 		return &MachineServiceTestSuite{Suite: suite, ctx: suite.Context()}

@@ -10,6 +10,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/tests"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/proxy"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/storage"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/token"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/goroutine"
@@ -24,6 +25,7 @@ func Init(c *container.Container) {
 	c.Provide(token.New)
 	c.Provide(consul.New)
 	c.Provide(server.New)
+	c.Provide(storage.New)
 	c.Provide(goroutine.New)
 	c.Provide(context.Background)
 	c.Provide(grpc.NewServer)

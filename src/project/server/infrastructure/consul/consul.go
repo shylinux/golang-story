@@ -67,7 +67,7 @@ func (s *consul) Register(service Service) error {
 	registration.Port = service.Port
 	registration.Address = service.Host
 	registration.ID = fmt.Sprintf("%s-%s-%d", service.Name, service.Host, service.Port)
-	if interval := s.Config.Consul.Interval; interval != "" {
+	if interval := s.Interval; interval != "" {
 		registration.Check = &api.AgentServiceCheck{
 			Interval: interval, DeregisterCriticalServiceAfter: interval,
 			GRPC: fmt.Sprintf("%s/%s", service.Address(), registration.Name),
@@ -103,10 +103,13 @@ func (s *consul) Address(target string) string {
 	if len(list) > 1 {
 		list = list[:len(list)-1]
 	}
-	name := strings.Join(list, ".")
-	if !s.Enable {
-		service := s.Config.Internal[strings.TrimPrefix(name, s.Config.Server.Name+".")]
+	if name := strings.Join(list, "."); !s.Enable {
+		service := s.Config.Internal[name]
+		if service.Port == 0 {
+			service.Port = s.Config.Server.Port
+		}
 		return config.Address(service.Host, service.Port)
+	} else {
+		return fmt.Sprintf("consul://%s/%s", s.Config.Consul.Addr, name)
 	}
-	return fmt.Sprintf("consul://%s/%s", s.Config.Consul.Addr, name)
 }

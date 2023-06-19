@@ -1,16 +1,17 @@
 syntax = "proto3";
 option go_package ="./pb";
-package demo.machine;
+package mesh;
 
 service MachineService {
     rpc Create (MachineCreateRequest) returns (MachineCreateReply);
     rpc Remove (MachineRemoveRequest) returns (MachineRemoveReply);
+    rpc Rename (MachineRenameRequest) returns (MachineRenameReply);
     rpc Info (MachineInfoRequest) returns (MachineInfoReply);
     rpc List (MachineListRequest) returns (MachineListReply);
 }
 
 message MachineCreateRequest {
-    // length > 6
+    // length >= 6
     string name = 1;
 }
 message MachineCreateReply {
@@ -23,6 +24,15 @@ message MachineRemoveRequest {
     int64 MachineID = 1;
 }
 message MachineRemoveReply {
+	MachineError error = 1;
+}
+
+message MachineRenameRequest {
+    // required
+    int64 MachineID = 1;
+    string name = 2;
+}
+message MachineRenameReply {
 	MachineError error = 1;
 }
 

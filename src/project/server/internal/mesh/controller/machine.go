@@ -22,7 +22,7 @@ type MachineController struct {
 
 func NewMachineController(config *config.Config, server *server.MainServer, service *service.MachineService) *MachineController {
 	controller := &MachineController{Main: server, service: service, name: pb.MachineService_ServiceDesc.ServiceName}
-	if !config.Internal["machine"].Export {
+	if !config.Internal["mesh"].Export {
 		return controller
 	}
 	server.Proxy.Register(controller.name, controller)
@@ -36,6 +36,9 @@ func (s *MachineController) Create(ctx context.Context, req *pb.MachineCreateReq
 }
 func (s *MachineController) Remove(ctx context.Context, req *pb.MachineRemoveRequest) (*pb.MachineRemoveReply, error) {
 	return &pb.MachineRemoveReply{}, errors.NewRemoveFailResp(s.service.Remove(ctx, req.MachineID))
+}
+func (s *MachineController) Rename(ctx context.Context, req *pb.MachineRenameRequest) (*pb.MachineRenameReply, error) {
+	return &pb.MachineRenameReply{}, errors.NewModifyFailResp(s.service.Rename(ctx, req.MachineID, req.Name))
 }
 func (s *MachineController) Info(ctx context.Context, req *pb.MachineInfoRequest) (*pb.MachineInfoReply, error) {
 	space, err := s.service.Info(ctx, req.MachineID)

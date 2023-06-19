@@ -6,14 +6,13 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 )
 
 type Server struct {
 	*grpc.Server
 }
 
-func NewServer(config *config.Config) *Server {
+func NewServer() *Server {
 	defer tracer()()
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), serverInterceptor))
 	grpc_health_v1.RegisterHealthServer(server, &HealthController{})

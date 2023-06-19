@@ -48,12 +48,11 @@ func (s *Proxy) Run() error {
 	engine := gin.New()
 	engine.POST("/*s", s.handler)
 	engine.GET("/*s", func(ctx *gin.Context) {
-		if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
+		if strings.HasPrefix(ctx.Request.URL.Path, "/api/menu/") {
+			ctx.JSON(http.StatusOK, s.Config.Product)
+		} else if strings.HasPrefix(ctx.Request.URL.Path, "/api/") {
 			s.handler(ctx)
-			return
-		}
-		logs.Infof("static %v", ctx.Request.URL.Path)
-		if ctx.Request.URL.Path == "/" {
+		} else if logs.Infof("static %v", ctx.Request.URL.Path); ctx.Request.URL.Path == "/" {
 			ctx.File(path.Join(conf.Root, "index.html"))
 		} else {
 			ctx.File(path.Join(conf.Root, ctx.Request.URL.Path))

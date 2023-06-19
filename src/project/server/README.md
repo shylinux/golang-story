@@ -1,4 +1,8 @@
 ## source
+./bin/matrix project create
+./bin/matrix service create machine
+./bin/matrix product create
+## source
 cmd
 idl
 controller

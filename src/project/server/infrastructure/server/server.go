@@ -26,8 +26,7 @@ func New(config *config.Config, logger logs.Logger, proxy *proxy.Proxy, consul c
 	return &MainServer{config, consul, proxy, server, pool}
 }
 func (s *MainServer) register(key string, name string, host string, port int) {
-	name = config.WithDef(name, s.Config.Server.Name+"."+key)
-	s.Consul.Register(consul.Service{Name: name, Host: host, Port: port})
+	s.Consul.Register(consul.Service{Name: config.WithDef(name, key), Host: host, Port: port})
 }
 func (s *MainServer) Run() error {
 	if s.Config.Logs.Pid != "" {
@@ -36,25 +35,19 @@ func (s *MainServer) Run() error {
 	}
 	if s.Config.Proxy.Local {
 		return s.Proxy.Run()
+	} else if s.Config.Proxy.Export {
+		s.Pool.Go("proxy", s.Proxy.Run)
 	}
 	server := s.Config.Server
-	if k := server.Main; k == server.Name || k == "server" {
-		if s.Config.Proxy.Export {
-			s.Pool.Go("proxy", s.Proxy.Run)
-		}
-		if !s.Config.Proxy.Simple {
-			for k, v := range s.Config.Internal {
-				if v.Export {
-					s.register(k, v.Name, server.Host, server.Port)
-				}
+	if !s.Config.Proxy.Simple {
+		for k, v := range s.Config.Internal {
+			if v.Export {
+				s.register(k, v.Name, server.Host, server.Port)
 			}
 		}
-	} else {
-		v := s.Config.Internal[k]
-		s.register(k, v.Name, server.Host, server.Port)
 	}
 	addr := config.Address(server.Host, server.Port)
-	logs.Infof("server start %s %s %s", server.Name, server.Type, addr)
+	logs.Infof("server start %s %s", server.Type, addr)
 	system.Printfln("server start %s", addr)
 	if l, e := system.Listen("tcp", addr); e != nil {
 		return errors.New(e, "server start tcp failure")

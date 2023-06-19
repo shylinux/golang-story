@@ -11,15 +11,14 @@ proxy:
   root: "usr/vue-element-admin/dist/"
   port: 8081
 token:
-  issuer: "demo.auth"
-  secret: "demo.auth"
+  issuer: "auth"
+  secret: "auth"
   expire: "72h"
 consul:
   enable: true
   addr: ":8500"
   interval: 10s
 server:
-  name: demo
   port: 9090
 consumer:
   user:
@@ -31,20 +30,23 @@ internal:
   user:
     export: true
     port: 9092
-  space:
+  mesh:
     export: true
     port: 9093
+  space:
+    export: true
+    port: 9094
 engine:
-  cache:
-    enable: true
-    name: redis
-    host: 127.0.0.1
-    port: 6379
   queue:
     enable: true
     name: pulsar
     host: 127.0.0.1
     port: 6650
+  cache:
+    enable: true
+    name: redis
+    host: 127.0.0.1
+    port: 6379
   search:
     enable: true
     name: elasticsearch
@@ -52,7 +54,7 @@ engine:
     host: 127.0.0.1
     port: 9200
   storage:
-    name: mysql
+    type: mysql
     username: demo
     password: demo
     database: demo

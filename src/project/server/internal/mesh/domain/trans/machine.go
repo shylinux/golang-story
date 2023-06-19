@@ -11,5 +11,6 @@ func MachineDTO(machine *model.Machine) *pb.Machine {
 	}
 	return &pb.Machine{
 		MachineID: machine.MachineID,
+		Name:      machine.Name,
 	}
 }

@@ -2,20 +2,17 @@ package cli
 
 import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 )
 
-func Init(container *container.Container) {
-	container.Provide(NewMainServiceCmds)
+func Init(c *container.Container) {
+	c.Provide(NewMainServiceCmds)
 
-	container.Provide(NewSpaceServiceCmds)
+	c.Provide(NewSpaceServiceCmds)
 
 }
 
-type MainServiceCmds struct {
-	*cmds.Cmds
-}
+type MainServiceCmds struct{}
 
-func NewMainServiceCmds(cmds *cmds.Cmds, _ *SpaceServiceCmds) *MainServiceCmds {
-	return &MainServiceCmds{cmds}
+func NewMainServiceCmds(_ *SpaceServiceCmds) *MainServiceCmds {
+	return &MainServiceCmds{}
 }

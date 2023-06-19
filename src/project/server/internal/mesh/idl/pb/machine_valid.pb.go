@@ -4,7 +4,7 @@ import "shylinux.com/x/golang-story/src/project/server/infrastructure/developmen
 
 func (this *MachineCreateRequest) Validate() error {
 
-	if err := proto.Valid(this, this.Name, "name", "length > 6"); err != nil {
+	if err := proto.Valid(this, this.Name, "name", "length >= 6"); err != nil {
 		return err
 	}
 
@@ -12,6 +12,15 @@ func (this *MachineCreateRequest) Validate() error {
 }
 
 func (this *MachineRemoveRequest) Validate() error {
+
+	if err := proto.Valid(this, this.MachineID, "MachineID", "required"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (this *MachineRenameRequest) Validate() error {
 
 	if err := proto.Valid(this, this.MachineID, "MachineID", "required"); err != nil {
 		return err

@@ -1,6 +1,6 @@
 syntax = "proto3";
 option go_package ="./pb";
-package demo.space;
+package space;
 
 service SpaceService {
     rpc Create (SpaceCreateRequest) returns (SpaceCreateReply);

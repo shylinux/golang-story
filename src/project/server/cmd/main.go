@@ -7,7 +7,6 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/elasticsearch"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/mysql"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/pulsar"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/repository/redis"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/server"
@@ -16,7 +15,7 @@ import (
 
 func main() {
 	c := container.New(idl.Init, internal.Init, api.Init, infrastructure.Init)
-	c.Provide(redis.New, pulsar.New, mysql.New, elasticsearch.New)
+	c.Provide(redis.New, pulsar.New, elasticsearch.New)
 	c.Invoke(func(s *server.MainServer, _ *idl.MainController, _ *internal.MainController) error { return s.Run() })
 }
 func init() {

@@ -25,16 +25,25 @@ func (s *MachineService) Create(ctx context.Context, name string) (*model.Machin
 	}
 	return space, errors.NewCreateFail(s.storage.Insert(ctx, space))
 }
-func (s *MachineService) Remove(ctx context.Context, spaceID int64) error {
+func (s *MachineService) Remove(ctx context.Context, machineID int64) error {
 	return errors.NewRemoveFail(s.storage.Delete(ctx, &model.Machine{
-		MachineID: spaceID,
+		MachineID: machineID,
 	}))
 }
-func (s *MachineService) Info(ctx context.Context, spaceID int64) (*model.Machine, error) {
-	space := &model.Machine{
-		MachineID: spaceID,
+func (s *MachineService) Rename(ctx context.Context, machineID int64, name string) error {
+	machine := &model.Machine{
+		MachineID: machineID, Name: name,
 	}
-	return space, errors.NewInfoFail(s.storage.SelectOne(ctx, space))
+	if err := s.storage.Update(ctx, machine); err != nil {
+		return errors.NewModifyFail(err)
+	}
+	return nil
+}
+func (s *MachineService) Info(ctx context.Context, machineID int64) (*model.Machine, error) {
+	machine := &model.Machine{
+		MachineID: machineID,
+	}
+	return machine, errors.NewInfoFail(s.storage.SelectOne(ctx, machine))
 }
 func (s *MachineService) List(ctx context.Context, page, count int64, key, value string) (list []*model.Machine, total int64, err error) {
 	condition, arg := service.Clause(key != "" && value != "", key+" = ? and ", key, value)

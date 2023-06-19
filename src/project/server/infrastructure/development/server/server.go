@@ -8,11 +8,11 @@ import (
 	"syscall"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/container"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/deploy"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/java"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/node"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/product"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/project"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/proto"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/service"
@@ -20,8 +20,7 @@ import (
 )
 
 type ServerCmds struct {
-	config    *config.Config
-	container *container.Container
+	config *config.Config
 }
 
 func (s *ServerCmds) Restart(ctx context.Context, arg ...string) {
@@ -38,17 +37,17 @@ func (s *ServerCmds) Restart(ctx context.Context, arg ...string) {
 func (s *ServerCmds) List(ctx context.Context, arg ...string) {
 }
 func NewServerCmds(
-	container *container.Container,
 	config *config.Config,
-	cmds *cmds.Cmds,
 	_ *project.ProjectCmds,
 	_ *service.ServiceCmds,
+	_ *product.ProductCmds,
 	_ *proto.GenerateCmds,
 	_ *deploy.DeployCmds,
 	_ *java.JavaCmds,
 	_ *node.NodeCmds,
+	cmds *cmds.Cmds,
 ) *ServerCmds {
-	s := &ServerCmds{config, container}
+	s := &ServerCmds{config}
 	cmds = cmds.Add("server", "server command", s.List)
 	cmds.Add("restart", "restart", s.Restart)
 	return s

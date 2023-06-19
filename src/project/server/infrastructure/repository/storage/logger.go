@@ -1,4 +1,4 @@
-package mysql
+package storage
 
 import (
 	"fmt"
@@ -10,13 +10,13 @@ import (
 
 func check(conf config.Storage) error {
 	if conf.Username == "" {
-		return fmt.Errorf("not found config mysql username")
+		return fmt.Errorf("not found config storage username")
 	} else if conf.Password == "" {
-		return fmt.Errorf("not found config mysql password")
+		return fmt.Errorf("not found config storage password")
 	} else if conf.Database == "" {
-		return fmt.Errorf("not found config mysql database")
+		return fmt.Errorf("not found config storage database")
 	} else if conf.Port == 0 {
-		return fmt.Errorf("not found config mysql port")
+		return fmt.Errorf("not found config storage port")
 	} else {
 		return nil
 	}

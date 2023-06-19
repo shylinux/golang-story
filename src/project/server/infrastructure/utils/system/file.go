@@ -13,6 +13,9 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
+func MkdirAll(dir ...string) {
+	os.MkdirAll(path.Join(dir...), 0755)
+}
 func AbsPath(dir string) string {
 	if strings.HasPrefix(dir, "/") {
 		return dir

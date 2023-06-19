@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
-	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/reflect"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
 type Cmds struct{ *cobra.Command }
@@ -19,17 +19,22 @@ func New(config *config.Config) *Cmds {
 		Short: "matrix devops command",
 		Long: `matrix devops command
 command
+  project create
+  service create
+  product create
   deploy enviroment
   server controll
+  proto define
 service
   auth client
   user client
+  mesh client
 runtime
   java language
   node language
 `,
 		Run: func(cmd *cobra.Command, arg []string) {
-			fmt.Println(logs.MarshalIndent(config))
+			fmt.Println(system.MarshalIndent(config))
 		},
 	}}
 }

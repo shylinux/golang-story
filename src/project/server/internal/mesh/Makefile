@@ -1,3 +1,4 @@
+export CGO_ENABLED=1
 def: matrix idl server restart
 all: matrix idl server deploy restart test pack
 matrix:

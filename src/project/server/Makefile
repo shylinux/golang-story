@@ -1,3 +1,4 @@
+export CGO_ENABLED=1
 def: matrix idl server restart
 all: matrix idl server deploy restart test pack
 matrix:
@@ -5,6 +6,7 @@ matrix:
 idl:
 	./bin/matrix unpack protoc
 	./bin/matrix generate
+	./bin/matrix product create
 server:
 	go build -v -o bin/server cmd/main.go
 deploy:

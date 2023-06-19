@@ -9,8 +9,7 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-type Pool struct {
-}
+type Pool struct{}
 
 func New() *Pool {
 	return &Pool{}
