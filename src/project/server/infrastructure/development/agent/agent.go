@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"shylinux.com/x/golang-story/src/project/server/idl/pb"
+	"shylinux.com/x/golang-story/src/project/server/infrastructure/config"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/consul"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/cmds"
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/development/deploy"
@@ -17,6 +18,8 @@ import (
 
 type AgentCmds struct {
 	consul  consul.Consul
+	config  *config.Config
+	deploy  *deploy.DeployCmds
 	machine pb.MachineServiceClient
 	service pb.ServiceServiceClient
 }
@@ -57,14 +60,26 @@ func (s *AgentCmds) List(ctx context.Context, arg ...string) {
 		if res, err := s.service.List(ctx, &pb.ServiceListRequest{MachineID: machineID}); err == nil {
 			fmt.Println(system.Now())
 			fmt.Println(system.MarshalIndent(res))
+			for _, data := range res.Data {
+				id := fmt.Sprintf("%d", data.ServiceID)
+				s.config.Install.Binary[id] = config.Target{
+					Address: "http://localhost:8081/usr/mirror/" + data.Mirror,
+					Install: data.Dir,
+					Start:   data.Cmd + " " + data.Arg,
+					Daemon:  true,
+				}
+				s.deploy.Download(id)
+				s.deploy.Unpack(id)
+				s.deploy.Start(id)
+			}
 		} else {
 			fmt.Println(err)
 		}
 		time.Sleep(10 * time.Second)
 	}
 }
-func NewAgentCmds(consul consul.Consul, cmds *cmds.Cmds, deploy *deploy.DeployCmds) *AgentCmds {
-	s := &AgentCmds{consul: consul}
+func NewAgentCmds(config *config.Config, consul consul.Consul, cmds *cmds.Cmds, deploy *deploy.DeployCmds) *AgentCmds {
+	s := &AgentCmds{config: config, consul: consul, deploy: deploy}
 	cmds = cmds.Add("agent", "agent runtime cli", s.List)
 	return s
 }

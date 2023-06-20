@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -72,7 +73,7 @@ func (s storage) Insert(ctx context.Context, obj model.Model) error {
 	}
 }
 func (s storage) Delete(ctx context.Context, obj model.Model) error {
-	return errors.New(s.DB.WithContext(ctx).Model(obj).Where(obj.GetKey()+" = ?", obj.GetID()).Update("deleted", "1").Error, "storage delete failure")
+	return errors.New(s.DB.WithContext(ctx).Model(obj).Where(obj.GetKey()+" = ?", obj.GetID()).Update("deleted_at", time.Now()).Error, "storage delete failure")
 }
 func (s storage) Update(ctx context.Context, obj model.Model) error {
 	err := s.DB.WithContext(ctx).Model(obj).Where(obj.GetKey()+" = ?", obj.GetID()).Updates(obj).Error
@@ -85,7 +86,7 @@ func (s storage) SelectOne(ctx context.Context, obj model.Model) error {
 	return errors.New(s.DB.WithContext(ctx).Model(obj).Where(obj.GetKey()+" = ?", obj.GetID()).First(obj).Error, "storage select failure")
 }
 func (s storage) SelectList(ctx context.Context, obj model.Model, res interface{}, page, count int64, condition string, arg ...interface{}) (total int64, err error) {
-	db := s.DB.WithContext(ctx).Model(obj).Where(condition+" deleted = 0", arg...)
+	db := s.DB.WithContext(ctx).Model(obj).Where(condition, arg...)
 	db.Count(&total)
 	if preload := metadata.GetValue(ctx, metadata.PRELOAD); preload != "" {
 		for _, preload := range strings.Split(preload, ",") {

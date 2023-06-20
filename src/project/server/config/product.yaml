@@ -8,27 +8,27 @@ product:
       display: "portal/admin/layout/index.vue"
       views:
         - name: machine
-          icon: user
+          icon: cpu
           title: "机器列表1"
           service: mesh.machine
           view:
             - name: machine
-              icon: user
+              icon: cpu
               title: "机器列表"
               display: "portal/mesh/views/machine/MachineList.vue"
               service: mesh.machine
             - name: service
-              icon: user
+              icon: service
               title: "服务列表"
               display: "portal/mesh/views/service/ServiceList.vue"
               service: mesh.service
-            - name: list2
+            - name: user
               icon: user
               title: "用户列表"
               display: "portal/admin/views/user/UserList.vue"
               service: user
-            - name: list3
-              icon: user
+            - name: space
+              icon: menu
               title: "空间列表"
               display: "portal/admin/views/space/SpaceList.vue"
               service: space

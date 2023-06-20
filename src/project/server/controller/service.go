@@ -48,7 +48,10 @@ func (s *ServiceController) Inputs(ctx context.Context, req *pb.ServiceInputsReq
 	case "machineID":
 		list, _, _ := s.machine.List(ctx, 1, 100, "", "")
 		for _, item := range list {
-			res.Data = append(res.Data, &pb.ServiceInputsItem{Value: fmt.Sprintf("%d", item.MachineID)})
+			res.Data = append(res.Data, &pb.ServiceInputsItem{
+				Value: fmt.Sprintf("%d", item.MachineID),
+				Name:  fmt.Sprintf("%s-%s", item.Hostname, item.Workpath),
+			})
 		}
 	case "mirror":
 		list, _ := system.ReadDir("usr/mirror")

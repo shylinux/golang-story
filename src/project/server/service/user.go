@@ -68,7 +68,7 @@ func (s *UserService) Info(ctx context.Context, userID int64) (*model.User, erro
 	return user, nil
 }
 func (s *UserService) List(ctx context.Context, page int64, count int64, key, value string) (list []*model.User, total int64, err error) {
-	condition, arg := Clause(key != "" && value != "", key+" = ? and ", value)
+	condition, arg := Clause(key != "" && value != "", key+" = ?", value)
 	total, err = s.storage.SelectList(ctx, &model.User{}, &list, page, count, condition, arg...)
 	return list, total, errors.NewListFail(err)
 }

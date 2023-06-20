@@ -35,6 +35,10 @@ func NewMachineController(config *config.Config, server *server.MainServer, serv
 func (s *MachineController) Create(ctx context.Context, req *pb.MachineCreateRequest) (*pb.MachineCreateReply, error) {
 	space, err := s.service.Create(ctx, req.Hostname, req.Workpath, int32(pb.MachineStatus_MACHINE_ONLINE))
 	if errors.IsError(err, enums.Errors.AlreadyExists) {
+		list, _, err := s.service.Find(ctx, req.Hostname, req.Workpath)
+		if len(list) > 0 {
+			return &pb.MachineCreateReply{Data: trans.MachineDTO(list[0])}, errors.NewCreateFailResp(err)
+		}
 		return nil, errors.NewAlreadyExists(fmt.Errorf("machine %s %s already exists", req.Hostname, req.Workpath))
 	}
 	return &pb.MachineCreateReply{Data: trans.MachineDTO(space)}, errors.NewCreateFailResp(err)

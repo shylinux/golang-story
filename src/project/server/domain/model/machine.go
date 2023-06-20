@@ -3,11 +3,12 @@ package model
 import (
 	"fmt"
 
+	"gorm.io/gorm"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 )
 
 type Machine struct {
-	Common
+	gorm.Model
 	MachineID int64
 	Hostname  string `gorm:"uniqueIndex:idx_hostname_workpath"`
 	Workpath  string `gorm:"uniqueIndex:idx_hostname_workpath"`

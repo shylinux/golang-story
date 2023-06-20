@@ -24,6 +24,8 @@ func (s *DeployCmds) Unpack(name string) error {
 		_, err := system.Command("", "tar", "xf", p, "-C", path.Dir(p))
 		return err
 	} else if strings.HasSuffix(p, ".tar.gz") {
+		_, err := system.Command("", "tar", "xf", p, "-C", path.Dir(p))
+		return err
 		return s.UnpackGZIP(name)
 	} else if strings.HasSuffix(p, ".zip") {
 		return s.UnpackZIP(name)
@@ -64,13 +66,13 @@ func (s *DeployCmds) UnpackGZIP(name string) error {
 func (s *DeployCmds) UnpackGZIPCount(name string) (int, error) {
 	f, e := system.Open(s.Path(name))
 	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
+		logs.Errorf("unpack failure %s %s %s", name, s.Path(name), e)
 		return 0, e
 	}
 	defer f.Close()
 	g, e := gzip.NewReader(f)
 	if e != nil {
-		logs.Errorf("unpack failure %s %s", name, e)
+		logs.Errorf("unpack failure %s %s %s", name, s.Path(name), e)
 		return 0, e
 	}
 	t := tar.NewReader(g)

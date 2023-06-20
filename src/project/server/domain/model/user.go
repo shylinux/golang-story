@@ -3,11 +3,12 @@ package model
 import (
 	"fmt"
 
+	"gorm.io/gorm"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 )
 
 type User struct {
-	Common
+	gorm.Model
 	UserID   int64  `gorm:"uniqueIndex:idx_userid"`
 	Username string `gorm:"type:varchar(32);uniqueIndex:idx_username"`
 	Password string

@@ -3,11 +3,12 @@ package model
 import (
 	"fmt"
 
+	"gorm.io/gorm"
 	"shylinux.com/x/golang-story/src/project/server/domain/enums"
 )
 
 type Service struct {
-	Common
+	gorm.Model
 	MachineID int64
 	ServiceID int64
 	Status    int32

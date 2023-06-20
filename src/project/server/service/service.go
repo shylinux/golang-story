@@ -34,8 +34,8 @@ func (s *ServiceService) Info(ctx context.Context, serviceID int64) (*model.Serv
 	return service, errors.NewInfoFail(s.storage.SelectOne(ctx, service))
 }
 func (s *ServiceService) List(ctx context.Context, page, count int64, key, value string, machineID int64) (list []*model.Service, total int64, err error) {
-	condition, arg := Clause(key != "" && value != "", key+" = ? and ", key, value)
-	condition, arg = Clause(machineID != 0, "machine_id = ? and ", machineID)
+	condition, arg := Clause(key != "" && value != "", key+" = ?", key, value)
+	condition, arg = Clause(machineID != 0, "machine_id = ?", machineID)
 	total, err = s.storage.SelectList(ctx, &model.Service{}, &list, page, count, condition, arg...)
 	return list, total, errors.NewListFail(err)
 }
