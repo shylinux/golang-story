@@ -8,25 +8,38 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-func (s *GenerateCmds) GenGoAPI() {
+func (s *GenerateCmds) GenGoAPI() error {
 	serviceList := []string{}
 	packageList := map[string][]string{}
 	for name, proto := range s.protos {
 		packageList[proto[PACKAGE].Name] = proto[PACKAGE].List
 		serviceList = append(serviceList, proto[PACKAGE].List...)
-		s.Render(path.Join(s.conf.GoPath, name+".go"), _goapi_client, proto[PACKAGE].List, template.FuncMap{
+		err := s.Render(path.Join(s.conf.GoPath, name+".go"), _goapi_client, proto[PACKAGE].List, template.FuncMap{
 			"PwdModPath": func() string { return logs.PwdModPath() },
 		})
+		if err != nil {
+			return err
+		}
 	}
-	s.Render(path.Join(s.conf.GoPath, path.Base(s.conf.GoPath)+".go"), _goapi_init, serviceList, nil)
+	err := s.Render(path.Join(s.conf.GoPath, path.Base(s.conf.GoPath)+".go"), _goapi_init, serviceList, nil)
+	if err != nil {
+		return err
+	}
 	for i, v := range serviceList {
 		serviceList[i] = strings.TrimSuffix(v, "Service")
 	}
-	s.Render(path.Join(s.conf.Path, "idl.go"), _idl_template, serviceList, template.FuncMap{
+	err = s.Render(path.Join(s.conf.Path, "idl.go"), _idl_template, serviceList, template.FuncMap{
 		"PwdModPath": func() string { return logs.PwdModPath() },
 		"HasService": func() bool { return len(serviceList) > 0 },
 	})
-	s.Render(path.Join("config/internal.yaml"), _config_template, packageList, nil)
+	if err != nil {
+		return err
+	}
+	err = s.Render(path.Join("config/internal.yaml"), _config_template, packageList, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 const (

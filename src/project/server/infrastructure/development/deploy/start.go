@@ -2,12 +2,16 @@ package deploy
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
 func (s *DeployCmds) Start(name string) error {
+	if system.Exists(path.Join(s.BinPath(name), system.LOG_SERVICE_PID)) {
+		return nil
+	}
 	target := s.Config.Install.GetTarget(name)
 	arg := strings.Split(target.Start, " ")
 	if !target.Daemon {

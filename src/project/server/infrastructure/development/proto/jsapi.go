@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func (s *GenerateCmds) GenJsAPI() {
+func (s *GenerateCmds) GenJsAPI() error {
 	for name, proto := range s.protos {
-		s.Render(path.Join(s.conf.JsPath, name+".js"), _jsapi_client, proto, template.FuncMap{
+		err := s.Render(path.Join(s.conf.JsPath, name+".js"), _jsapi_client, proto, template.FuncMap{
 			"PackageName": func() string { return proto[PACKAGE].Name },
 			"ServiceList": func() []string { return proto[PACKAGE].List },
 			"MethodList":  func(service string) []string { return proto[service].List },
@@ -20,7 +20,11 @@ func (s *GenerateCmds) GenJsAPI() {
 				return strings.Join(list, ", ")
 			},
 		})
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 const (

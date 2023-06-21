@@ -4,7 +4,7 @@ product:
   portal:
     - name: mesh
       title: "matrix mesh"
-      redirect: /mesh/machine1/list1
+      redirect: /mesh/machine/machine
       display: "portal/admin/layout/index.vue"
       views:
         - name: machine

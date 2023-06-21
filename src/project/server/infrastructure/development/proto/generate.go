@@ -28,13 +28,22 @@ func NewGenerateCmds(config *config.Config, logger logs.Logger, cmds *cmds.Cmds)
 	cmds.Add("generate", "proto generate", func(ctx context.Context, arg ...string) {
 		s.protos = map[string]map[string]*Item{}
 		s.OpenProto(func(file *os.File, name string) { s.protos[name] = s.ParseProto(file) })
-		s.GenProto()
-		s.GenValid()
-		s.GenTests()
-		s.GenGoAPI()
-		s.GenShCLI()
-		s.GenJsAPI()
-		s.GenErrors()
+		for _, cb := range []func() error{
+			s.GenProto,
+			s.GenValid,
+			s.GenTests,
+			s.GenGoAPI,
+			s.GenShCLI,
+			s.GenJsAPI,
+			s.GenErrors,
+		} {
+			err := cb()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+				break
+			}
+		}
 	})
 	return s
 }

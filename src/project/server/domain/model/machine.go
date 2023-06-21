@@ -10,8 +10,8 @@ import (
 type Machine struct {
 	gorm.Model
 	MachineID int64
-	Hostname  string `gorm:"uniqueIndex:idx_hostname_workpath"`
-	Workpath  string `gorm:"uniqueIndex:idx_hostname_workpath"`
+	Hostname  string `gorm:"type:varchar(32);uniqueIndex:idx_hostname_workpath"`
+	Workpath  string `gorm:"type:varchar(128);uniqueIndex:idx_hostname_workpath"`
 	Status    int32
 }
 

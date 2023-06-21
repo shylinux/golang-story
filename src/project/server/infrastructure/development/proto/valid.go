@@ -54,9 +54,9 @@ func Valid(req interface{}, value interface{}, name string, rule string) error {
 	return nil
 }
 
-func (s *GenerateCmds) GenValid() {
+func (s *GenerateCmds) GenValid() error {
 	for name, proto := range s.protos {
-		s.Render(path.Join(s.conf.PbPath, name+"_valid.pb.go"), _valid_template, proto, template.FuncMap{
+		err := s.Render(path.Join(s.conf.PbPath, name+"_valid.pb.go"), _valid_template, proto, template.FuncMap{
 			"RequestList": func() (res []string) {
 				for _, service := range proto[PACKAGE].List {
 					for _, method := range proto[service].List {
@@ -80,7 +80,11 @@ func (s *GenerateCmds) GenValid() {
 				return
 			},
 		})
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 var (

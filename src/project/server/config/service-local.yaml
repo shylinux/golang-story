@@ -3,59 +3,27 @@ logs:
   path: log/service.log
   maxsize: 10 # 10M
   maxage: 30  # 30days
-  stdout: false
 proxy:
   export: true
-  simple: false
-  local: true
-  root: "usr/vue-element-admin/dist/"
+  target: http://localhost:8080
   port: 8081
 token:
-  issuer: "demo.auth"
-  secret: "demo.auth"
+  issuer: "auth"
+  secret: "auth"
   expire: "72h"
-consul:
-  enable: false
-  addr: ":8500"
-  interval: 10s
 server:
-  name: demo
   port: 9090
-consumer:
-  user:
-    enable: true
 internal:
   auth:
     export: true
-    port: 9091
   user:
     export: true
-    port: 9092
+  mesh:
+    export: true
   space:
     export: true
-    port: 9093
 engine:
-  cache:
-    enable: false
-    name: redis
-    host: 127.0.0.1
-    port: 6379
-  queue:
-    enable: false
-    name: pulsar
-    host: 127.0.0.1
-    port: 6650
-  search:
-    enable: false
-    name: elasticsearch
-    index: demo
-    host: 127.0.0.1
-    port: 9200
   storage:
-    name: mysql
-    username: demo
-    password: demo
+    name: sqlite
     database: demo
-    host: 127.0.0.1
-    port: 3306
 

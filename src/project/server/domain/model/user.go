@@ -17,5 +17,5 @@ type User struct {
 }
 
 func (s User) TableName() string { return enums.Table.User }
-func (s User) GetKey() string    { return "user_id" }
+func (s User) GetKey() string    { return enums.Table.User + "_id" }
 func (s User) GetID() string     { return fmt.Sprintf("%d", s.UserID) }

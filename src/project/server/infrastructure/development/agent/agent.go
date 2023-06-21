@@ -63,7 +63,7 @@ func (s *AgentCmds) List(ctx context.Context, arg ...string) {
 			for _, data := range res.Data {
 				id := fmt.Sprintf("%d", data.ServiceID)
 				s.config.Install.Binary[id] = config.Target{
-					Address: "http://localhost:8081/usr/mirror/" + data.Mirror,
+					Address: "http://" + config.Address(s.config.Proxy.Host, s.config.Proxy.Port) + "/usr/mirror/" + data.Mirror,
 					Install: data.Dir,
 					Start:   data.Cmd + " " + data.Arg,
 					Daemon:  true,

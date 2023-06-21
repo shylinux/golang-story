@@ -8,11 +8,11 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
-func (s *GenerateCmds) GenShCLI() {
+func (s *GenerateCmds) GenShCLI() error {
 	serviceList := []string{}
 	for name, proto := range s.protos {
 		serviceList = append(serviceList, proto[PACKAGE].List...)
-		s.Render(path.Join(s.conf.ShPath, name+".go"), _shcmd_client, proto, template.FuncMap{
+		err := s.Render(path.Join(s.conf.ShPath, name+".go"), _shcmd_client, proto, template.FuncMap{
 			"PwdModPath":  func() string { return logs.PwdModPath() },
 			"ServiceList": func() []string { return proto[PACKAGE].List },
 			"ServiceCmds": func(service string) string { return strings.ToLower(strings.TrimSuffix(service, "Service")) },
@@ -22,8 +22,15 @@ func (s *GenerateCmds) GenShCLI() {
 			"MethodList":    func(service string) []string { return proto[service].List },
 			"MethodRequest": func(method string) string { return proto[method].List[0] },
 		})
+		if err != nil {
+			return err
+		}
 	}
-	s.Render(path.Join(s.conf.ShPath, path.Base(s.conf.ShPath)+".go"), _shcmd_init, serviceList, nil)
+	err := s.Render(path.Join(s.conf.ShPath, path.Base(s.conf.ShPath)+".go"), _shcmd_init, serviceList, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 const (

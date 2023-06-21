@@ -12,6 +12,15 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/logs"
 )
 
+const (
+	BIN = "bin"
+	LOG = "log"
+	USR = "usr"
+
+	LOG_SERVICE_LOG = "log/service.log"
+	LOG_SERVICE_PID = "log/service.pid"
+)
+
 func Command(dir, name string, arg ...string) (string, error) {
 	logs.Infof("cmd %s %s %s", dir, name, strings.Join(arg, " "))
 	cmd := exec.Command(name, arg...)
@@ -39,7 +48,7 @@ func CommandBuild(dir, name string, arg ...string) error {
 	return nil
 }
 func CommandStart(dir, name string, arg ...string) (int, error) {
-	f, e := Create(path.Join(dir, "log/service.log"))
+	f, e := Create(path.Join(dir, LOG_SERVICE_LOG))
 	if e != nil {
 		logs.Errorf("cmd failure %s %s %s", name, arg, e)
 		return 0, e
@@ -47,18 +56,18 @@ func CommandStart(dir, name string, arg ...string) (int, error) {
 	logs.Infof("cmd %s %s %s", dir, name, strings.Join(arg, " "))
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = f
-	cmd.Stderr = f
+	cmd.Stdout = f
 	cmd.Dir = dir
 	if err := cmd.Start(); err != nil {
 		logs.Errorf("cmd failure %s %s %s", name, arg, err)
 		return 0, err
 	} else {
-		WriteFile(path.Join(dir, "log/service.pid"), []byte(fmt.Sprintf("%d", cmd.Process.Pid)), 0644)
+		WriteFile(path.Join(dir, LOG_SERVICE_PID), []byte(fmt.Sprintf("%d", cmd.Process.Pid)), 0644)
 		return cmd.Process.Pid, nil
 	}
 }
 func CommandStop(dir, name string, arg ...string) error {
-	if buf, err := ReadFile(path.Join(dir, "log/service.pid")); err == nil {
+	if buf, err := ReadFile(path.Join(dir, LOG_SERVICE_PID)); err == nil {
 		if pid, err := strconv.ParseInt(string(buf), 10, 64); err == nil {
 			if p, err := os.FindProcess(int(pid)); err == nil {
 				if err := p.Kill(); err == nil || err == os.ErrProcessDone {

@@ -110,6 +110,8 @@ func init() {
 	flag.StringVar(&config.file, "config.file", "config/service.yaml", "")
 	flag.StringVar(&config.Logs.Pid, "logs.pid", "log/service.pid", "")
 	flag.StringVar(&config.Logs.Path, "logs.path", "log/service.log", "")
+	flag.StringVar(&config.Proxy.Host, "proxy.Host", "", "")
+	flag.IntVar(&config.Proxy.Port, "proxy.port", 8081, "")
 	flag.StringVar(&config.Token.Issuer, "token.issuer", "auth", "")
 	flag.StringVar(&config.Token.Expire, "token.expire", "72h", "")
 	flag.BoolVar(&config.Consul.Enable, "consul.enable", false, "")

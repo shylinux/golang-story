@@ -11,9 +11,9 @@ import (
 	"shylinux.com/x/golang-story/src/project/server/infrastructure/utils/system"
 )
 
-func (s *GenerateCmds) GenTests() {
+func (s *GenerateCmds) GenTests() error {
 	for name, proto := range s.protos {
-		s.Render(path.Join(s.conf.TsPath, name+"_test.go"), _ts_cases, proto, template.FuncMap{
+		err := s.Render(path.Join(s.conf.TsPath, name+"_test.go"), _ts_cases, proto, template.FuncMap{
 			"PwdModPath":  func() string { return logs.PwdModPath() },
 			"ServiceList": func() []string { return proto[PACKAGE].List },
 			"MethodList": func(service string) map[string]string {
@@ -47,7 +47,11 @@ func (s *GenerateCmds) GenTests() {
 				return strings.Join(res, ", ")
 			},
 		})
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 const (

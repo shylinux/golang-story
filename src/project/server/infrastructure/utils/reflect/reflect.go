@@ -39,6 +39,9 @@ func Trans(dst interface{}, src interface{}) interface{} {
 		return dst
 	}
 	t, v := reflect.TypeOf(src).Elem(), reflect.ValueOf(src).Elem()
+	if !v.IsValid() {
+		return dst
+	}
 	call := errors.FileLine(2)
 	FieldList(dst, func(name string, field Field) {
 		if _, ok := t.FieldByName(name); ok {

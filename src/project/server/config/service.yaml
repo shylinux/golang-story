@@ -3,11 +3,9 @@ logs:
   path: log/service.log
   maxsize: 10 # 10M
   maxage: 30  # 30days
-  stdout: false
 proxy:
   export: true
   simple: false
-  target: http://localhost:8082
   root: "usr/vue-element-admin/dist/"
   port: 8081
 token:
@@ -26,16 +24,12 @@ consumer:
 internal:
   auth:
     export: true
-    port: 9090
   user:
     export: true
-    port: 9090
   mesh:
     export: true
-    port: 9090
   space:
     export: true
-    port: 9094
 engine:
   queue:
     enable: false
@@ -54,7 +48,7 @@ engine:
     host: 127.0.0.1
     port: 9200
   storage:
-    type: sqlite
+    type: mysql
     username: demo
     password: demo
     database: demo
