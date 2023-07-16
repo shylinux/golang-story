@@ -16,14 +16,6 @@
       "time": "2023-05-11 16:24:22.813"
     }
   },
-  "8ca991": {
-    "meta": {
-      "icon": "/require/usr/icons/Terminal.png",
-      "index": "web.code.xterm",
-      "name": "Terminal",
-      "time": "2023-05-25 17:54:30.086"
-    }
-  },
   "92ddbf": {
     "meta": {
       "icon": "usr/icons/Photos.png",
@@ -38,14 +30,6 @@
       "index": "web.wiki.draw",
       "name": "Grapher",
       "time": "2023-05-11 16:24:22.813"
-    }
-  },
-  "d5ed5b": {
-    "meta": {
-      "icon": "/require/usr/icons/Docker.png",
-      "index": "web.code.docker.client",
-      "name": "docker",
-      "time": "2023-05-11 16:26:57.887"
     }
   }
 }

@@ -1,10 +1,11 @@
 {
-  "3d8576": {
+  "1ccd88": {
     "meta": {
+      "_target": [],
       "icon": "/require/usr/icons/go.png",
       "index": "web.code.compile",
       "name": "compile",
-      "time": "2023-05-15 19:09:46.010"
+      "time": "2023-07-16 10:58:36.347"
     }
   },
   "3e2741": {
@@ -21,6 +22,15 @@
       "index": "web.chat.macos.finder",
       "name": "Finder",
       "time": "2023-05-11 16:24:22.809"
+    }
+  },
+  "923486": {
+    "meta": {
+      "_target": [],
+      "icon": "/require/usr/icons/git.jpg",
+      "index": "web.code.git.status",
+      "name": "repos",
+      "time": "2023-07-16 10:58:36.347"
     }
   },
   "9fc722": {
