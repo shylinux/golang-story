@@ -1,52 +1,58 @@
 {
-  "1ccd88": {
+  "5bd63f": {
     "meta": {
-      "_target": [],
       "icon": "/require/usr/icons/go.png",
       "index": "web.code.compile",
       "name": "compile",
-      "time": "2023-07-16 10:58:36.347"
+      "time": "2023-07-12 10:16:45.614"
     }
   },
-  "3e2741": {
+  "7b06e7": {
     "meta": {
       "icon": "usr/icons/Safari.png",
       "index": "web.chat.iframe",
       "name": "Safari",
-      "time": "2023-05-11 16:24:22.809"
+      "time": "2023-05-24 15:32:00.613"
     }
   },
-  "802891": {
+  "955f91": {
     "meta": {
-      "icon": "usr/icons/Finder.png",
-      "index": "web.chat.macos.finder",
-      "name": "Finder",
-      "time": "2023-05-11 16:24:22.809"
+      "icon": "/require/usr/icons/Mission Control.png",
+      "index": "web.dream",
+      "name": "dream",
+      "time": "2023-07-12 10:16:45.613"
     }
   },
-  "923486": {
-    "meta": {
-      "_target": [],
-      "icon": "/require/usr/icons/git.jpg",
-      "index": "web.code.git.status",
-      "name": "repos",
-      "time": "2023-07-16 10:58:36.347"
-    }
-  },
-  "9fc722": {
-    "meta": {
-      "icon": "usr/icons/Terminal.png",
-      "index": "web.code.xterm",
-      "name": "Terminal",
-      "time": "2023-05-11 16:24:22.809"
-    }
-  },
-  "cf15bf": {
+  "99baca": {
     "meta": {
       "icon": "usr/icons/vimer.png",
       "index": "web.code.vimer",
       "name": "vimer",
-      "time": "2023-05-11 16:24:22.809"
+      "time": "2023-05-24 15:32:00.615"
+    }
+  },
+  "d5df43": {
+    "meta": {
+      "icon": "usr/icons/Finder.png",
+      "index": "web.chat.macos.finder",
+      "name": "Finder",
+      "time": "2023-05-24 15:32:00.612"
+    }
+  },
+  "e615d4": {
+    "meta": {
+      "icon": "usr/icons/Terminal.png",
+      "index": "web.code.xterm",
+      "name": "Terminal",
+      "time": "2023-05-24 15:32:00.614"
+    }
+  },
+  "eac248": {
+    "meta": {
+      "icon": "/require/usr/icons/git.jpg",
+      "index": "web.code.git.status",
+      "name": "status",
+      "time": "2023-07-15 14:31:26.486"
     }
   }
 }
