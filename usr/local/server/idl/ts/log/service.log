@@ -1,0 +1,72 @@
+2023-06-15T16:31:52.689+0800	INFO	system/file.go:67	file open testdata/AuthService/Login.yaml
+2023-06-15T16:31:52.690+0800	INFO	grpc/interceptor.go:48	a0235d094ea33464d0182a8d788f1d66-f394d3cd81f960ee request /demo.auth.AuthService/Login {}
+2023-06-15T16:38:46.109+0800	INFO	system/file.go:67	file open testdata/AuthService/Login.yaml
+2023-06-15T16:38:46.110+0800	INFO	grpc/interceptor.go:48	6273a6a18d2e33243acc68193645e1fe-291ef14d7bb9878d request /demo.auth.AuthService/Login {}
+2023-06-15T16:38:46.117+0800	WARN	grpc/interceptor.go:55	6273a6a18d2e33243acc68193645e1fe-291ef14d7bb9878d response /demo.auth.AuthService/Login 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Login cost:6.13ms
+2023-06-15T16:38:46.117+0800	INFO	system/file.go:67	file open testdata/AuthService/Logout.yaml
+2023-06-15T16:38:46.118+0800	INFO	grpc/interceptor.go:48	13e6869f8f2203676a54bf2eefbd8049-199df28af42ad2a7 request /demo.auth.AuthService/Logout {}
+2023-06-15T16:38:46.122+0800	WARN	grpc/interceptor.go:55	13e6869f8f2203676a54bf2eefbd8049-199df28af42ad2a7 response /demo.auth.AuthService/Logout 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Logout cost:3.29ms
+2023-06-15T16:38:46.122+0800	INFO	system/file.go:67	file open testdata/AuthService/Refresh.yaml
+2023-06-15T16:38:46.123+0800	INFO	grpc/interceptor.go:48	4d035dcdd970427f2867581ff45d149b-988dc814a806e6bb request /demo.auth.AuthService/Refresh {}
+2023-06-15T16:38:46.124+0800	WARN	grpc/interceptor.go:55	4d035dcdd970427f2867581ff45d149b-988dc814a806e6bb response /demo.auth.AuthService/Refresh 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Refresh cost:1.28ms
+2023-06-15T16:38:46.124+0800	INFO	system/file.go:67	file open testdata/AuthService/Register.yaml
+2023-06-15T16:38:46.125+0800	INFO	grpc/interceptor.go:48	7886e465146880f1de22110d0e06c146-a45353ef3dc345eb request /demo.auth.AuthService/Register {}
+2023-06-15T16:38:46.127+0800	WARN	grpc/interceptor.go:55	7886e465146880f1de22110d0e06c146-a45353ef3dc345eb response /demo.auth.AuthService/Register 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Register cost:1.25ms
+2023-06-15T16:38:46.127+0800	INFO	system/file.go:67	file open testdata/AuthService/Verify.yaml
+2023-06-15T16:38:46.128+0800	INFO	grpc/interceptor.go:48	f07643090a991a783064a50b0df3cee0-d6b283622ba005eb request /demo.auth.AuthService/Verify {}
+2023-06-15T16:38:46.129+0800	WARN	grpc/interceptor.go:55	f07643090a991a783064a50b0df3cee0-d6b283622ba005eb response /demo.auth.AuthService/Verify 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Verify cost:1.13ms
+2023-06-15T16:38:46.135+0800	INFO	system/file.go:67	file open testdata/UserService/Create.yaml
+2023-06-15T16:38:46.135+0800	INFO	grpc/interceptor.go:48	8c4f66b57b897c50f03ede6884878cc8-a01f048b53180359 request /demo.user.UserService/Create {"username":"hi"}
+2023-06-15T16:38:46.136+0800	WARN	grpc/interceptor.go:55	8c4f66b57b897c50f03ede6884878cc8-a01f048b53180359 response /demo.user.UserService/Create 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Create cost:0.73ms
+2023-06-15T16:38:46.136+0800	INFO	grpc/interceptor.go:48	b899c1753b08d346c8d2a2bc4876d6fa-88bbbb21921c32e1 request /demo.user.UserService/Create {"username":"hihihihi"}
+2023-06-15T16:38:46.175+0800	INFO	grpc/interceptor.go:57	b899c1753b08d346c8d2a2bc4876d6fa-88bbbb21921c32e1 response /demo.user.UserService/Create {"data":{"userID":14200726010001,"username":"hihihihi"}} cost:38.78ms
+2023-06-15T16:38:46.176+0800	INFO	system/file.go:67	file open testdata/UserService/Info.yaml
+2023-06-15T16:38:46.177+0800	INFO	grpc/interceptor.go:48	e6aae837dc43f2ab5e9f4e3b3ea90cfb-76f0fc38008c03e6 request /demo.user.UserService/Info {}
+2023-06-15T16:38:46.179+0800	WARN	grpc/interceptor.go:55	e6aae837dc43f2ab5e9f4e3b3ea90cfb-76f0fc38008c03e6 response /demo.user.UserService/Info 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Info cost:2.24ms
+2023-06-15T16:38:46.180+0800	INFO	system/file.go:67	file open testdata/UserService/List.yaml
+2023-06-15T16:38:46.180+0800	INFO	grpc/interceptor.go:48	525b6d1ee9c429ae8dd8286b51d4baaa-60dc6af688171c17 request /demo.user.UserService/List {}
+2023-06-15T16:38:46.182+0800	INFO	grpc/interceptor.go:57	525b6d1ee9c429ae8dd8286b51d4baaa-60dc6af688171c17 response /demo.user.UserService/List {"data":[{},{},{"userID":14200726010001,"username":"hihihihi"}],"total":3} cost:2.00ms
+2023-06-15T16:38:46.183+0800	INFO	system/file.go:67	file open testdata/UserService/Remove.yaml
+2023-06-15T16:38:46.183+0800	INFO	grpc/interceptor.go:48	83e81a0b3f1ff0b7a0c791d01688787e-0cfdd0be53647d27 request /demo.user.UserService/Remove {}
+2023-06-15T16:38:46.184+0800	WARN	grpc/interceptor.go:55	83e81a0b3f1ff0b7a0c791d01688787e-0cfdd0be53647d27 response /demo.user.UserService/Remove 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Remove cost:1.03ms
+2023-06-15T16:38:46.185+0800	INFO	system/file.go:67	file open testdata/UserService/Rename.yaml
+2023-06-15T16:38:46.186+0800	INFO	grpc/interceptor.go:48	107544d1f76e173b2412fe8ed49d6275-76a7fe7387a7e173 request /demo.user.UserService/Rename {}
+2023-06-15T16:38:46.186+0800	WARN	grpc/interceptor.go:55	107544d1f76e173b2412fe8ed49d6275-76a7fe7387a7e173 response /demo.user.UserService/Rename 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Rename cost:0.90ms
+2023-06-15T16:38:46.187+0800	INFO	system/file.go:67	file open testdata/UserService/Search.yaml
+2023-06-15T16:38:46.188+0800	INFO	grpc/interceptor.go:48	20579481b786480582f19bfaaaaae002-1a45ce86e51c873e request /demo.user.UserService/Search {}
+2023-06-15T16:38:46.188+0800	WARN	grpc/interceptor.go:55	20579481b786480582f19bfaaaaae002-1a45ce86e51c873e response /demo.user.UserService/Search 10003: invalid params proto/valid.go:51:proto.Valid key Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Search cost:0.88ms
+2023-06-15T16:38:54.737+0800	INFO	system/file.go:67	file open testdata/AuthService/Login.yaml
+2023-06-15T16:38:54.738+0800	INFO	grpc/interceptor.go:48	cb99c73b23dc37b9e0198eb4d531c0ae-58f7a841092b7b45 request /demo.auth.AuthService/Login {}
+2023-06-15T16:38:54.741+0800	WARN	grpc/interceptor.go:55	cb99c73b23dc37b9e0198eb4d531c0ae-58f7a841092b7b45 response /demo.auth.AuthService/Login 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Login cost:3.46ms
+2023-06-15T16:38:54.742+0800	INFO	system/file.go:67	file open testdata/AuthService/Logout.yaml
+2023-06-15T16:38:54.742+0800	INFO	grpc/interceptor.go:48	32b8860b0b56ee11893ee5640f3a7dbe-82e735e33daca978 request /demo.auth.AuthService/Logout {}
+2023-06-15T16:38:54.743+0800	WARN	grpc/interceptor.go:55	32b8860b0b56ee11893ee5640f3a7dbe-82e735e33daca978 response /demo.auth.AuthService/Logout 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Logout cost:1.83ms
+2023-06-15T16:38:54.744+0800	INFO	system/file.go:67	file open testdata/AuthService/Refresh.yaml
+2023-06-15T16:38:54.744+0800	INFO	grpc/interceptor.go:48	d78ad46ea811ab39195efc6e6a61ac7e-dc0bb69dd291092b request /demo.auth.AuthService/Refresh {}
+2023-06-15T16:38:54.745+0800	WARN	grpc/interceptor.go:55	d78ad46ea811ab39195efc6e6a61ac7e-dc0bb69dd291092b response /demo.auth.AuthService/Refresh 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Refresh cost:1.56ms
+2023-06-15T16:38:54.746+0800	INFO	system/file.go:67	file open testdata/AuthService/Register.yaml
+2023-06-15T16:38:54.746+0800	INFO	grpc/interceptor.go:48	cb51be8099ed57b752d156ef79da8aed-4402a8a4789bbb30 request /demo.auth.AuthService/Register {}
+2023-06-15T16:38:54.748+0800	WARN	grpc/interceptor.go:55	cb51be8099ed57b752d156ef79da8aed-4402a8a4789bbb30 response /demo.auth.AuthService/Register 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Register cost:1.68ms
+2023-06-15T16:38:54.751+0800	INFO	system/file.go:67	file open testdata/AuthService/Verify.yaml
+2023-06-15T16:38:54.751+0800	INFO	grpc/interceptor.go:48	4dbd1acbe9e51efe01e8f4e911879fcc-44187dcef98b0459 request /demo.auth.AuthService/Verify {}
+2023-06-15T16:38:54.758+0800	WARN	grpc/interceptor.go:55	4dbd1acbe9e51efe01e8f4e911879fcc-44187dcef98b0459 response /demo.auth.AuthService/Verify 10003: invalid params proto/valid.go:51:proto.Valid token Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.auth.AuthService/Verify cost:7.06ms
+2023-06-15T16:38:54.760+0800	INFO	system/file.go:67	file open testdata/UserService/Create.yaml
+2023-06-15T16:38:54.760+0800	INFO	grpc/interceptor.go:48	4747a51c1ffa1b31e6bf57a7917df4f5-5be18a0f8458b784 request /demo.user.UserService/Create {"username":"hi"}
+2023-06-15T16:38:54.762+0800	WARN	grpc/interceptor.go:55	4747a51c1ffa1b31e6bf57a7917df4f5-5be18a0f8458b784 response /demo.user.UserService/Create 10003: invalid params proto/valid.go:29:proto.Valid username need length >= 6 grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Create cost:1.95ms
+2023-06-15T16:38:54.762+0800	INFO	grpc/interceptor.go:48	c6bb36883881688da645dc3fd8c605fb-6183f8941885cc0f request /demo.user.UserService/Create {"username":"hihihihi"}
+2023-06-15T16:38:54.768+0800	WARN	grpc/interceptor.go:55	c6bb36883881688da645dc3fd8c605fb-6183f8941885cc0f response /demo.user.UserService/Create 10006: already exists mysql/mysql.go:46:mysql.storage.Insert Error 1062 (23000): Duplicate entry 'hihihihi' for key 'username' grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Create cost:5.39ms
+2023-06-15T16:38:54.769+0800	INFO	system/file.go:67	file open testdata/UserService/Info.yaml
+2023-06-15T16:38:54.769+0800	INFO	grpc/interceptor.go:48	6d6b7f45f77692d44d9041a98d7e105a-a86c37108482929c request /demo.user.UserService/Info {}
+2023-06-15T16:38:54.771+0800	WARN	grpc/interceptor.go:55	6d6b7f45f77692d44d9041a98d7e105a-a86c37108482929c response /demo.user.UserService/Info 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Info cost:2.10ms
+2023-06-15T16:38:54.772+0800	INFO	system/file.go:67	file open testdata/UserService/List.yaml
+2023-06-15T16:38:54.772+0800	INFO	grpc/interceptor.go:48	0d9a5ac77187f84a4283277288276598-6cbd99deb5157fb3 request /demo.user.UserService/List {}
+2023-06-15T16:38:54.774+0800	INFO	grpc/interceptor.go:57	0d9a5ac77187f84a4283277288276598-6cbd99deb5157fb3 response /demo.user.UserService/List {"data":[{},{},{"userID":14200726010001,"username":"hihihihi"}],"total":3} cost:2.24ms
+2023-06-15T16:38:54.774+0800	INFO	system/file.go:67	file open testdata/UserService/Remove.yaml
+2023-06-15T16:38:54.774+0800	INFO	grpc/interceptor.go:48	ddff6ff256e8be19a92d8c01b4221c2b-493d4335643d1837 request /demo.user.UserService/Remove {}
+2023-06-15T16:38:54.776+0800	WARN	grpc/interceptor.go:55	ddff6ff256e8be19a92d8c01b4221c2b-493d4335643d1837 response /demo.user.UserService/Remove 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Remove cost:1.62ms
+2023-06-15T16:38:54.776+0800	INFO	system/file.go:67	file open testdata/UserService/Rename.yaml
+2023-06-15T16:38:54.776+0800	INFO	grpc/interceptor.go:48	44ab3c1d1dfe9bb323aaa9f582e6350a-a652dcef86af9c12 request /demo.user.UserService/Rename {}
+2023-06-15T16:38:54.778+0800	WARN	grpc/interceptor.go:55	44ab3c1d1dfe9bb323aaa9f582e6350a-a652dcef86af9c12 response /demo.user.UserService/Rename 10003: invalid params proto/valid.go:51:proto.Valid userID Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Rename cost:1.46ms
+2023-06-15T16:38:54.778+0800	INFO	system/file.go:67	file open testdata/UserService/Search.yaml
+2023-06-15T16:38:54.778+0800	INFO	grpc/interceptor.go:48	94e3e4c4d241c4dc54109d46ca383932-df6a486d46207947 request /demo.user.UserService/Search {}
+2023-06-15T16:38:54.781+0800	WARN	grpc/interceptor.go:55	94e3e4c4d241c4dc54109d46ca383932-df6a486d46207947 response /demo.user.UserService/Search 10003: invalid params proto/valid.go:51:proto.Valid key Key: '' Error:Field validation for '' failed on the 'required' tag grpc/interceptor.go:51:grpc.clientInterceptor /demo.user.UserService/Search cost:2.62ms
