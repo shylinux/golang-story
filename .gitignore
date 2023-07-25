@@ -1,9 +1,7 @@
 src/binpack.go
 src/version.go
 etc/local.shy
-etc/local.sh
 bin/
-log/
 var/
 usr/
 .*

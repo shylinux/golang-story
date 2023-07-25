@@ -2,11 +2,11 @@ module shylinux.com/x/golang-story
 
 go 1.15
 
-// replace (
-// 	shylinux.com/x/ice => ./usr/release
-// 	shylinux.com/x/icebergs => ./usr/icebergs
-// 	shylinux.com/x/toolkits => ./usr/toolkits
-// )
+replace (
+	shylinux.com/x/ice => ./usr/release
+	shylinux.com/x/icebergs => ./usr/icebergs
+	shylinux.com/x/toolkits => ./usr/toolkits
+)
 
 require (
 	shylinux.com/x/ice v1.3.11
