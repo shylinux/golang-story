@@ -1,4 +1,10 @@
 chapter "project"
+section "matrix"
+shell `
+git clone https://shylinux.com/x/matrix
+make
+`
+
 section "后端框架"
 refer `
 prometheus https://github.com/prometheus/client_golang
