@@ -2,8 +2,16 @@ chapter "project"
 section "matrix"
 shell `
 git clone https://shylinux.com/x/matrix
-make
+cd matrix
+
+make server
+./bin/server
+
+make portal
+open http://localhost:8080
 `
+field "matrix" web.code.vimer args "usr/matrix/ README.md"
+return
 
 section "后端框架"
 refer `
