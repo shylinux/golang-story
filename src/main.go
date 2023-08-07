@@ -5,6 +5,8 @@ import (
 	_ "shylinux.com/x/icebergs/misc/java"
 	_ "shylinux.com/x/icebergs/misc/node"
 
+	_ "shylinux.com/x/docker-story/src/client"
+	_ "shylinux.com/x/docker-story/src/swarm"
 	_ "shylinux.com/x/golang-story/src/compile"
 	_ "shylinux.com/x/golang-story/src/markdown"
 	_ "shylinux.com/x/golang-story/src/project"

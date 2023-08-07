@@ -3,6 +3,7 @@ module shylinux.com/x/golang-story
 go 1.15
 
 replace (
+	shylinux.com/x/docker-story => ./usr/docker-story
 	shylinux.com/x/go-git => ./usr/go-git
 	shylinux.com/x/ice => ./usr/release
 	shylinux.com/x/icebergs => ./usr/icebergs
@@ -17,8 +18,10 @@ require (
 
 require (
 	github.com/cvilsmeier/sqinn-go v1.1.2 // indirect
+	github.com/glebarez/go-sqlite v1.21.2 // indirect
 	github.com/glebarez/sqlite v1.9.0 // indirect
 	github.com/yuin/goldmark v1.4.13
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.2 // indirect
+	shylinux.com/x/docker-story v0.0.1 // indirect
 )
