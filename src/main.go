@@ -11,7 +11,6 @@ import (
 	_ "shylinux.com/x/golang-story/src/proto"
 	_ "shylinux.com/x/golang-story/src/runtime"
 	_ "shylinux.com/x/golang-story/src/sqlite"
-	_ "shylinux.com/x/golang-story/src/yaml"
 )
 
 func main() { print(ice.Run()) }
