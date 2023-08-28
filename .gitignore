@@ -1,0 +1,8 @@
+src/binpack.go
+src/version.go
+etc/local.shy
+bin/
+var/
+usr/
+.*
+
