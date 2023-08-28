@@ -23,6 +23,15 @@
       "time": "2023-08-28 23:18:07.511"
     }
   },
+  "b5a999": {
+    "meta": {
+      "_target": [],
+      "icon": "/require/usr/icons/mail.png",
+      "index": "web.chat.mail.client",
+      "name": "mail",
+      "time": "2023-08-28 23:22:24.887"
+    }
+  },
   "f36db6": {
     "meta": {
       "args": "month",
