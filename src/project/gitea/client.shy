@@ -1,0 +1,5 @@
+chapter "client"
+
+field web.code.gitea.client
+field web.chat.oauth.client
+# field "gitea" web.code.vimer args "usr/local/gitea/ main.go"

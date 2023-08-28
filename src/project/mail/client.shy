@@ -1,0 +1,8 @@
+chapter "client"
+refer `
+https://datatracker.ietf.org/doc/html/rfc3501
+https://pkg.go.dev/github.com/emersion/go-imap
+https://zhuanlan.zhihu.com/p/446124221
+https://zhuanlan.zhihu.com/p/357556162
+`
+field web.chat.email.client

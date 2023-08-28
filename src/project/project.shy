@@ -1,0 +1,139 @@
+chapter "project"
+section "matrix"
+shell `
+git clone https://shylinux.com/x/matrix
+cd matrix
+
+make server
+./bin/server
+
+make portal
+open http://localhost:8080
+`
+field "matrix" web.code.vimer args "usr/matrix/ README.md"
+return
+
+section "后端框架"
+refer `
+prometheus https://github.com/prometheus/client_golang
+https://github.com/elastic/go-elasticsearch
+https://github.com/stretchr/testify
+https://pkg.go.dev/go.uber.org/zap
+https://pkg.go.dev/go.uber.org/dig
+https://github.com/gin-gonic/gin
+https://github.com/go-redis/redis
+https://github.com/go-gorm/gorm
+https://github.com/spf13/viper
+https://google.golang.org/grpc
+`
+refer `
+middleware https://github.com/grpc-ecosystem/go-grpc-middleware/blob/main/examples/client/main.go
+`
+field web.code.golang.project
+section "grpc consul"
+refer `
+'Consul教程' https://juejin.cn/post/7089016533682225160
+'5分钟看懂微服务Consul特性及搭建' https://zhuanlan.zhihu.com/p/126064282
+https://developer.hashicorp.com/consul/docs/integrate/partnerships
+'golang grpc consul 服务注册、发现和负载均衡' https://blog.csdn.net/qq_35916684/article/details/104055246
+'Consul 入门-gRPC 服务注册与发现' https://www.cnblogs.com/Zioyi/p/15255570.html
+`
+
+section "protobuf 协议"
+refer `
+文档 https://developers.google.cn/protocol-buffers/
+源码 https://github.com/protocolbuffers/protobuf
+插件 https://github.com/golang/protobuf
+https://grpc.io/docs/languages/go/quickstart/
+yaml https://yaml.org/spec/1.2.2/
+`
+field web.code.golang.protobuf
+shell `
+wget https://github.com/protocolbuffers/protobuf/releases/download/v23.1/protoc-23.1-linux-x86_64.zip
+unzip -d protoc protoc-23.1-linux-x86_64.zip
+go install google.golang.org/protobuf/cmd/protoc-gen-go
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+`
+return
+section "Google资深工程师深度讲解Go语言"
+refer `
+免费列表 https://www.imooc.com/course/list?c=go
+Go语言第一课 https://www.imooc.com/video/6644
+https://coding.imooc.com/learningpath/route?pathId=5
+`
+
+refer `
+视频 https://coding.imooc.com/learn/list/180.html
+源码 https://git.imooc.com/coding-180/coding-180
+docker https://www.daocloud.io/mirror
+`
+section "other"
+
+
+refer `
+https://github.com/spf13/cobra
+https://github.com/fyne-io/fyne
+https://github.com/webview/webview
+
+https://github.com/golang/protobuf
+https://github.com/gorilla/websocket
+https://github.com/pion/webrtc
+https://github.com/tidwall/gjson
+
+https://github.com/golang/oauth2
+https://github.com/ouqiang/gocron
+https://github.com/stretchr/testify
+https://github.com/golang/mock
+https://github.com/google/uuid
+https://github.com/fsnotify/fsnotify
+https://github.com/go-swagger/go-swagger
+https://github.com/go-admin-team/go-admin
+
+https://github.com/segmentio/kafka-go
+https://github.com/apache/pulsar-client-go
+https://github.com/elastic/go-elasticsearch
+https://github.com/uber-go/zap
+`
+
+refer `
+https://github.com/go-git/go-git
+https://github.com/go-gitea/gitea
+https://github.com/lni/dragonboat
+https://github.com/CodisLabs/codis
+https://github.com/docker/engine
+
+https://github.com/go-delve/delve
+https://github.com/fatih/vim-go
+https://github.com/google/gops
+`
+
+refer `
+https://github.com/talkgo/read
+https://github.com/avelino/awesome-go
+https://github.com/Alikhll/golang-developer-roadmap
+
+https://github.com/chai2010/advanced-go-programming-book
+https://github.com/chai2010/go-ast-book
+https://github.com/tmrts/go-patterns
+https://github.com/dariubs/GoBooks
+
+https://github.com/halfrost/LeetCode-Go
+https://github.com/doocs/leetcode
+`
+section "流行库"
+
+section "raft 协议"
+refer `
+官网 https://raft.github.io/
+源码 https://github.com/lni/dragonboat
+`
+
+section "ledisdb 缓存"
+refer `
+codis https://github.com/CodisLabs/codis
+ledisdb https://github.com/ledisdb/ledisdb
+redis https://github.com/gomodule/redigo/redis
+rocksdb https://github.com/tecbot/gorocksdb
+leveldb https://github.com/syndtr/goleveldb
+`
+

@@ -1,0 +1,6 @@
+~web
+	config space meta.main desktop
+	config serve meta.main /chat/cmd/desktop
+
+~ssh
+	source local.shy
