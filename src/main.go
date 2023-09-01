@@ -14,8 +14,6 @@ import (
 	_ "shylinux.com/x/golang-story/src/project/matrix"
 	_ "shylinux.com/x/golang-story/src/runtime"
 	_ "shylinux.com/x/golang-story/src/runtime/proto"
-
-	_ "shylinux.com/x/golang-story/src/project/matrix"
 )
 
 func main() { print(ice.Run()) }
