@@ -20,7 +20,7 @@ type portal struct {
 }
 
 func (s portal) List(m *ice.Message, arg ...string) {
-	res := web.SpideGet(m.Message, "https://matrix.shylinux.com/api/menu/")
+	res := web.SpideGet(m.Message, m.Conf(s.Server, kit.Keym(web.DOMAIN))+"/api/menu/")
 	kit.For(kit.Value(res, "Portal"), func(value ice.Map) {
 		if len(arg) == 0 {
 			m.Push(PORTAL, value[mdb.NAME]).Push("", value, []string{TITLE, DISPLAY, "redirect"})

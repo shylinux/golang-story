@@ -28,7 +28,7 @@ const (
 
 type Server struct {
 	ice.Code
-	domain string `data:"https://matrix.shylinux.com"`
+	domain string `data:"http://localhost:8090"`
 	source string `data:"https://shylinux.com/x/matrix"`
 	binary string `data:"bin/server"`
 	action string `data:"open,iframe"`
