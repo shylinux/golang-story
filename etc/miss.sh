@@ -13,6 +13,7 @@ ish_miss_prepare_contexts
 ish_miss_prepare_toolkits
 ish_miss_prepare_icebergs
 ish_miss_prepare_release
+ish_miss_prepare_volcanos
 
 ish_miss_prepare matrix
 
