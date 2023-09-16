@@ -11,7 +11,6 @@ import (
 	_ "shylinux.com/x/golang-story/src/project/gitea"
 	_ "shylinux.com/x/golang-story/src/project/mail"
 	_ "shylinux.com/x/golang-story/src/project/markdown"
-	_ "shylinux.com/x/golang-story/src/project/matrix"
 	_ "shylinux.com/x/golang-story/src/runtime"
 	_ "shylinux.com/x/golang-story/src/runtime/proto"
 )

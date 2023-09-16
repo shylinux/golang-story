@@ -16,15 +16,10 @@ func (s md) Init(m *ice.Message, arg ...string) {
 }
 func (s md) Render(m *ice.Message, arg ...string) {
 	var buf bytes.Buffer
-	if !m.Warn(goldmark.Convert([]byte(m.Cmdx(nfs.CAT, path.Join(m.Option(nfs.PATH), m.Option(nfs.FILE)))), &buf)) {
+	if !m.Warn(goldmark.Convert([]byte(m.Cmdx(nfs.CAT, path.Join(arg[2], arg[1]))), &buf)) {
 		m.Echo(buf.String())
 	}
 }
-func (s md) Engine(m *ice.Message, arg ...string) {
-	var buf bytes.Buffer
-	if !m.Warn(goldmark.Convert([]byte(m.Cmdx(nfs.CAT, path.Join(m.Option(nfs.PATH), m.Option(nfs.FILE)))), &buf)) {
-		m.Echo(buf.String())
-	}
-}
+func (s md) Engine(m *ice.Message, arg ...string) { s.Render(m) }
 
 func init() { ice.Cmd("web.wiki.md", md{}) }
