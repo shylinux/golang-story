@@ -68,7 +68,7 @@ type Client struct {
 
 func (s Client) Init(m *ice.Message, arg ...string) {
 	s.Hash.Init(m, arg...)
-	macos.AppInstall(m.Message, MAIL, m.PrefixKey(), mdb.ICON, ice.USR_ICONS+"mail.png")
+	macos.AppInstall(m.Message, ice.USR_ICONS+"Mail.png", m.PrefixKey())
 }
 func (s Client) Inputs(m *ice.Message, arg ...string) {
 	switch m.Option(ctx.ACTION) {
