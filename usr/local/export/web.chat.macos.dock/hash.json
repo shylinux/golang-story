@@ -17,7 +17,6 @@
   },
   "532f81": {
     "meta": {
-      "_target": [],
       "icon": "/require/usr/icons/git.png",
       "index": "web.code.git.status",
       "name": "status",

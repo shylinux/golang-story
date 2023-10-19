@@ -1,12 +1,11 @@
-package leecode
+package leetcode
 
 func init() {
-	Cmd(leecode{help: "两数之和",
-		link: "https://leetcode.cn/problems/two-sum/",
+	Cmd(leetcode{name: "two-sum", help: "两数之和",
 		test: `
-					[2,7,11,15] 9 [0,1]
-					[3,2,4]     6 [1,2]
-					[3,3]       6 [0,1]
+			[2,7,11,15] 9 [0,1]
+			[3,2,4]     6 [1,2]
+			[3,3]       6 [0,1]
 		`,
 		hand: func(nums []int, target int) []int {
 			for i := 0; i < len(nums)-1; i++ {

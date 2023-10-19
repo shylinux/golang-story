@@ -26,27 +26,25 @@ const (
 
 type Client struct {
 	oauth.Client
-	uploads string `name:"uploads name*=install version*=latest file*" help:"上传"`
-	list    string `name:"list hash orgs:text repo:text auto"`
+	uploads string `name:"uploads name*=publish version*=latest file*" help:"上传"`
+	list    string `name:"list hash orgs:text repo:text auto" help:"仓库" icon:"gitea.png"`
 }
 
 func (s Client) Inputs(m *ice.Message, arg ...string) {
-	switch m.Option(ctx.ACTION) {
+	switch s.Client.Inputs(m, arg...); m.Option(ctx.ACTION) {
 	case "uploads":
 		switch arg[0] {
 		case mdb.NAME:
-			m.Push(arg[0], "install")
-			m.Push(arg[0], "publish")
+			m.Push(arg[0], "publish", "install")
 		case nfs.FILE:
 			m.Option(nfs.DIR_TYPE, nfs.CAT)
 			m.Cmdy(nfs.DIR, ice.USR_PUBLISH, nfs.PATH)
 			m.Cmdy(nfs.DIR, ice.USR_INSTALL, nfs.PATH)
 		}
 	}
-	s.Client.Inputs(m, arg...)
 }
 func (s Client) Orgs(m *ice.Message, arg ...string) {
-	res := s.Get(m, kit.Select(m.Option(mdb.HASH), arg, 0), "")
+	res := s.Get(m, kit.Select(m.Option(mdb.HASH), arg, 0), API_V1+ORGS)
 	s.rewrite(m, res, ORGS, "id,avatar_url,name,description")
 	m.PushAction(s.Uploads)
 	m.Echo(kit.Formats(res))
@@ -54,16 +52,8 @@ func (s Client) Orgs(m *ice.Message, arg ...string) {
 func (s Client) Repo(m *ice.Message, arg ...string) {
 	res := s.Get(m, kit.Select(m.Option(mdb.HASH), arg, 0), kit.Format(API_V1_ORGS_REPOS, kit.Select(m.Option(ORGS), arg, 1)))
 	s.rewrite(m, res, REPO, "updated_at,id,avatar_url,name,language,description,html_url,website").Sort(UPDATED_AT, "str_r")
-	m.PushAction(s.Open, s.Uploads)
+	m.PushAction(s.Open)
 	m.Echo(kit.Formats(res))
-}
-func (s Client) Uploads(m *ice.Message, arg ...string) {
-	msg := s.Hash.List(m, m.Option(mdb.HASH))
-	m.Echo(kit.Formats(s.Put(m, m.Option(mdb.HASH), kit.Format("%s/api/packages/%s/generic/%s/%s/%s", msg.Append(web.DOMAIN), m.Option(ORGS),
-		m.Option(mdb.NAME), m.Option(nfs.VERSION), path.Base(m.Option(nfs.FILE))), web.SPIDE_FILE, m.Option(nfs.FILE)))).ProcessInner()
-}
-func (s Client) Open(m *ice.Message, arg ...string) {
-	m.ProcessOpen(m.Option("html_url"))
 }
 func (s Client) List(m *ice.Message, arg ...string) {
 	switch len(arg) {
@@ -74,6 +64,14 @@ func (s Client) List(m *ice.Message, arg ...string) {
 	case 2:
 		s.Repo(m, arg...)
 	}
+}
+func (s Client) Open(m *ice.Message, arg ...string) {
+	m.ProcessOpen(m.Option("html_url"))
+}
+func (s Client) Uploads(m *ice.Message, arg ...string) {
+	msg := s.Hash.List(m, m.Option(mdb.HASH))
+	m.Echo(kit.Formats(s.Put(m, m.Option(mdb.HASH), kit.Format("%s/api/packages/%s/generic/%s/%s/%s", msg.Append(web.DOMAIN), m.Option(ORGS),
+		m.Option(mdb.NAME), m.Option(nfs.VERSION), path.Base(m.Option(nfs.FILE))), web.SPIDE_FILE, m.Option(nfs.FILE)))).ProcessInner()
 }
 
 func init() { ice.CodeCtxCmd(Client{}) }

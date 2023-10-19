@@ -4,11 +4,10 @@ refer `
 文档 https://golang.google.cn/doc
 源码 https://github.com/golang/go
 `
-
 field "编译器" web.code.golang.compile
 
 section "编译安装"
-shell `
+shell centos `
 yum install -y wget make gcc
 yum install -y diffutils.x86_64
 
@@ -18,18 +17,37 @@ export PATH=$PWD/go/bin:$PATH GOROOT_BOOTSTRAP=$PWD/go
 wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
 tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
 
-export CGO_ENABLED=0 
+export CGO_ENABLED=0
 ./all.bash
-`
 
-shell `
 cd ../../../
 wget https://golang.google.cn/dl/go1.15.5.src.tar.gz
 tar xvf go1.15.5.src.tar.gz && cd go/src
 ./all.bash
-`
 
-shell `
 cd ../
 bin/go version
+`
+
+field "compile" web.code.inner args "usr/local/go/src/cmd/ go/main.go"
+
+section "命令"
+refer `
+https://golang.google.cn/doc/
+https://golang.google.cn/doc/tutorial/getting-started
+https://golang.google.cn/doc/tutorial/web-service-gin
+`
+shell `
+go mod init
+go mod tidy
+go mod edit -replace example.com/greetings=../greetings
+go get golang.org/x/example/hello/reverse
+go get github.com/gin-gonic/gin
+go env -w GOBIN=/somewhere/else/bin
+go doc
+go run
+go test
+go build
+go install
+go clean -modcache
 `

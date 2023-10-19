@@ -20,6 +20,8 @@ func (s md) Render(m *ice.Message, arg ...string) {
 		m.Echo(buf.String())
 	}
 }
-func (s md) Engine(m *ice.Message, arg ...string) { s.Render(m) }
+func (s md) Engine(m *ice.Message, arg ...string) {
+	s.Render(m)
+}
 
-func init() { ice.Cmd("web.wiki.md", md{}) }
+func init() { ice.CodeCmd(md{}) }

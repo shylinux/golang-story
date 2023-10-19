@@ -12,13 +12,11 @@ import (
 
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/aaa"
-	"shylinux.com/x/icebergs/base/ctx"
 	"shylinux.com/x/icebergs/base/lex"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/base/web/html"
-	"shylinux.com/x/icebergs/core/chat/macos"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -38,6 +36,7 @@ const (
 	TRASH   = "Trash"
 	ARCHIVE = "Archive"
 
+	SEND   = "send"
 	FROM   = "from"
 	TO     = "to"
 	CC     = "cc"
@@ -48,12 +47,11 @@ const (
 type Client struct {
 	ice.Code
 	ice.Hash
-	short string `data:"username"`
-	field string `data:"time,username,password,smtp,imap"`
-
+	short   string `data:"username"`
+	field   string `data:"time,username,password,smtp,imap"`
 	login   string `name:"login username* password* smtp* imap*" help:"登录"`
 	logout  string `name:"logout" help:"退出"`
-	create  string `name:"create mailbox*" help:"创建"`
+	create  string `name:"create mailbox*"`
 	rename  string `name:"rename mailbox* to*" help:"重命名"`
 	spam    string `name:"spam" help:"垃圾"`
 	archive string `name:"archive" help:"归档"`
@@ -62,22 +60,11 @@ type Client struct {
 	send    string `name:"send to* cc subject* content*:textarea" help:"发送"`
 	reply   string `name:"send subject* content*:textarea" help:"回复"`
 	forword string `name:"forword to*" help:"转发"`
-	list    string `name:"list refresh" help:"邮箱"`
+	list    string `name:"list refresh" help:"邮箱" icon:"mail.png"`
 	sync    string `name:"sync" help:"同步"`
 }
 
-func (s Client) Init(m *ice.Message, arg ...string) {
-	s.Hash.Init(m, arg...)
-	macos.AppInstall(m.Message, ice.USR_ICONS+"Mail.png", m.PrefixKey())
-}
 func (s Client) Inputs(m *ice.Message, arg ...string) {
-	switch m.Option(ctx.ACTION) {
-	case "send":
-		switch arg[0] {
-		case TO, CC:
-			return
-		}
-	}
 	switch s.Hash.Inputs(m, arg...); arg[0] {
 	case SMTP:
 		m.Push(arg[0], kit.Keys(arg[0], kit.Select("shylinux.com", kit.Split(m.Option(aaa.USERNAME)), 1))+":25")
@@ -87,26 +74,17 @@ func (s Client) Inputs(m *ice.Message, arg ...string) {
 		m.Cmdy("", m.Option(aaa.USERNAME)).CutTo(MAILBOX, arg[0])
 	}
 }
-func (s Client) Login(m *ice.Message, arg ...string) {
-	s.Hash.Create(m, arg...)
-	s.Sync(m)
-}
-func (s Client) Logout(m *ice.Message, arg ...string) {
-	s.Hash.Remove(m, arg...)
-}
+func (s Client) Login(m *ice.Message, arg ...string)  { s.Hash.Create(m, arg...); s.Sync(m) }
+func (s Client) Logout(m *ice.Message, arg ...string) { s.Hash.Remove(m, arg...) }
 func (s Client) Create(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
-		if !m.Warn(c.Create(m.Option(MAILBOX))) {
-			s.Sync(m)
-		}
+		kit.If(!m.Warn(c.Create(m.Option(MAILBOX))), func() { s.Sync(m) })
 	})
 }
 func (s Client) Remove(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
-		if !m.Warn(c.Delete(m.Option(MAILBOX))) {
-			mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
-			s.Sync(m)
-		}
+		kit.If(!m.Warn(c.Delete(m.Option(MAILBOX))), func() { s.Sync(m) })
+		mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
 	})
 }
 func (s Client) Rename(m *ice.Message, arg ...string) {
@@ -117,21 +95,10 @@ func (s Client) Rename(m *ice.Message, arg ...string) {
 		}
 	})
 }
-func (s Client) Prune(m *ice.Message, arg ...string) {
-	s.Remove(m)
-}
-func (s Client) Archive(m *ice.Message, arg ...string) {
-	m.Option(nfs.TO, ARCHIVE)
-	s.Move(m)
-}
-func (s Client) Trash(m *ice.Message, arg ...string) {
-	m.Option(nfs.TO, TRASH)
-	s.Move(m)
-}
-func (s Client) Spam(m *ice.Message, arg ...string) {
-	m.Option(nfs.TO, SPAM)
-	s.Move(m)
-}
+func (s Client) Prune(m *ice.Message, arg ...string)   { s.Remove(m) }
+func (s Client) Spam(m *ice.Message, arg ...string)    { m.Option(nfs.TO, SPAM); s.Move(m) }
+func (s Client) Trash(m *ice.Message, arg ...string)   { m.Option(nfs.TO, TRASH); s.Move(m) }
+func (s Client) Archive(m *ice.Message, arg ...string) { m.Option(nfs.TO, ARCHIVE); s.Move(m) }
 func (s Client) Move(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
 		c.Select(m.Option(MAILBOX), false)
@@ -155,6 +122,16 @@ func (s Client) Copy(m *ice.Message, arg ...string) {
 		}
 	})
 }
+func (s Client) Send(m *ice.Message, arg ...string) {
+	msg := s.Hash.List(m.Spawn(), m.Option(aaa.USERNAME))
+	content := []byte(kit.JoinKV(nfs.DF, lex.NL, kit.Simple(FROM, m.Option(aaa.USERNAME), m.OptionSimple(TO, CC, SUBJECT), web.ContentType, "text/plain; charset=UTF-8")...) + lex.NL + lex.NL + m.Option(nfs.CONTENT))
+	auth := smtp.PlainAuth("", msg.Append(aaa.USERNAME), msg.Append(aaa.PASSWORD), kit.Split(msg.Append(SMTP), ice.DF)[0])
+	m.Logs(MAIL, string(content)).Warn(smtp.SendMail(msg.Append(SMTP), auth, msg.Append(aaa.USERNAME), kit.Split(m.Option(nfs.TO)), content))
+	web.ToastSuccess(m.Message)
+	m.ProcessHold()
+}
+func (s Client) Reply(m *ice.Message, arg ...string)   {}
+func (s Client) Forword(m *ice.Message, arg ...string) {}
 func (s Client) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.OptionFields(aaa.USERNAME)
@@ -193,32 +170,6 @@ func (s Client) List(m *ice.Message, arg ...string) {
 			m.EchoIFrame(kit.MergeURL(path.Join(nfs.REQUIRE, m.Append(nfs.FILE)), ice.POD, m.Option(ice.MSG_USERPOD)))
 		}
 	}
-}
-func (s Client) Send(m *ice.Message, arg ...string) {
-	msg := s.Hash.List(m.Spawn(), m.Option(aaa.USERNAME))
-	content := []byte(kit.JoinKV(nfs.DF, lex.NL, kit.Simple(FROM, m.Option(aaa.USERNAME), m.OptionSimple(TO, CC, SUBJECT),
-		web.ContentType, "text/plain; charset=UTF-8")...) + lex.NL + lex.NL + m.Option(nfs.CONTENT))
-	auth := smtp.PlainAuth("", msg.Append(aaa.USERNAME), msg.Append(aaa.PASSWORD), kit.Split(msg.Append(SMTP), ice.DF)[0])
-	m.Logs(MAIL, string(content)).Warn(smtp.SendMail(msg.Append(SMTP), auth, msg.Append(aaa.USERNAME), kit.Split(m.Option(nfs.TO)), content))
-	web.ToastSuccess(m.Message)
-	m.ProcessHold()
-}
-func (s Client) Reply(m *ice.Message, arg ...string) {
-}
-func (s Client) Forword(m *ice.Message, arg ...string) {
-}
-func (s Client) client(m *ice.Message, username string, cb func(c *client.Client)) {
-	msg := s.Hash.List(m.Spawn(), username)
-	c, err := client.DialTLS(msg.Append(IMAP), nil)
-	if m.Warn(err) {
-		return
-	}
-	defer c.Close()
-	if m.Warn(c.Login(msg.Append(aaa.USERNAME), msg.Append(aaa.PASSWORD))) {
-		return
-	}
-	defer c.Logout()
-	cb(c)
 }
 func (s Client) Sync(m *ice.Message, arg ...string) {
 	kit.If(len(arg) == 0, func() { arg = append(arg, m.Option(aaa.USERNAME)) })
@@ -261,11 +212,7 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 		done := make(chan error, 1)
 		list := make(chan *imap.Message, 10)
 		m.Go(func() {
-			done <- c.Fetch(seqset, []imap.FetchItem{
-				imap.FetchRFC822,
-				imap.FetchRFC822Header,
-				imap.FetchInternalDate,
-			}, list)
+			done <- c.Fetch(seqset, []imap.FetchItem{imap.FetchRFC822, imap.FetchRFC822Header, imap.FetchInternalDate}, list)
 		})
 		web.GoToast(m.Message, kit.Select(m.CommandKey()+lex.SP+m.ActionKey()), func(toast func(string, int, int)) []string {
 			toast(arg[1], 0, int(to-from+1))
@@ -324,14 +271,25 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 			}
 			return nil
 		})
-		if m.Warn(<-done) {
-			return
-		}
+		m.Warn(<-done)
 	})
 }
 
-func init() { ice.Cmd("web.chat.mail.client", Client{}) }
+func init() { ice.ChatCtxCmd(Client{}) }
 
+func (s Client) client(m *ice.Message, username string, cb func(c *client.Client)) {
+	msg := s.Hash.List(m.Spawn(), username)
+	c, err := client.DialTLS(msg.Append(IMAP), nil)
+	if m.Warn(err) {
+		return
+	}
+	defer c.Close()
+	if m.Warn(c.Login(msg.Append(aaa.USERNAME), msg.Append(aaa.PASSWORD))) {
+		return
+	}
+	defer c.Logout()
+	cb(c)
+}
 func (s Client) dirs(m *ice.Message, arg ...string) string {
 	return path.Join(USR_LOCAL_MAIL, path.Join(arg...))
 }

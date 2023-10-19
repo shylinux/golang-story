@@ -7,12 +7,13 @@ import (
 	_ "shylinux.com/x/icebergs/misc/node"
 
 	_ "shylinux.com/x/golang-story/src/compile"
+	_ "shylinux.com/x/golang-story/src/leetcode"
 	_ "shylinux.com/x/golang-story/src/project"
 	_ "shylinux.com/x/golang-story/src/project/gitea"
 	_ "shylinux.com/x/golang-story/src/project/mail"
-	_ "shylinux.com/x/golang-story/src/project/markdown"
+	_ "shylinux.com/x/golang-story/src/project/md"
+	_ "shylinux.com/x/golang-story/src/project/proto"
 	_ "shylinux.com/x/golang-story/src/runtime"
-	_ "shylinux.com/x/golang-story/src/runtime/proto"
 )
 
 func main() { print(ice.Run()) }

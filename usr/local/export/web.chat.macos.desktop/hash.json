@@ -25,7 +25,6 @@
   },
   "b5a999": {
     "meta": {
-      "_target": [],
       "icon": "/require/usr/icons/mail.png",
       "index": "web.chat.mail.client",
       "name": "mail",

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"shylinux.com/x/ice"
+	"shylinux.com/x/icebergs/base/ctx"
 	"shylinux.com/x/icebergs/base/lex"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
@@ -12,23 +13,28 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
+const (
+	SERVICE = "service"
+	MESSAGE = "message"
+	RPC     = "rpc"
+)
+
 type proto struct{ ice.Lang }
 
 func (s proto) Init(m *ice.Message, arg ...string) {
-
-	s.Lang.Init(m, code.PREPARE, kit.Dict(code.KEYWORD, kit.List("message")))
+	s.Lang.Init(m, code.PREPARE, kit.Dict(code.KEYWORD, kit.List(MESSAGE)))
 }
 func (s proto) parse(m *ice.Message, arg ...string) ice.Any {
 	block, comment := "", ""
 	list := kit.Dict()
 	m.Cmd(lex.SPLIT, path.Join(m.Option(nfs.PATH), m.Option(nfs.FILE)), func(ls []string) {
 		switch ls[0] {
-		case "service":
+		case SERVICE:
 			list[ls[0]] = append(kit.List(list[ls[0]]), ls[1])
 			fallthrough
-		case "message":
+		case MESSAGE:
 			block, list[ls[1]] = ls[1], []ice.Any{}
-		case "rpc":
+		case RPC:
 			list[block] = append(kit.List(list[block]), ls[1])
 			list[ls[1]] = []string{ls[3], ls[7]}
 		case "}":
@@ -48,7 +54,7 @@ func (s proto) parse(m *ice.Message, arg ...string) ice.Any {
 		}
 	})
 	data := kit.Dict()
-	for _, service := range kit.List(list["service"]) {
+	for _, service := range kit.List(list[SERVICE]) {
 		service := kit.Format(service)
 		serviceDict := kit.Dict()
 		for _, api := range kit.List(list[service]) {
@@ -63,12 +69,12 @@ func (s proto) parse(m *ice.Message, arg ...string) ice.Any {
 }
 
 func (s proto) Render(m *ice.Message, arg ...string) {
-	m.Echo(kit.Formats(s.parse(m, arg...))).Display("/plugin/story/json.js")
+	m.Echo(kit.Formats(s.parse(m, arg...)))
+	ctx.DisplayStoryJSON(m.Message)
 }
 func (s proto) Engine(m *ice.Message, arg ...string) {
 	m.OptionFields(mdb.DETAIL)
 	kit.For(kit.KeyValue(nil, "", s.parse(m, arg...)), func(k string, v string) { m.Push(k, v) })
-	m.StatusTimeCount()
 }
 
 func init() { ice.CodeCmd(proto{}) }

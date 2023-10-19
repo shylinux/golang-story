@@ -11,6 +11,7 @@ import (
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/tcp"
 	"shylinux.com/x/icebergs/base/web"
+	"shylinux.com/x/icebergs/misc/git"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -18,30 +19,20 @@ type project struct {
 	ice.Code
 	ice.Hash
 	short    string `data:"name"`
-	start    string `name:"start port=11000" help:"启动"`
 	field    string `data:"time,name,path,repos,bin,pid,port"`
-	create   string `name:"create repos='shylinux.com/x/space'" help:"创建"`
+	create   string `name:"create repos*='https://shylinux.com/x/demo'"`
 	generate string `name:"generate" help:"生成"`
-	list     string `name:"list name auto create" help:"项目管理"`
+	start    string `name:"start port=11000"`
+	list     string `name:"list name auto" help:"项目管理"`
 }
 
 func (s project) Create(m *ice.Message, arg ...string) {
 	p := path.Join(ice.USR, path.Base(m.Option(nfs.REPOS))) + nfs.PS
-	m.Cmd(nfs.DIR, nfs.PWD, kit.Dict(nfs.DIR_DEEP, ice.TRUE, nfs.DIR_TYPE, nfs.TYPE_CAT, nfs.DIR_ROOT, "src/project/server/"), func(value ice.Maps) {
-		p := path.Join(ice.USR, path.Base(m.Option(nfs.REPOS)), value[nfs.PATH])
-		m.Cmd(nfs.COPY, p, path.Join("src/project/server/", value[nfs.PATH]))
-		if strings.Contains(p, "/bin/") {
-			return
-		}
-		nfs.Rewrite(m.Message, p, func(p string) string {
-			if strings.Contains(p, "shylinux.com/x/golang-story/src/project/server") {
-				return strings.Replace(p, "shylinux.com/x/golang-story/src/project/server", m.Option(nfs.REPOS), 1)
-			}
-			return p
-		})
-	})
-	m.Cmd("web.code.git.repos", "init", "origin", m.Option(nfs.REPOS))
 	s.Hash.Create(m, append(arg, mdb.NAME, path.Base(p), nfs.PATH, p)...)
+	m.Cmd(nfs.DEFS, path.Join(p, ice.SRC_MAIN_GO), nfs.Template(m.Message, ice.SRC_MAIN_GO))
+	m.Cmd(nfs.DEFS, path.Join(p, ice.GO_MOD), kit.Format(nfs.Template(m.Message, ice.GO_MOD), strings.TrimPrefix(m.Option(nfs.REPOS), "https://")))
+	m.Cmd(nfs.DEFS, path.Join(p, ice.GO_SUM), nfs.Template(m.Message, ice.GO_SUM))
+	git.ReposInit(m.Message, m.Option(nfs.REPOS), p)
 }
 func (s project) Generate(m *ice.Message, arg ...string) {
 	list := m.Cmd(nfs.DIR, "idl/", kit.Dict(nfs.DIR_ROOT, m.Option(nfs.PATH), nfs.DIR_REG, kit.ExtReg("proto"))).Appendv(nfs.PATH)
@@ -68,12 +59,10 @@ func (s project) Start(m *ice.Message, arg ...string) {
 	}
 }
 func (s project) Test(m *ice.Message, arg ...string) {
-	// ctx.ProcessField(m.Message, "apitest", []string{m.Option(mdb.NAME), m.Option(mdb.NAME)}, arg...)
 	ctx.ProcessField(m.Message, "xterm", []string{"sh", "", "make test", m.Option(nfs.PATH)}, arg...)
 }
 func (s project) List(m *ice.Message, arg ...string) {
-	s.Hash.List(m, arg...)
-	m.PushAction(s.Generate, s.Build, s.Start, s.Test, s.Remove)
+	s.Hash.List(m, arg...).PushAction(s.Generate, s.Build, s.Start, s.Test, s.Remove)
 }
 
 func init() { ice.CodeModCmd(project{}) }

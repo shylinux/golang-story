@@ -1,22 +1,21 @@
-package leecode
+package leetcode
 
 import (
 	"encoding/json"
-	"path"
 	"reflect"
 	"strings"
 
 	ice "shylinux.com/x/icebergs"
-	"shylinux.com/x/icebergs/base/ctx"
+	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
 )
 
-var Index = &ice.Context{Name: "leecode", Help: "刷题"}
+var Index = &ice.Context{Name: "leetcode", Help: "刷题"}
 
 func init() { code.Index.Register(Index, nil) }
 
-type leecode struct {
+type leetcode struct {
 	name string
 	help string
 	link string
@@ -24,27 +23,23 @@ type leecode struct {
 	hand ice.Any
 }
 
-func Cmd(l leecode) {
+func Cmd(l leetcode) {
 	l.name = kit.Select(kit.FileName(2), l.name)
-	ctx.AddFileCmd(path.Join("/require/", kit.ModPath(1), l.name+".go"), "web.code.leecode."+l.name)
+	l.link = kit.Select("https://leetcode.cn/problems/"+l.name+"/", l.link)
 	Index.MergeCommands(ice.Commands{
-		l.name: {Name: l.name + " auto link", Help: l.help, Actions: ice.Actions{
-			"link": {Name: "link", Help: "链接", Hand: func(m *ice.Message, arg ...string) {
-				m.ProcessOpen(l.link)
-			}},
-		}, Hand: func(m *ice.Message, arg ...string) {
+		l.name: {Name: l.name + " auto open", Help: l.help, Actions: ice.Actions{
+			web.OPEN: {Hand: func(m *ice.Message, arg ...string) { m.ProcessOpen(l.link) }},
+		}, RawHand: kit.FileLine(2, 100), Hand: func(m *ice.Message, arg ...string) {
 			t := reflect.TypeOf(l.hand)
 			v := reflect.ValueOf(l.hand)
-
 			for _, param := range Split(l.test) {
 				args := []reflect.Value{}
 				for j := 0; j < t.NumIn(); j++ {
+					m.Push(kit.Format("in%d", j), param[j])
 					p := reflect.New(t.In(j))
 					json.Unmarshal([]byte(param[j]), p.Interface())
 					args = append(args, p.Elem())
-					m.Push(kit.Format("in%d", j), param[j])
 				}
-
 				ok := true
 				res := v.Call(args)
 				for j, p := range param[t.NumIn():] {
@@ -55,10 +50,7 @@ func Cmd(l leecode) {
 						break
 					}
 				}
-				if ok {
-					m.Push("res", "success")
-				}
-				m.StatusTimeCount()
+				kit.If(ok, func() { m.Push("res", "success") })
 			}
 		}},
 	})

@@ -1,4 +1,4 @@
-package leecode
+package leetcode
 
 func init() {
 	type ListNode struct {
@@ -25,12 +25,11 @@ func init() {
 		}
 		return res
 	}
-	Cmd(leecode{help: "两数相加",
-		link: "https://leetcode.cn/problems/add-two-numbers/",
+	Cmd(leetcode{name: "add-two-numbers", help: "两数相加",
 		test: `
-					[2,4,3]         [5,6,4]   [7,0,8]
-					[0]             [0]       [0]
-					[9,9,9,9,9,9,9] [9,9,9,9] [8,9,9,9,0,0,0,1]
+			[2,4,3]         [5,6,4]   [7,0,8]
+			[0]             [0]       [0]
+			[9,9,9,9,9,9,9] [9,9,9,9] [8,9,9,9,0,0,0,1]
 		`,
 		hand: func(n1 []int, n2 []int) (res []int) {
 			var l1, l2 *ListNode

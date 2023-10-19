@@ -33,7 +33,7 @@ func (s tree) show(m *ice.Message, deep int, node *treeNode) {
 }
 func (s tree) Init(m *ice.Message, arg ...string) {
 	m.OptionFields("name")
-	s.Hash.List(m).Tables(func(val ice.Maps) {
+	s.Zone.List(m).Tables(func(val ice.Maps) {
 		list := map[string]*treeNode{}
 		list[""] = &treeNode{}
 		m.Confv("", kit.KeyHash(val[mdb.NAME], mdb.META, mdb.TARGET), list[""])
