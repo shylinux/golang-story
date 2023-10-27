@@ -15,5 +15,6 @@ ish_miss_prepare_icebergs
 ish_miss_prepare_release
 
 ish_miss_prepare matrix
+ish_miss_prepare icons
 
 ish_miss_make
