@@ -60,7 +60,7 @@ type Client struct {
 	send    string `name:"send to* cc subject* content*:textarea" help:"发送"`
 	reply   string `name:"send subject* content*:textarea" help:"回复"`
 	forword string `name:"forword to*" help:"转发"`
-	list    string `name:"list refresh" help:"邮箱" icon:"mail.png"`
+	list    string `name:"list refresh" help:"邮箱" icon:"Mail.png"`
 	sync    string `name:"sync" help:"同步"`
 }
 
