@@ -9,12 +9,8 @@ Volcanos(chat.ONIMPORT, {
 }, [""])
 Volcanos(chat.ONACTION, {
 	parse: function(event, can, button) { can.user.input(event, can, [nfs.SCRIPT], function(list) {
-		debugger
-		can.onappend.plugin(can, {title: can.user.trans(can, "parse", "解析"), display: web.SHARE_LOCAL+can._msg.Option(nfs.DIR_ROOT)+list[0], style: html.FLOAT, height: can.ConfHeight()*3/4, width: can.ConfWidth()*3/4, top: can.ConfHeight()/4, left: can.ConfWidth()/4}, function(sub) {
-			sub.run = function(event, cmds, cb) {
-				var msg = can.request(); msg._sheet = can.db.sheet, cb(msg)
-				can.onmotion.resize(can, sub._target, function(height, width) { sub.onimport.size(sub, height, width, true) })
-			}
+		can.onappend.plugin(can, {display: web.SHARE_LOCAL+can._msg.Option(nfs.DIR_ROOT)+list[0], style: html.FLOAT}, function(sub) {
+			sub.run = function(event, cmds, cb) { var msg = can.request(); msg._sheet = can.db.sheet, cb(msg) }
 		})
 	}) },
 })
