@@ -1,10 +1,16 @@
 chapter "office"
 refer `
-https://context.feishu.cn/drive/home/
+网盘 https://context.feishu.cn/drive/home/
 `
-
-section "xlsx"
+section "xls"
 refer `
-https://www.npmjs.com/package/xlsx
-https://xlsx.nodejs.cn/docs/getting-started/examples/import
+源码 https://www.npmjs.com/package/xlsx
+文档 https://xlsx.nodejs.cn/docs/getting-started/examples/import
+教程 https://juejin.cn/post/7003153489920524301
+`
+section "echarts"
+refer `
+文档 https://echarts.apache.org/handbook/zh/get-started/
+数据 http://datav.aliyun.com/portal/school/atlas/area_selector
+教程 https://juejin.cn/post/7146785031020052493
 `
