@@ -9,6 +9,7 @@ import (
 
 	"github.com/nfnt/resize"
 	"shylinux.com/x/ice"
+	icebergs "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
@@ -30,12 +31,12 @@ func (s trans) Resize(m *ice.Message, arg ...string) {
 		web.GoToast(m.Message, "", func(toast func(string, int, int)) []string {
 			msg.Table(func(index int, value ice.Maps, head []string) {
 				toast(value[nfs.PATH], index, msg.Length())
-				Resize(m, value[nfs.PATH], uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
+				Resize(m.Message, value[nfs.PATH], uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
 			})
 			return nil
 		})
 	} else {
-		Resize(m, m.Option(nfs.PATH), uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
+		Resize(m.Message, m.Option(nfs.PATH), uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
 	}
 }
 func (s trans) List(m *ice.Message, arg ...string) {
@@ -58,20 +59,21 @@ func (s trans) List(m *ice.Message, arg ...string) {
 }
 
 func init() { ice.CodeCmd(trans{}) }
+func init() { nfs.ImageResize = Resize }
 
-func Resize(m *ice.Message, p string, height, width uint) {
+func Resize(m *icebergs.Message, p string, height, width uint) bool {
 	f, e := os.Open(p)
 	if m.Warn(e) {
-		return
+		return false
 	}
 	defer f.Close()
 	img, fmt, err := image.Decode(f)
 	if m.Warn(err) {
-		return
+		return false
 	}
 	out, err := os.Create(p)
 	if m.Warn(err) {
-		return
+		return false
 	}
 	defer out.Close()
 	switch _img := resize.Resize(width, height, img, resize.Lanczos3); fmt {
@@ -81,5 +83,7 @@ func Resize(m *ice.Message, p string, height, width uint) {
 		jpeg.Encode(out, _img, nil)
 	default:
 		m.ErrorNotImplement(fmt)
+		return false
 	}
+	return true
 }
