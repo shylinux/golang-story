@@ -124,7 +124,7 @@ func (s Client) Copy(m *ice.Message, arg ...string) {
 }
 func (s Client) Send(m *ice.Message, arg ...string) {
 	msg := s.Hash.List(m.Spawn(), m.Option(aaa.USERNAME))
-	content := []byte(kit.JoinKV(nfs.DF, lex.NL, kit.Simple(FROM, m.Option(aaa.USERNAME), m.OptionSimple(TO, CC, SUBJECT), web.ContentType, "text/plain; charset=UTF-8")...) + lex.NL + lex.NL + m.Option(nfs.CONTENT))
+	content := []byte(kit.JoinKV(nfs.DF, lex.NL, kit.Simple(FROM, m.Option(aaa.USERNAME), m.OptionSimple(TO, CC, SUBJECT), html.ContentType, "text/plain; charset=UTF-8")...) + lex.NL + lex.NL + m.Option(nfs.CONTENT))
 	auth := smtp.PlainAuth("", msg.Append(aaa.USERNAME), msg.Append(aaa.PASSWORD), kit.Split(msg.Append(SMTP), ice.DF)[0])
 	m.Logs(MAIL, string(content)).Warn(smtp.SendMail(msg.Append(SMTP), auth, msg.Append(aaa.USERNAME), kit.Split(m.Option(nfs.TO)), content))
 	web.ToastSuccess(m.Message)
@@ -160,7 +160,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 	} else {
 		m.OptionFields(mdb.DETAIL)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), s.keys(m, arg[0], arg[1]), mdb.LIST, mdb.ID, arg[2]).Display("")
-		if strings.HasPrefix(m.Append(web.ContentType), html.TEXT_PLAIN) {
+		if strings.HasPrefix(m.Append(html.ContentType), html.TEXT_PLAIN) {
 			if p := m.Cmdx(nfs.CAT, m.Append(nfs.FILE)); kit.HasPrefix(p, nfs.PS, web.HTTP) {
 				m.EchoIFrame(kit.MergeURL(p, ice.POD, m.Option(ice.MSG_USERPOD)))
 			} else {
@@ -227,7 +227,7 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 				fields := mr.Header.Fields()
 				for fields.Next() {
 					m.Debug("header %v %v", fields.Key(), fields.Value())
-					kit.If(fields.Key() == web.ContentType, func() { contentType = fields.Value() })
+					kit.If(fields.Key() == html.ContentType, func() { contentType = fields.Value() })
 				}
 				subject, _ := mr.Header.Subject()
 				arg := append(arg, kit.Format(item.SeqNum))
