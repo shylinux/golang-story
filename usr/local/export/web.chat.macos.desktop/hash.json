@@ -1,51 +1,50 @@
 {
-  "24ca13": {
+  "006ff3": {
+    "meta": {
+      "icon": "usr/icons/gitea.png",
+      "index": "web.code.gitea.client",
+      "name": "gitea",
+      "time": "2023-12-13 12:03:23.475"
+    }
+  },
+  "26ed79": {
     "meta": {
       "icon": "usr/icons/Grapher.png",
       "index": "web.wiki.draw",
       "name": "Grapher",
-      "time": "2023-08-28 23:18:07.511"
+      "time": "2023-12-13 12:03:23.257"
     }
   },
-  "25a2f5": {
-    "meta": {
-      "icon": "usr/icons/Books.png",
-      "index": "web.wiki.word",
-      "name": "Books",
-      "time": "2023-08-28 23:18:07.511"
-    }
-  },
-  "3e1896": {
-    "meta": {
-      "icon": "/require/usr/icons/favor.png?debug=true",
-      "index": "web.chat.favor",
-      "name": "favor",
-      "time": "2023-11-24 20:30:36.195"
-    }
-  },
-  "800707": {
-    "meta": {
-      "icon": "/require/usr/icons/Mail.png?debug=true",
-      "index": "web.chat.mail.client",
-      "name": "Mail",
-      "time": "2023-11-02 16:41:26.672"
-    }
-  },
-  "9ff551": {
+  "2e437e": {
     "meta": {
       "icon": "usr/icons/Photos.png",
       "index": "web.wiki.feel",
       "name": "Photos",
-      "time": "2023-08-28 23:18:07.511"
+      "time": "2023-12-13 12:03:23.257"
     }
   },
-  "f36db6": {
+  "c5caf6": {
     "meta": {
-      "args": "month",
+      "icon": "usr/icons/Mail.png",
+      "index": "web.chat.mail.client",
+      "name": "Mail",
+      "time": "2023-12-13 12:03:23.262"
+    }
+  },
+  "d45cc4": {
+    "meta": {
       "icon": "usr/icons/Calendar.png",
       "index": "web.team.plan",
       "name": "Calendar",
-      "time": "2023-08-28 23:18:07.512"
+      "time": "2023-12-13 12:03:23.258"
+    }
+  },
+  "ee0d42": {
+    "meta": {
+      "icon": "usr/icons/Books.png",
+      "index": "web.wiki.word",
+      "name": "Books",
+      "time": "2023-12-13 12:03:23.257"
     }
   }
 }
