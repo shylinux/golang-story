@@ -1,50 +1,50 @@
 {
-  "13fc0b": {
-    "meta": {
-      "icon": "usr/icons/git.png",
-      "index": "web.code.git.status",
-      "name": "git",
-      "time": "2023-12-13 12:03:23.259"
-    }
-  },
-  "170ed5": {
+  "03448e": {
     "meta": {
       "icon": "usr/icons/vimer.png",
       "index": "web.code.vimer",
       "name": "vimer",
-      "time": "2023-12-13 12:03:23.259"
+      "time": "2023-12-13 12:29:52.834"
     }
   },
-  "1d71ef": {
+  "1e0d78": {
     "meta": {
       "icon": "usr/icons/go.png",
       "index": "web.code.compile",
       "name": "go",
-      "time": "2023-12-13 12:03:23.259"
+      "time": "2023-12-13 12:29:52.833"
     }
   },
-  "2ec79c": {
-    "meta": {
-      "icon": "usr/icons/Finder.png",
-      "index": "web.chat.macos.finder",
-      "name": "Finder",
-      "time": "2023-12-13 12:03:23.258"
-    }
-  },
-  "c9715f": {
+  "484dc5": {
     "meta": {
       "icon": "usr/icons/Terminal.png",
       "index": "web.code.xterm",
       "name": "Terminal",
-      "time": "2023-12-13 12:03:23.259"
+      "time": "2023-12-13 12:29:52.833"
     }
   },
-  "efb94e": {
+  "593762": {
+    "meta": {
+      "icon": "usr/icons/Finder.png",
+      "index": "web.chat.macos.finder",
+      "name": "Finder",
+      "time": "2023-12-13 12:29:52.833"
+    }
+  },
+  "6364b7": {
     "meta": {
       "icon": "usr/icons/Safari.png",
       "index": "web.chat.iframe",
       "name": "Safari",
-      "time": "2023-12-13 12:03:23.259"
+      "time": "2023-12-13 12:29:52.833"
+    }
+  },
+  "a3d72e": {
+    "meta": {
+      "icon": "usr/icons/git.png",
+      "index": "web.code.git.status",
+      "name": "git",
+      "time": "2023-12-13 12:29:52.833"
     }
   }
 }
