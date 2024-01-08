@@ -2,6 +2,7 @@ package main
 
 import (
 	"shylinux.com/x/ice"
+	_ "shylinux.com/x/icebergs/base/aaa/portal"
 
 	_ "shylinux.com/x/golang-story/src/compile"
 	_ "shylinux.com/x/golang-story/src/leetcode"

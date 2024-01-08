@@ -4,6 +4,7 @@ fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child) { border-ri
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div { padding:10px 0; border-top:var(--box-border); }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div.project { padding:0; }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div>div.item { padding:10px; }
+fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div>div.item>i { margin-right:var(--input-margin); }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project { width:unset; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item { border-bottom:var(--box-border); border-bottom-style:dotted; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item.filter>span.icon.delete { margin-right:10px; }
