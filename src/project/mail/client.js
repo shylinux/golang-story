@@ -2,7 +2,7 @@ Volcanos(chat.ONIMPORT, {
 	_init: function(can, msg) { can.onmotion.hidden(can, can._status), can.isCmdMode() && can.onappend.style(can, html.OUTPUT)
 		can.ui = can.onappend.layout(can, [[aaa.USERNAME, "mailbox", html.PROJECT], [html.PROFILE, html.CONTENT]]), can.onmotion.toggle(can, can.ui.profile, true)
 		can.require([can.user.template(can, "trans.js")], function() { can.onimport._username(can, msg, can.ui.username) })
-		msg.Length() == 0 && can.Update({}, [ctx.ACTION, aaa.LOGIN])
+		// msg.Length() == 0 && can.Update({}, [ctx.ACTION, aaa.LOGIN])
 	},
 	_table: function(can, msg, target, cb) { var _select
 		msg.Table(function(value) { var action = can.page.parseAction(can, value).concat("", can.base.Obj(msg.Option(ice.MSG_ACTION)))
