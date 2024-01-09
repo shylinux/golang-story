@@ -2,7 +2,6 @@ Volcanos(chat.ONIMPORT, {
 	_init: function(can, msg) { can.onmotion.hidden(can, can._status), can.isCmdMode() && can.onappend.style(can, html.OUTPUT)
 		can.ui = can.onappend.layout(can, [[aaa.USERNAME, "mailbox", html.PROJECT], [html.PROFILE, html.CONTENT]]), can.onmotion.toggle(can, can.ui.profile, true)
 		can.require([can.user.template(can, "trans.js")], function() { can.onimport._username(can, msg, can.ui.username) })
-		// msg.Length() == 0 && can.Update({}, [ctx.ACTION, aaa.LOGIN])
 	},
 	_table: function(can, msg, target, cb) { var _select
 		msg.Table(function(value) { var action = can.page.parseAction(can, value).concat("", can.base.Obj(msg.Option(ice.MSG_ACTION)))
@@ -16,6 +15,9 @@ Volcanos(chat.ONIMPORT, {
 				return can.page.Select(can, can.ui.mailbox, html.DIV_ITEM_SELECT, function(target) { target.click() })
 			} can.run(event, [value.username], function(msg) { can.onimport._mailbox(can, msg, can.ui.mailbox, value.username) })
 		}, function(event) { cb(event, function(event, button) { can.Update(can.request(event, value), [ctx.ACTION, button, value.username]) }) }, target)
+		can.page.Append(can, _target, [{icon: "bi bi-arrow-repeat", style: {float: "right"}, onclick: function(event) {
+			can.runAction(event, "sync", [value.username])
+		}}])
 		return can.db.hash[0] == value.username? _target: _select||_target
 	}) },
 	_mailbox: function(can, msg, target, username) { can.onimport._table(can, msg, target, function(value, cb, _select) {

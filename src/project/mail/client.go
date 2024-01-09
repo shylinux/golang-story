@@ -136,9 +136,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.OptionFields(aaa.USERNAME)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), "", mdb.HASH).PushAction(s.Sync, s.Logout).Action(s.Login, s.Sync).Display("")
-		if m.Length() == 0 {
-			m.EchoInfoButton("please login", aaa.LOGIN)
-		}
+		kit.If(m.Length() == 0, func() { m.EchoInfoButton("please login", aaa.LOGIN) })
 	} else if len(arg) == 1 {
 		m.OptionFields(MAILBOX, mdb.COUNT, mdb.ORDER)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), kit.KeyHash(arg[0]), mdb.HASH).Sort("order,mailbox")
@@ -176,14 +174,11 @@ func (s Client) List(m *ice.Message, arg ...string) {
 }
 func (s Client) Sync(m *ice.Message, arg ...string) {
 	if m.Option(aaa.USERNAME) == "" {
-		s.Hash.List(m.Spawn()).Table(func(value ice.Maps) {
-			s.Sync(m.Spawn(value))
-		})
+		s.Hash.List(m.Spawn()).Table(func(value ice.Maps) { s.Sync(m.Spawn(value)) })
 		return
 	} else {
 		kit.If(len(arg) == 0, func() { arg = append(arg, m.Option(aaa.USERNAME)) })
 	}
-
 	c, err := client.DialTLS(m.Append(IMAP), nil)
 	if m.Warn(err) {
 		return
