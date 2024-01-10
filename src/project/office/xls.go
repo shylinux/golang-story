@@ -33,7 +33,7 @@ func (s xls) Upload(m *ice.Message, arg ...string) {
 	m.Cmd(web.CACHE, web.WATCH, ls[0], path.Join(m.Config(nfs.PATH), m.Option(nfs.PATH), ls[1]))
 }
 func (s xls) Download(m *ice.Message, arg ...string) {
-	m.ProcessOpen(kit.MergeURL(path.Join(ice.SHARE_LOCAL, m.Config(nfs.PATH), m.Option(nfs.PATH)), ice.POD, m.Option(ice.MSG_USERPOD)))
+	m.ProcessOpen(kit.MergeURL(path.Join(nfs.SHARE_LOCAL, m.Config(nfs.PATH), m.Option(nfs.PATH)), ice.POD, m.Option(ice.MSG_USERPOD)))
 }
 func (s xls) Rename(m *ice.Message, arg ...string) {
 	m.Cmd(nfs.MOVE, m.Option("newname"), m.Option(nfs.PATH), kit.Dict(nfs.DIR_ROOT, m.Config(nfs.PATH)))
@@ -45,7 +45,7 @@ func (s xls) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 || strings.HasSuffix(arg[0], nfs.PS) {
 		m.Cmdy(nfs.DIR, arg, kit.Dict(nfs.DIR_ROOT, m.Config(nfs.PATH), nfs.DIR_REG, kit.ExtReg(m.Config(lex.REGEXP)))).Action(s.Upload).PushAction(s.Download, s.Rename, s.Trash)
 	} else {
-		m.Action(s.Parse).Display("").Options(nfs.DIR_ROOT, m.Config(nfs.PATH), nfs.PATH, kit.MergeURL(path.Join(ice.SHARE_LOCAL, m.Config(nfs.PATH), arg[0]), ice.POD, m.Option(ice.MSG_USERPOD)))
+		m.Action(s.Parse).Display("").Options(nfs.DIR_ROOT, m.Config(nfs.PATH), nfs.PATH, kit.MergeURL(path.Join(nfs.SHARE_LOCAL, m.Config(nfs.PATH), arg[0]), ice.POD, m.Option(ice.MSG_USERPOD)))
 	}
 }
 func (s xls) Parse(m *ice.Message, arg ...string) {
