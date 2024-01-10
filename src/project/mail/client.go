@@ -155,6 +155,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 			}
 		})
 	} else if len(arg) == 2 {
+		m.OptionDefault("cache.limit", "50")
 		m.OptionFields("time,id,subject,from,to,cc,bcc,file")
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), s.keys(m, arg[0], arg[1]), mdb.LIST)
 		m.PushAction(s.Reply, s.Forword, s.Copy, s.Move, s.Spam, s.Trash, s.Archive)
