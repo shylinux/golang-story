@@ -7,6 +7,22 @@
       "time": "2023-12-13 12:29:52.832"
     }
   },
+  "15522b": {
+    "meta": {
+      "icon": "usr/icons/Photos.png",
+      "index": "web.wiki.feel",
+      "name": "Photos",
+      "time": "2024-01-11 00:20:42.179"
+    }
+  },
+  "47ca88": {
+    "meta": {
+      "icon": "usr/icons/Calendar.png",
+      "index": "web.team.plan",
+      "name": "Calendar",
+      "time": "2024-01-11 00:20:42.181"
+    }
+  },
   "a3a9ee": {
     "meta": {
       "icon": "usr/icons/Grapher.png",
@@ -21,6 +37,14 @@
       "index": "web.chat.mail.client",
       "name": "Mail",
       "time": "2023-12-13 12:37:00.206"
+    }
+  },
+  "ae3275": {
+    "meta": {
+      "icon": "usr/icons/Grapher.png",
+      "index": "web.wiki.draw",
+      "name": "Grapher",
+      "time": "2024-01-11 00:20:42.180"
     }
   },
   "c6f1c3": {
@@ -45,6 +69,14 @@
       "index": "web.team.plan",
       "name": "Calendar",
       "time": "2023-12-13 12:29:52.832"
+    }
+  },
+  "f3792b": {
+    "meta": {
+      "icon": "usr/icons/Books.png",
+      "index": "web.wiki.word",
+      "name": "Books",
+      "time": "2024-01-11 00:20:42.178"
     }
   }
 }

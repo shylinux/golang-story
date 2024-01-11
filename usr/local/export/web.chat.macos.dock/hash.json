@@ -1,50 +1,50 @@
 {
-  "03448e": {
-    "meta": {
-      "icon": "usr/icons/vimer.png",
-      "index": "web.code.vimer",
-      "name": "vimer",
-      "time": "2023-12-13 12:29:52.834"
-    }
-  },
-  "1e0d78": {
-    "meta": {
-      "icon": "usr/icons/go.png",
-      "index": "web.code.compile",
-      "name": "go",
-      "time": "2023-12-13 12:29:52.833"
-    }
-  },
-  "484dc5": {
-    "meta": {
-      "icon": "usr/icons/Terminal.png",
-      "index": "web.code.xterm",
-      "name": "Terminal",
-      "time": "2023-12-13 12:29:52.833"
-    }
-  },
-  "593762": {
-    "meta": {
-      "icon": "usr/icons/Finder.png",
-      "index": "web.chat.macos.finder",
-      "name": "Finder",
-      "time": "2023-12-13 12:29:52.833"
-    }
-  },
-  "6364b7": {
+  "1b73dc": {
     "meta": {
       "icon": "usr/icons/Safari.png",
       "index": "web.chat.iframe",
       "name": "Safari",
-      "time": "2023-12-13 12:29:52.833"
+      "time": "2024-01-11 13:35:01.658"
     }
   },
-  "a3d72e": {
+  "21f310": {
     "meta": {
       "icon": "usr/icons/git.png",
       "index": "web.code.git.status",
       "name": "git",
-      "time": "2023-12-13 12:29:52.833"
+      "time": "2024-01-11 13:35:01.660"
+    }
+  },
+  "32cdd5": {
+    "meta": {
+      "icon": "usr/icons/Terminal.png",
+      "index": "web.code.xterm",
+      "name": "Terminal",
+      "time": "2024-01-11 13:35:01.658"
+    }
+  },
+  "82ffc5": {
+    "meta": {
+      "icon": "usr/icons/go.png",
+      "index": "web.code.compile",
+      "name": "go",
+      "time": "2024-01-11 13:35:01.659"
+    }
+  },
+  "e5b740": {
+    "meta": {
+      "icon": "usr/icons/vimer.png",
+      "index": "web.code.vimer",
+      "name": "vimer",
+      "time": "2024-01-11 13:35:01.660"
+    }
+  },
+  "f640a4": {
+    "meta": {
+      "icon": "usr/icons/Finder.png",
+      "index": "web.chat.macos.finder",
+      "name": "Finder",
+      "time": "2024-01-11 13:35:01.657"
     }
   }
 }
