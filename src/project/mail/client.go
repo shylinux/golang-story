@@ -61,7 +61,7 @@ type Client struct {
 	reply   string `name:"send subject* content*:textarea" help:"回复"`
 	forword string `name:"forword to*" help:"转发"`
 	list    string `name:"list refresh" help:"邮箱" icon:"Mail.png"`
-	sync    string `name:"sync" help:"同步"`
+	sync    string `name:"sync" help:"同步" icon:"bi bi-arrow-repeat"`
 }
 
 func (s Client) Inputs(m *ice.Message, arg ...string) {
