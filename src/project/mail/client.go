@@ -257,7 +257,7 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 					}
 					switch h := p.Header.(type) {
 					case *mail.InlineHeader:
-						args = append(args, nfs.FILE, m.Cmdx(nfs.SAVE, s.dirs(m, arg[0], arg[1], arg[2], "content."+path.Base(kit.Split(contentType, ";")[0])), kit.Dict(nfs.CONTENT, p.Body)))
+						args = append(args, nfs.FILE, m.Cmdx(nfs.SAVE, s.dirs(m, arg[0], arg[1], arg[2], "content."+path.Base(kit.Select("", kit.Split(contentType, ";"), 0))), kit.Dict(nfs.CONTENT, p.Body)))
 					case *mail.AttachmentHeader:
 						if filename, err := h.Filename(); m.Warn(err) || filename == "" {
 							break
