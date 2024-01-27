@@ -75,5 +75,6 @@ Volcanos(chat.ONIMPORT, {
 Volcanos(chat.ONACTION, {_trans: {from: "来自", to: "收件", cc: "抄送", time: "时间"}})
 Volcanos(chat.ONEXPORT, {
 	info: function(can, item) { return item.text && {view: item.name, list: [{text: can.user.trans(can, item.name)+": "}, {icon: item.icon}, {text: " "}, {text: can.page.trans(can, item.text)}]} },
-	time: function(can, time) { return can.base.trimPrefix(can.base.trimSuffix(time, ".000"), new Date().getFullYear()+"-") },
+	// time: function(can, time) { return can.base.trimPrefix(can.base.trimSuffix(time, ".000"), new Date().getFullYear()+"-") },
+	time: function(can, time) { return can.base.TimeTrim(time) },
 })
