@@ -3,13 +3,13 @@ fieldset.web.chat.mail.client>div.output>div.layout>div { overflow:auto; }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child) { border-right:var(--box-border); min-width:230px; max-width:320px; flex:0 0 20%; overflow:auto; }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div { padding:10px 0; border-top:var(--box-border); }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div.project { padding:0; }
-fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div>div.item:not(.text) { padding:10px; }
+fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div>div.item:not(.text) { padding:10px; flex-direction:column; }
 fieldset.web.chat.mail.client>div.output>div.layout:not(:last-child)>div>div.item>i { margin-right:var(--input-margin); }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project { width:unset; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item { border-bottom:var(--box-border); border-bottom-style:dotted; }
 // fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item.filter>span.icon.delete { margin-right:10px; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item>div.subject { white-space:normal; }
-fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item>div.info { font-size:12px; font-style:italic; white-space:pre; margin-top:10px; display:flex; }
+fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item>div.info { font-size:12px; font-style:italic; white-space:pre; margin-top:10px; display:flex; width:100%; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item>div.info>div.from { flex-shrink:1; overflow:hidden; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.project>div.item>div.info>div.space { flex-grow:1; min-width:10px; }
 fieldset.web.chat.mail.client>div.output>div.layout>div.profile { padding:20px; border-bottom:var(--box-border); width:100%; }
