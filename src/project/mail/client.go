@@ -84,13 +84,13 @@ func (s Client) Create(m *ice.Message, arg ...string) {
 func (s Client) Remove(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
 		kit.If(!m.Warn(c.Delete(m.Option(MAILBOX))), func() { s.Sync(m) })
-		mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
+		mdb.Conf(m.Message, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
 	})
 }
 func (s Client) Rename(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
 		if !m.Warn(c.Rename(m.Option(MAILBOX), m.Option(nfs.TO))) {
-			mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
+			mdb.Conf(m.Message, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
 			s.Sync(m)
 		}
 	})
@@ -105,8 +105,8 @@ func (s Client) Move(m *ice.Message, arg ...string) {
 		set := &imap.SeqSet{}
 		set.AddNum(uint32(kit.Int(m.Option(mdb.ID))))
 		if !m.Warn(c.Move(set, m.Option(nfs.TO))) {
-			mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
-			mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(nfs.TO))), "")
+			mdb.Conf(m.Message, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(MAILBOX))), "")
+			mdb.Conf(m.Message, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(nfs.TO))), "")
 			s.Sync(m)
 		}
 	})
@@ -117,7 +117,7 @@ func (s Client) Copy(m *ice.Message, arg ...string) {
 		set := &imap.SeqSet{}
 		set.AddNum(uint32(kit.Int(m.Option(mdb.ID))))
 		if !m.Warn(c.Copy(set, m.Option(nfs.TO))) {
-			mdb.Conf(m, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(nfs.TO))), "")
+			mdb.Conf(m.Message, m.PrefixKey(), kit.KeyHash(m.Option(aaa.USERNAME), kit.KeyHash(m.Option(nfs.TO))), "")
 			s.Sync(m)
 		}
 	})
@@ -208,7 +208,7 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 			return
 		}
 		s.order(m, arg...)
-		from, to := uint32(kit.Int(mdb.Conf(m, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, mdb.COUNT)))+1), mbox.Messages
+		from, to := uint32(kit.Int(mdb.Conf(m.Message, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, mdb.COUNT)))+1), mbox.Messages
 		if from > to {
 			return
 		}
@@ -303,6 +303,6 @@ func (s Client) keys(m *ice.Message, username, mailbox string, arg ...string) st
 	return kit.KeyHash(username, kit.KeyHash(mailbox), arg)
 }
 func (s Client) order(m *ice.Message, arg ...string) {
-	mdb.Conf(m, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, MAILBOX), arg[1])
-	mdb.Conf(m, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, mdb.ORDER), kit.Select("100", map[string]string{INBOX: "1", SENT: "2", DRAFTS: "3", SPAM: "4", TRASH: "5", ARCHIVE: "6"}[arg[1]]))
+	mdb.Conf(m.Message, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, MAILBOX), arg[1])
+	mdb.Conf(m.Message, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, mdb.ORDER), kit.Select("100", map[string]string{INBOX: "1", SENT: "2", DRAFTS: "3", SPAM: "4", TRASH: "5", ARCHIVE: "6"}[arg[1]]))
 }
