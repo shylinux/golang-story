@@ -11,7 +11,6 @@ import (
 	"shylinux.com/x/ice"
 	icebergs "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/nfs"
-	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -28,12 +27,8 @@ type trans struct {
 func (s trans) Resize(m *ice.Message, arg ...string) {
 	if strings.HasSuffix(m.Option(nfs.PATH), nfs.PS) {
 		msg := m.Cmd(nfs.DIR, m.Option(nfs.PATH), kit.Dict(nfs.DIR_TYPE, nfs.TYPE_CAT))
-		web.GoToast(m.Message, "", func(toast func(string, int, int)) []string {
-			msg.Table(func(index int, value ice.Maps, head []string) {
-				toast(value[nfs.PATH], index, msg.Length())
-				Resize(m.Message, value[nfs.PATH], uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
-			})
-			return nil
+		msg.GoToastTable(nfs.PATH, func(value ice.Maps) {
+			Resize(m.Message, value[nfs.PATH], uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))
 		})
 	} else {
 		Resize(m.Message, m.Option(nfs.PATH), uint(kit.Int(m.Option(HEIGHT))), uint(kit.Int(m.Option(WIDTH))))

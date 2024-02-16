@@ -220,7 +220,7 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 		m.Go(func() {
 			done <- c.Fetch(seqset, []imap.FetchItem{imap.FetchRFC822, imap.FetchRFC822Header, imap.FetchInternalDate}, list)
 		})
-		web.GoToast(m.Message, kit.Select(m.CommandKey()+lex.SP+m.ActionKey()), func(toast func(string, int, int)) []string {
+		m.GoToast(func(toast func(string, int, int)) {
 			toast(arg[1], 0, int(to-from+1))
 			for item := range list {
 				var section imap.BodySectionName
@@ -275,7 +275,6 @@ func (s Client) Sync(m *ice.Message, arg ...string) {
 				}
 				m.Cmd(mdb.INSERT, m.PrefixKey(), s.keys(m, arg[0], arg[1]), mdb.LIST, args)
 			}
-			return nil
 		})
 		m.Warn(<-done)
 	})
