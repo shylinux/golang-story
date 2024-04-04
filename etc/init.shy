@@ -1,5 +1,5 @@
 ~web
-	config space icons "usr/icons/go.png"
+	space icons "usr/icons/go.png"
 	space main desktop
 	serve main desktop
 ~ssh
