@@ -1,6 +1,4 @@
 ~web
-	space icons "usr/icons/go.png"
 	space main desktop
-	serve main desktop
 ~ssh
 	source local.shy

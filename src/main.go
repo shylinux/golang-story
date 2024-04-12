@@ -16,4 +16,6 @@ import (
 	_ "shylinux.com/x/golang-story/src/runtime"
 )
 
+func init() { ice.Info.NodeIcon = "usr/icons/go.png" }
+
 func main() { print(ice.Run()) }
