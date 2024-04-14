@@ -6,5 +6,4 @@ testing database net context sync errors expvar flag time path log io os
 internal builtin reflect runtime syscall unsafe plugin vendor debug cmd go
 ` compact true index "web.code.godoc"
 
-field "runtime" web.code.inner args "usr/local/go/src/runtime/ malloc.go"
 field web.code.golang.runtime

@@ -12,48 +12,37 @@ import (
 )
 
 const (
-	BOOTSTRAP = "bootstrap"
-	COMPILE   = "compile"
+	COMPILE = "compile"
 )
 
-type Compile struct {
+type compile struct {
 	ice.Code
-	linux     string `data:"https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz"`
-	darwin    string `data:"https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz"`
-	windows   string `data:"https://golang.google.cn/dl/go1.17.13.windows-amd64.zip"`
-	bootstrap string `data:"https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz"`
-	source    string `data:"https://golang.google.cn/dl/go1.17.13.src.tar.gz"`
+	linux   string `data:"https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz"`
+	darwin  string `data:"https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz"`
+	windows string `data:"https://golang.google.cn/dl/go1.17.13.windows-amd64.zip"`
+	source  string `data:"https://golang.google.cn/dl/go1.17.13.src.tar.gz"`
 
-	c    string `name:"c" help:"源码"`
-	gcc  string `name:"gcc" help:"编译"`
-	list string `name:"list path auto install order build download gcc c" help:"编译器"`
+	list string `name:"list path auto order build download install" help:"编译器"`
 }
 
-func (c Compile) C(m *ice.Message, arg ...string) {
-	c.Code.Download(m, m.Config(BOOTSTRAP), _path(m, BOOTSTRAP))
+func (c compile) Install(m *ice.Message, arg ...string) {
+	c.Code.Install(m, "", ice.USR_LOCAL)
+	m.Cmd(cli.SYSTEM, nfs.PUSH, ice.USR_LOCAL_GO_BIN)
 }
-func (c Compile) Gcc(m *ice.Message, arg ...string) {
-	m.Option(cli.CMD_ENV, cli.PATH, os.Getenv(cli.PATH), "CGO_ENABLE", "0")
-	c.Code.Stream(m, _path(m, BOOTSTRAP, "go/src"), "./all.bash")
-}
-func (c Compile) Build(m *ice.Message, arg ...string) {
+func (c compile) Build(m *ice.Message, arg ...string) {
 	m.Option(cli.CMD_ENV, cli.HOME, os.Getenv(cli.HOME), "CGO_ENABLE", "0", "GOROOT_BOOTSTRAP", kit.Path(_path(m, BOOTSTRAP)),
 		cli.PATH, strings.Join([]string{kit.Path(_path(m, BOOTSTRAP, "go/bin")), os.Getenv(cli.PATH)}, ice.DF),
 	)
 	c.Code.Stream(m, _path(m, "go/src"), "./all.bash")
 }
-func (c Compile) Order(m *ice.Message, arg ...string) {
+func (c compile) Order(m *ice.Message, arg ...string) {
 	c.Code.Order(m, _path(m, "go"), ice.BIN)
 }
-func (c Compile) Install(m *ice.Message, arg ...string) {
-	c.Code.Install(m, "", ice.USR_LOCAL)
-	m.Cmd(cli.SYSTEM, nfs.PUSH, ice.USR_LOCAL_GO_BIN)
-}
-func (c Compile) List(m *ice.Message, arg ...string) {
+func (c compile) List(m *ice.Message, arg ...string) {
 	m.Cmdy(nfs.DIR, arg, kit.Dict(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN))
 }
 
-func init() { ice.CodeModCmd(Compile{}) }
+func init() { ice.CodeModCmd(compile{}) }
 
 func _path(m *ice.Message, arg ...string) string {
 	return path.Join(ice.USR_INSTALL, path.Join(arg...))

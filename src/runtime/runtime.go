@@ -2,19 +2,20 @@ package runtime
 
 import (
 	"shylinux.com/x/ice"
+	"shylinux.com/x/icebergs/base/cli"
 	kit "shylinux.com/x/toolkits"
 )
 
 type runtime struct {
 	ice.Code
-	list string `name:"list pkg key auto" help:"运行时"`
+	list string `name:"list pkg key auto"`
 }
 
 func (s runtime) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
-		kit.For(kit.Split(s.Code.System(m.Spawn(), "", "go", "list", "std").Result()), func(p string) { m.Push("pkg", p) })
+		kit.For(kit.Split(m.SystemCmd(cli.GO, "list", "std").Result()), func(p string) { m.Push("pkg", p) })
 	} else {
-		s.Code.System(m, "", kit.Simple("go", "doc", arg)...)
+		m.Copy(m.SystemCmd(cli.GO, "doc", arg))
 	}
 }
 

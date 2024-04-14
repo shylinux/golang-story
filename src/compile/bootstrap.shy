@@ -1,0 +1,16 @@
+section "bootstrap"
+field "编译器" web.code.golang.bootstrap
+shell centos `
+yum install -y wget make gcc
+yum install -y diffutils.x86_64
+
+mkdir bootstrap; cd bootstrap
+export GOBIN=$PWD/_install/bin GOROOT_BOOTSTRAP=$PWD/go; export PATH=$GOBIN:$PATH
+
+wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz
+tar xvf go1.4-bootstrap-20171003.tar.gz && cd go/src
+
+export CGO_ENABLED=0
+./all.bash
+go version
+`
