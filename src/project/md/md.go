@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"path"
 
-	"github.com/yuin/goldmark"
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/nfs"
+
+	"github.com/yuin/goldmark"
 )
 
 type md struct{ ice.Lang }
