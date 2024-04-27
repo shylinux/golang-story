@@ -7,20 +7,38 @@ import (
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
+	"shylinux.com/x/icebergs/base/web/html"
 	kit "shylinux.com/x/toolkits"
 
-	"github.com/PuerkitoBio/goquery"
+	query "github.com/PuerkitoBio/goquery"
 )
 
-type query struct {
+type goquery struct {
 	ice.Hash
 	short string `data:"path,tags"`
-	field string `data:"time,hash,path,tags"`
+	field string `data:"time,hash,name,text,path,tags"`
 	save  string `name:"save file*"`
-	list  string `name:"list hash auto"`
 }
 
-func (s query) Save(m *ice.Message, arg ...string) {
+func (s goquery) List(m *ice.Message, arg ...string) {
+	if len(arg) == 0 {
+		s.Hash.List(m, arg...)
+		return
+	}
+	msg := s.Hash.List(m.Spawn(), arg...)
+	q, e := query.NewDocument(msg.Append(nfs.PATH))
+	if m.Warn(e) {
+		return
+	}
+	q.Find(msg.Append(nfs.TAGS)).Each(func(i int, q *query.Selection) {
+		switch query.NodeName(q) {
+		case html.TABLE:
+			s.table(m, q)
+		}
+	})
+	m.Action(s.Save)
+}
+func (s goquery) Save(m *ice.Message, arg ...string) {
 	f, _, e := nfs.CreateFile(m.Message, m.Option(nfs.FILE))
 	if m.Warn(e) {
 		return
@@ -36,33 +54,18 @@ func (s query) Save(m *ice.Message, arg ...string) {
 		w.Write(data)
 	})
 }
-func (s query) List(m *ice.Message, arg ...string) {
-	if len(arg) == 0 {
-		s.Hash.List(m, arg...)
-		return
-	}
-	msg := s.Hash.List(m.Spawn(), arg...)
-	doc, err := goquery.NewDocument(msg.Append(nfs.PATH))
-	if m.Warn(err) {
-		return
-	}
-	doc.Find(msg.Append(nfs.TAGS)).Each(func(i int, s *goquery.Selection) {
-		if goquery.NodeName(s) == "table" {
-			head := []string{}
-			s.Find("tr").Each(func(i int, s *goquery.Selection) {
-				if i == 0 {
-					s.Find("th").Each(func(i int, s *goquery.Selection) {
-						head = append(head, strings.TrimSpace(s.Text()))
-					})
-				} else {
-					s.Find("td").Each(func(i int, s *goquery.Selection) {
-						m.Push(head[i], strings.TrimSpace(s.Text()))
-					})
-				}
-			})
+
+func init() { ice.CodeCtxCmd(goquery{}) }
+
+func (s goquery) table(m *ice.Message, q *query.Selection) {
+	head := []string{}
+	q.Find(html.TR).Each(func(i int, q *query.Selection) {
+		if i == 0 {
+			if q.Find(html.TH).Each(func(i int, q *query.Selection) { head = append(head, strings.TrimSpace(q.Text())) }); len(head) == 0 {
+				q.Find(html.TD).Each(func(i int, q *query.Selection) { head = append(head, strings.TrimSpace(q.Text())) })
+			}
+		} else {
+			q.Find(html.TD).Each(func(i int, q *query.Selection) { m.Push(head[i], strings.TrimSpace(q.Text())) })
 		}
 	})
-	m.Action(s.Save)
 }
-
-func init() { ice.Cmd("web.code.goquery.goquery", query{}) }
