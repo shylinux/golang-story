@@ -7,6 +7,7 @@ import (
 	_ "shylinux.com/x/golang-story/src/compile"
 	_ "shylinux.com/x/golang-story/src/project"
 	_ "shylinux.com/x/golang-story/src/project/gitea"
+	_ "shylinux.com/x/golang-story/src/project/goquery"
 	_ "shylinux.com/x/golang-story/src/project/image"
 	_ "shylinux.com/x/golang-story/src/project/leetcode"
 	_ "shylinux.com/x/golang-story/src/project/mail"
@@ -15,8 +16,6 @@ import (
 	_ "shylinux.com/x/golang-story/src/project/proto"
 	_ "shylinux.com/x/golang-story/src/project/stats"
 	_ "shylinux.com/x/golang-story/src/runtime"
-
-	_ "shylinux.com/x/golang-story/src/project/goquery"
 )
 
 func main() { print(ice.Run()) }
