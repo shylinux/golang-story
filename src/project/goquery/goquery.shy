@@ -1,0 +1,15 @@
+chapter "goquery"
+refer `
+源码 https://github.com/PuerkitoBio/goquery
+`
+
+field web.code.git.source args `
+https://github.com/PuerkitoBio/goquery
+usr/local/goquery/ go.mod
+`
+field web.code.git.tags args `
+usr/local/goquery/
+`
+field web.code.goquery.goquery args `
+https://www.w3.org/TR/css-color-3/ table.colortable
+`
