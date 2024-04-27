@@ -15,6 +15,8 @@ import (
 	_ "shylinux.com/x/golang-story/src/project/proto"
 	_ "shylinux.com/x/golang-story/src/project/stats"
 	_ "shylinux.com/x/golang-story/src/runtime"
+
+	_ "shylinux.com/x/golang-story/src/project/goquery"
 )
 
 func main() { print(ice.Run()) }
