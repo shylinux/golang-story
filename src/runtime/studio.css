@@ -1,0 +1,4 @@
+$output table tr.struct { color:var(--notice-bg-color); }
+$output table tr.interface { color:purple; }
+$output table tr.func { color:var(--danger-bg-color); }
+div.content>fieldset.story>form.option>div.item.icon.delete { display:none; }
