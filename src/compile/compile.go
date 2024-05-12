@@ -17,16 +17,16 @@ const (
 
 type compile struct {
 	ice.Code
-	linux   string `data:"https://golang.google.cn/dl/go1.17.13.linux-amd64.tar.gz"`
-	darwin  string `data:"https://golang.google.cn/dl/go1.17.13.darwin-amd64.tar.gz"`
-	windows string `data:"https://golang.google.cn/dl/go1.17.13.windows-amd64.zip"`
-	source  string `data:"https://golang.google.cn/dl/go1.17.13.src.tar.gz"`
+	linux   string `data:"https://golang.google.cn/dl/go1.22.2.linux-amd64.tar.gz"`
+	darwin  string `data:"https://golang.google.cn/dl/go1.22.2.darwin-amd64.tar.gz"`
+	windows string `data:"https://golang.google.cn/dl/go1.22.2.windows-amd64.zip"`
+	source  string `data:"https://golang.google.cn/dl/go1.22.2.src.tar.gz"`
 
-	list string `name:"list path auto order build download install" help:"编译器"`
+	list string `name:"list cmd auto"`
 }
 
-func (c compile) Install(m *ice.Message, arg ...string) {
-	c.Code.Install(m, "", ice.USR_LOCAL)
+func (s compile) Install(m *ice.Message, arg ...string) {
+	s.Code.Install(m, "", ice.USR_LOCAL)
 	m.Cmd(cli.SYSTEM, nfs.PUSH, ice.USR_LOCAL_GO_BIN)
 }
 func (c compile) Build(m *ice.Message, arg ...string) {
@@ -35,11 +35,15 @@ func (c compile) Build(m *ice.Message, arg ...string) {
 	)
 	c.Code.Stream(m, _path(m, "go/src"), "./all.bash")
 }
-func (c compile) Order(m *ice.Message, arg ...string) {
-	c.Code.Order(m, _path(m, "go"), ice.BIN)
+func (s compile) Order(m *ice.Message, arg ...string) {
+	s.Code.Order(m, _path(m, cli.GO), ice.BIN)
 }
-func (c compile) List(m *ice.Message, arg ...string) {
-	m.Cmdy(nfs.DIR, arg, kit.Dict(nfs.DIR_ROOT, ice.USR_LOCAL_GO_BIN))
+func (s compile) List(m *ice.Message, arg ...string) {
+	if cli.SystemFind(m.Message, cli.GO) == "" {
+		s.Code.List(m, "", arg...)
+	} else {
+		m.SystemCmdy(cli.GO, "help", arg)
+	}
 }
 
 func init() { ice.CodeModCmd(compile{}) }

@@ -1,4 +1,6 @@
 $output table tr.struct { color:var(--notice-bg-color); }
 $output table tr.interface { color:purple; }
 $output table tr.func { color:var(--danger-bg-color); }
-div.content>fieldset.story>form.option>div.item.icon.delete { display:none; }
+$project div.item>div.name>span.version { color:var(--disable-fg-color); margin-left:var(--input-margin); }
+$content>fieldset.story>legend { display:none; }
+$content>fieldset.story>form.option>div.text.path { display:none; }

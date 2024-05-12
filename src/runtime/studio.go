@@ -9,7 +9,7 @@ import (
 )
 
 type studio struct {
-	list string `name:"list refresh" icon:"go.png"`
+	list string `name:"list refresh" icon:"golang.png"`
 }
 
 func (s studio) List(m *ice.Message, arg ...string) {

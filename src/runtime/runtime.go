@@ -6,7 +6,6 @@ import (
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
-	"shylinux.com/x/icebergs/base/web/html"
 	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
 )
@@ -21,7 +20,6 @@ func (s runtime) List(m *ice.Message, arg ...string) {
 		kit.For(kit.Split(m.SystemCmd(cli.GO, "list", "std").Result()), func(p string) { m.Push(nfs.PATH, p) })
 	} else {
 		s.split(m, m.Copy(m.SystemCmd(cli.GO, "doc", arg)).Result()).StatusTimeCountStats(mdb.TYPE)
-		kit.If(m.Length() > 5, func() { m.Action(html.FILTER) })
 	}
 }
 
@@ -29,7 +27,7 @@ func init() { ice.CodeModCmd(runtime{}) }
 
 func (s runtime) split(m *ice.Message, res string) *ice.Message {
 	kit.For(kit.SplitLine(res), func(text string) {
-		ls := kit.Split(text, " =(){}", "=")
+		ls := kit.Split(text, " =()[]{}", "=")
 		if len(ls) < 2 {
 			return
 		}
