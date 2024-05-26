@@ -4,7 +4,6 @@ import (
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/mdb"
-	"shylinux.com/x/icebergs/base/web/html"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -17,7 +16,6 @@ func (s env) List(m *ice.Message, arg ...string) {
 		ls := kit.Split(text, "=")
 		m.Push(mdb.NAME, ls[0]).Push(mdb.VALUE, ls[1])
 	})
-	m.Action(html.FILTER)
 }
 
 func init() { ice.Cmd("web.code.golang.env", env{}) }
