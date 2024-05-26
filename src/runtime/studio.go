@@ -5,6 +5,7 @@ import (
 	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/ctx"
 	"shylinux.com/x/icebergs/base/nfs"
+	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
 )
 
@@ -12,6 +13,11 @@ type studio struct {
 	list string `name:"list refresh" icon:"golang.png"`
 }
 
+func (s studio) Init(m *ice.Message, arg ...string) {
+	web.AddPortalProduct(m.Message, "Golang Studio", `
+一款网页版的 Golang 工作台，用来查看依赖库的注释文档。
+`, 10.0)
+}
 func (s studio) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.Cmdy(runtime{}).Display("").DisplayCSS("")
