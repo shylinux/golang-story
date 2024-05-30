@@ -7,10 +7,14 @@ import (
 	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
+
+	"shylinux.com/x/golang-story/src/compile"
 )
 
 type studio struct {
-	list string `name:"list refresh" icon:"golang.png"`
+	env   env
+	tools compile.Tools
+	list  string `name:"list refresh" icon:"golang.png"`
 }
 
 func (s studio) Init(m *ice.Message, arg ...string) {
@@ -21,7 +25,7 @@ func (s studio) Init(m *ice.Message, arg ...string) {
 func (s studio) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.Cmdy(runtime{}).Display("").DisplayCSS("")
-		kit.If(m.Config(ctx.TOOLS) == "", func() { m.Toolkit(env{}) })
+		kit.If(m.Config(ctx.TOOLS) == "", func() { m.Toolkit(s.tools, s.env) })
 		m.StatusTimeCount(nfs.VERSION, kit.TrimPrefix(m.SystemCmdx(cli.GO, nfs.VERSION), "go version "))
 	} else {
 		m.ProcessField(runtime{}, arg)

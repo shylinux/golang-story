@@ -8,7 +8,7 @@ import (
 )
 
 type env struct {
-	list string `name:"list name auto"`
+	list string `name:"list name auto" help:"环境"`
 }
 
 func (s env) List(m *ice.Message, arg ...string) {
@@ -18,4 +18,4 @@ func (s env) List(m *ice.Message, arg ...string) {
 	})
 }
 
-func init() { ice.Cmd("web.code.golang.env", env{}) }
+func init() { ice.CodeModCmd(env{}) }

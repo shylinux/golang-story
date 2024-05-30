@@ -1,5 +1,7 @@
 Volcanos(chat.ONIMPORT, {
-	_init: function(can, msg) { can.onmotion.hidden(can, can._status)
+	_init: function(can, msg) {
+		// can.onmotion.hidden(can, can._status)
+		can.db.hash[0] = can.db.hash[0]||"context"
 		can.ui = can.onappend.layout(can), can.onimport._project(can, msg)
 	},
 	_project: function(can, msg) {
