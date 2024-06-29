@@ -4,6 +4,7 @@ import (
 	"shylinux.com/x/ice"
 
 	_ "shylinux.com/x/golang-story/src/compile"
+	_ "shylinux.com/x/golang-story/src/project/media"
 	_ "shylinux.com/x/golang-story/src/runtime"
 )
 

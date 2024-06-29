@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.1
+	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8 // indirect
 	github.com/emersion/go-imap v1.2.1
 	github.com/emersion/go-message v0.15.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
