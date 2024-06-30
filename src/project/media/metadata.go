@@ -19,6 +19,7 @@ func (s metadata) Parse(m *ice.Message, arg ...string) {
 	m.Cmd("", arg).Table(func(value ice.Maps) {
 		if f, e := os.Open(value[nfs.PATH]); e == nil {
 			if t, e := tag.ReadFrom(f); e == nil {
+				m.Push("file", value[nfs.PATH])
 				m.Push("format", t.Format())
 				m.Push("filetype", t.FileType())
 				m.Push("title", t.Title())
