@@ -3,14 +3,14 @@ module shylinux.com/x/golang-story
 go 1.15
 
 require (
-	shylinux.com/x/ice v1.5.28
-	shylinux.com/x/icebergs v1.9.28
-	shylinux.com/x/toolkits v1.0.10
+	shylinux.com/x/ice v1.5.33
+	shylinux.com/x/icebergs v1.9.33
+	shylinux.com/x/toolkits v1.0.12
 )
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.1
-	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8 // indirect
+	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/emersion/go-imap v1.2.1
 	github.com/emersion/go-message v0.15.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
