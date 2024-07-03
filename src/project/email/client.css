@@ -1,0 +1,16 @@
+$fieldset.cmd>div.output>div.project { width:320px; flex:0 0 320px; }
+$project>div.username { padding:10px 0; }
+$project>div.username>div.item { padding:10px; }
+$project>div.username>div.item span.username { padding-right:10px; }
+$project>div.mailbox { padding:10px 0; }
+$project>div.mailbox>div.item { padding:10px; }
+$project>div.maillist>div.item:not(.text) { padding:10px; flex-direction:column; }
+$project>div.maillist>div.item>div.subject { font-size:18px; width:100%; }
+$project>div.maillist>div.item>div.info { display:flex; width:100%; }
+$project>div.maillist>div.item>div.info>div.from { flex-grow:1; }
+$content { padding:10px; }
+$content div.subject { font-size:32px; }
+$content div.info { display:flex; flex-wrap:wrap; }
+$content div.info div.item { padding:5px; }
+$display:not(.select) { display:none; }
+$display iframe body { color:white;}

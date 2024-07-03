@@ -1,4 +1,4 @@
-package mail
+package email
 
 import (
 	"io"
@@ -136,6 +136,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.OptionFields(aaa.USERNAME)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), "", mdb.HASH).PushAction(s.Sync, s.Logout).Action(s.Login, s.Sync).Display("")
+		m.DisplayCSS("")
 		kit.If(m.Length() == 0, func() { m.EchoInfoButton("please login", aaa.LOGIN) })
 	} else if len(arg) == 1 {
 		m.OptionFields(MAILBOX, mdb.COUNT, mdb.ORDER)
@@ -169,7 +170,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 				m.Echo(p)
 			}
 		} else {
-			m.EchoIFrame(kit.MergeURL(path.Join(nfs.REQUIRE, m.Append(nfs.FILE)), ice.POD, m.Option(ice.MSG_USERPOD)))
+			m.EchoIFrame(kit.MergeURL(path.Join(nfs.P, m.Append(nfs.FILE)), ice.POD, m.Option(ice.MSG_USERPOD)))
 		}
 	}
 }

@@ -21,6 +21,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.13 // indirect
 	github.com/yuin/goldmark v1.5.5
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/tools v0.22.0 // indirect
 	tinygo.org/x/bluetooth v0.10.0
 )

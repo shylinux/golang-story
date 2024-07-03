@@ -4,17 +4,8 @@ refer `
 源码 https://github.com/foxcpp/maddy
 `
 
-# field web.chat.email.creds
+field web.chat.email.creds
 # field "源码" web.code.git.source args "github.com/foxcpp/maddy usr/local/maddy/ maddy.go"
-
-section "软件下载"
-shell `
-yum install -y zstd
-wget https://maddy.email/builds/0.7.1/maddy-0.7.1-x86_64-linux-musl.tar.zst
-zstd -d maddy-0.7.1-x86_64-linux-musl.tar.zst
-tar xvf maddy-0.7.1-x86_64-linux-musl.tar
-cd maddy-0.7.1-x86_64-linux-musl/
-`
 
 section "源码编译"
 shell `
