@@ -1,0 +1,47 @@
+chapter "maddy"
+refer `
+官网 https://maddy.email/
+源码 https://github.com/foxcpp/maddy
+`
+
+field web.chat.email.creds
+# field "源码" web.code.git.source args "https://github.com/foxcpp/maddy usr/local/maddy/ maddy.go"
+
+section "源码编译"
+shell `
+git clone https://github.com/foxcpp/maddy
+cd maddy
+./build.sh
+./build.sh install
+`
+
+section "配置域名"
+shell `
+vim /etc/maddy/maddy.conf
+`
+spark inner `
+$(hostname) = mx.shylinux.com
+$(primary_domain) = shylinux.com
+$(local_domains) = $(primary_domain)
+tls file /root/cert/shylinux.com.pem /root/cert/shylinux.com.key
+`
+
+section "启动服务"
+shell `
+maddy run
+`
+
+section "创建用户"
+shell `
+maddy creds create shy@shylinux.com
+maddy imap-acct create shy@shylinux.com
+`
+
+section "相关文件"
+order `
+/etc/maddy/maddy.conf
+/var/lib/maddy/credentials.db
+/var/lib/maddy/imapsql.db
+/var/lib/maddy/messages/
+/run/maddy/
+`
