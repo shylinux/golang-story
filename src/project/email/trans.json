@@ -1,0 +1,12 @@
+{
+	"copy": "复制到",
+	"move": "移动到",
+	"spam": "垃圾",
+	"archive": "归档",
+	"forword": "转发",
+	"reply": "回复",
+	"sync": "同步",
+	"icons": {
+		"sync": "bi bi-arrow-repeat"
+	}
+}
