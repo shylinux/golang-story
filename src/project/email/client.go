@@ -46,17 +46,18 @@ const (
 type Client struct {
 	ice.Hash
 	proto
-	short   string `data:"username"`
-	field   string `data:"time,username,password,imap,smtp"`
-	login   string `name:"login username* password* imap* smtp*"`
-	create  string `name:"create mailbox*"`
-	rename  string `name:"rename mailbox* to*"`
-	copy    string `name:"copy to*"`
-	move    string `name:"move to*"`
-	forword string `name:"forword to*"`
-	reply   string `name:"reply subject* content*:textarea"`
-	send    string `name:"send to* cc subject* content*:textarea"`
-	list    string `name:"list refresh" help:"邮件" icon:"Mail.png"`
+	important string `data:"true"`
+	short     string `data:"username"`
+	field     string `data:"time,username,password,imap,smtp"`
+	login     string `name:"login username* password* imap* smtp*"`
+	create    string `name:"create mailbox*"`
+	rename    string `name:"rename mailbox* to*"`
+	copy      string `name:"copy to*"`
+	move      string `name:"move to*"`
+	forword   string `name:"forword to*"`
+	reply     string `name:"reply subject* content*:textarea"`
+	send      string `name:"send to* cc subject* content*:textarea"`
+	list      string `name:"list refresh" help:"邮件" icon:"Mail.png"`
 }
 
 func (s Client) Inputs(m *ice.Message, arg ...string) {

@@ -5,7 +5,7 @@ refer `
 `
 
 field web.chat.email.creds
-# field "源码" web.code.git.source args "github.com/foxcpp/maddy usr/local/maddy/ maddy.go"
+field "源码" web.code.git.source args "github.com/foxcpp/maddy usr/local/maddy/ maddy.go"
 
 section "源码编译"
 shell `

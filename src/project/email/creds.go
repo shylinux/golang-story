@@ -86,5 +86,5 @@ func (s creds) List(m *ice.Message, arg ...string) {
 func init() { ice.Cmd(prefix(), creds{}) }
 
 func (s creds) maddy(m *ice.Message, arg ...string) string {
-	return m.System(MADDY, arg).Result()
+	return m.System("sudo", MADDY, arg).Result()
 }
