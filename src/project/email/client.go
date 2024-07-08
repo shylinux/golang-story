@@ -32,6 +32,7 @@ const (
 	DRAFTS  = "Drafts"
 	SENT    = "Sent"
 	SPAM    = "Spam"
+	JUNK    = "Junk"
 	TRASH   = "Trash"
 	ARCHIVE = "Archive"
 
@@ -96,7 +97,20 @@ func (s Client) Rename(m *ice.Message, arg ...string) {
 		}
 	})
 }
-func (s Client) Prune(m *ice.Message, arg ...string) { s.Remove(m) }
+func (s Client) Prune(m *ice.Message, arg ...string) {
+	m.Debug("what", m.Option(aaa.USERNAME))
+	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
+		m.Debug("what", m.Option(MAILBOX))
+		kit.If(!m.Warn(c.Delete(m.Option(MAILBOX))), func() {
+			m.Debug("what", m.Option(MAILBOX))
+			s.clear(m, m.Option(MAILBOX))
+			m.Debug("what", m.Option(MAILBOX))
+			c.Create(m.Option(MAILBOX))
+			m.Debug("what", m.Option(MAILBOX))
+			s.Sync(m)
+		})
+	})
+}
 func (s Client) Copy(m *ice.Message, arg ...string) {
 	s.client(m, m.Option(aaa.USERNAME), func(c *client.Client) {
 		c.Select(m.Option(MAILBOX), false)
@@ -131,7 +145,7 @@ func (s Client) List(m *ice.Message, arg ...string) {
 	if len(arg) == 0 {
 		m.OptionFields(aaa.USERNAME)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), "", mdb.HASH).PushAction(s.Sync, s.Logout).Action(s.Login, s.Sync).Display("").DisplayCSS("")
-		kit.If(m.Length() == 0, func() { m.EchoInfoButton("please login", aaa.LOGIN) })
+		kit.If(m.Length() == 0, func() { m.EchoInfoButton(m.Trans("please login mail", "请登录邮箱"), aaa.LOGIN) })
 	} else if len(arg) == 1 {
 		m.OptionFields(MAILBOX, mdb.ORDER, mdb.COUNT)
 		m.Cmdy(mdb.SELECT, m.PrefixKey(), kit.KeyHash(arg[0]), mdb.HASH).Sort("order,mailbox")
@@ -162,7 +176,12 @@ func (s Client) List(m *ice.Message, arg ...string) {
 }
 func (s Client) Sync(m *ice.Message, arg ...string) {
 	if m.Option(aaa.USERNAME) == "" {
-		s.Hash.List(m.Spawn()).Table(func(value ice.Maps) { s.Sync(m.Spawn(value)) })
+		s.Hash.List(m.Spawn()).Table(func(value ice.Maps) {
+			if m.WarnNotValid(value[aaa.USERNAME] == "") {
+				return
+			}
+			s.Sync(m.Spawn(value))
+		})
 		return
 	}
 	kit.If(len(arg) == 0, func() { arg = append(arg, m.Option(aaa.USERNAME)) })
@@ -202,7 +221,7 @@ func (s Client) check(m *ice.Message, c *client.Client, arg ...string) {
 	}
 	m.Debug("sync %s %s %v-%v", arg[0], arg[1], from, to)
 	list := make(chan *imap.Message, 10)
-	m.ToastProcess()
+	defer m.ToastProcess()()
 	m.Go(func() {
 		c.Fetch(s.seqs(m, kit.Format(from), kit.Format(to)), []imap.FetchItem{imap.FetchRFC822, imap.FetchRFC822Header, imap.FetchInternalDate}, list)
 	})
@@ -222,9 +241,9 @@ func (s Client) fetch(m *ice.Message, list chan *imap.Message, from, to uint32, 
 			}
 			date, _ := r.Header.Date()
 			subject, _ := r.Header.Subject()
-			args := []ice.Any{mdb.TIME, date.Format(kit.MOD_TIME), mdb.ID, item.SeqNum, SUBJECT, subject}
+			args := []ice.Any{mdb.TIME, date.Format(kit.MOD_TIME), mdb.ID, item.SeqNum, SUBJECT, s.decode(m, subject)}
 			for _, key := range []string{FROM, TO, CC, BCC, SENDER, "Reply-To"} {
-				if list, err := r.Header.AddressList(key); !m.Warn(err) {
+				if list, err := r.Header.AddressList(key); err == nil {
 					_list := []string{}
 					for _, item := range list {
 						_list = append(_list, kit.Format("%s<%s>", s.decode(m, item.Name), item.Address))
@@ -237,7 +256,7 @@ func (s Client) fetch(m *ice.Message, list chan *imap.Message, from, to uint32, 
 			msg, file, trans := m.Spawn(), s.dirs(m, arg[0], arg[1], arg[2], CONTENT_HTML), []func(string) string{}
 			for {
 				p, err := r.NextPart()
-				if err == io.EOF || m.Warn(err) {
+				if err == io.EOF || err != nil {
 					break
 				}
 				switch h := p.Header.(type) {
@@ -257,7 +276,7 @@ func (s Client) fetch(m *ice.Message, list chan *imap.Message, from, to uint32, 
 func (s Client) order(m *ice.Message, arg ...string) {
 	mdb.Conf(m.Message, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, MAILBOX), arg[1])
 	mdb.Conf(m.Message, m.PrefixKey(), s.keys(m, arg[0], arg[1], mdb.META, mdb.ORDER), kit.Select("100", map[string]string{
-		INBOX: "1", DRAFTS: "2", SENT: "3", SPAM: "4", TRASH: "5", ARCHIVE: "6",
+		INBOX: "1", DRAFTS: "2", SENT: "3", SPAM: "4", JUNK: "5", TRASH: "6", ARCHIVE: "7",
 	}[arg[1]]))
 }
 func (s Client) clear(m *ice.Message, box string) {

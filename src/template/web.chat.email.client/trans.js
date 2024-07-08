@@ -5,6 +5,7 @@ Volcanos(chat.ONIMPORT, {
 			"Sent": "已发送",
 			"Drafts": "草稿箱",
 			"Spam": "垃圾邮件",
+			"Junk": "垃圾邮件",
 			"Trash": "已删除",
 			"Archive": "已归档",
 		}

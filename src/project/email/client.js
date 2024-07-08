@@ -25,7 +25,7 @@ Volcanos(chat.ONIMPORT, {
 		return can.db.hash[0] == value.username? _target: _select||_target
 	}) },
 	_mailbox: function(can, msg, target, username) { can.onimport._table(can, msg, target, function(value, cb, _select) {
-		if (can.base.isIn(value.mailbox, "Drafts", "Spam", "Trash") && !value.count) { return _select }
+		if (can.base.isIn(value.mailbox, "Drafts", "Spam", "Junk", "Trash") && !value.count) { return _select }
 		value.nick = value.order > 99? value.mailbox: can.user.trans(can, value.mailbox, can.onimport._box_trans(can)), value.nick += lex.SP+value.count
 		value.icon = can.onimport._box_icon(can, value.mailbox)
 		var _target = can.onimport.item(can, value, function(event) {
@@ -36,7 +36,10 @@ Volcanos(chat.ONIMPORT, {
 				can.onimport._maillist(can, msg, can.ui.maillist, username, value.mailbox)
 			})
 		}, function(event) {
-			cb(event, function(event, button) { can.Update(can.request(event, value, {username: username}), [ctx.ACTION, button, username, value.mailbox]) })
+			can.request(event, {username, username})
+			cb(event, function(event, button) {
+				can.Update(can.request(event, value, {username: username}), [ctx.ACTION, button, username, value.mailbox])
+			})
 		}, target)
 		return can.db.hash[0] == username && can.db.hash[1] == value.mailbox? _target: _select||_target
 	}) },

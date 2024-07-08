@@ -10,6 +10,9 @@ import (
 	"path"
 	"strings"
 
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+
 	"shylinux.com/x/ice"
 	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/nfs"
@@ -83,9 +86,15 @@ func (s proto) decode(m *ice.Message, text string) string {
 		b, e := base64.StdEncoding.DecodeString(text[10 : len(text)-2])
 		text = string(b)
 		m.Warn(e)
-	}
-	if strings.HasPrefix(strings.ToLower(text), "=?utf-8?q?") {
+	} else if strings.HasPrefix(strings.ToLower(text), "=?utf-8?q?") {
 		b, e := ioutil.ReadAll(quotedprintable.NewReader(bytes.NewBuffer([]byte(text[10 : len(text)-2]))))
+		text = string(b)
+		m.Warn(e)
+	} else if strings.HasPrefix(strings.ToLower(text), "=?gbk?b?") {
+		return text
+		b, e := base64.StdEncoding.DecodeString(text[10 : len(text)-2])
+		m.Warn(e)
+		b, e = ioutil.ReadAll(transform.NewReader(bytes.NewBuffer(b), simplifiedchinese.GBK.NewDecoder()))
 		text = string(b)
 		m.Warn(e)
 	}
