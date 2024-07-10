@@ -1,4 +1,32 @@
 Volcanos(chat.ONIMPORT, {
+	_box_trans: function(can) {
+		return {
+			"INBOX": "收件箱",
+			"Sent": "已发送",
+			"Drafts": "草稿箱",
+			"Spam": "垃圾邮件",
+			"Junk": "垃圾邮件",
+			"Trash": "已删除",
+			"Archive": "已归档",
+		}
+	},
+	_box_icon: function(can, mail) {
+		return {
+			"INBOX": "bi bi-mailbox",
+			"Sent": "bi bi-send",
+			"Drafts": "bi bi-send-exclamation",
+			"Spam": "bi bi-envelope-slash",
+			"Trash": "bi bi-trash",
+			"Archive": "bi bi-archive",
+		}[mail]||"bi bi-folder"
+	},
+	_user_icon: function(can, user) {
+		return {
+			"Mail Delivery System<MAILER-DAEMON@mail.shylinux.com>": "bi bi-exclamation-circle",
+			"Rocket.Chat Cloud<cloud@rocket.chat>": "bi bi-chat",
+			"GitHub<noreply@github.com>": "bi bi-github",
+		}[user]||"bi bi-person"
+	},
 	_init: function(can, msg) {
 		// can.onmotion.hidden(can, can._status), can.isCmdMode() && can.onappend.style(can, html.OUTPUT)
 		can.ui = can.onappend.layout(can), can.base.Copy(can.ui, can.page.Appends(can, can.ui.project, ["username", "mailbox", "maillist"]), "username", "mailbox", "maillist")
