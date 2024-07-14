@@ -3,24 +3,23 @@ module shylinux.com/x/golang-story
 go 1.15
 
 require (
-	shylinux.com/x/ice v1.5.33
-	shylinux.com/x/icebergs v1.9.33
+	shylinux.com/x/ice v1.5.34
+	shylinux.com/x/icebergs v1.9.36
 	shylinux.com/x/toolkits v1.0.12
 )
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.1
-	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef // indirect
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/emersion/go-imap v1.2.1
 	github.com/emersion/go-message v0.15.0
-	github.com/flashmob/go-guerrilla v1.6.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.13 // indirect
 	github.com/yuin/goldmark v1.5.5
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/tools v0.22.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/text v0.16.0
 	tinygo.org/x/bluetooth v0.10.0
 )
