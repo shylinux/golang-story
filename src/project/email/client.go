@@ -48,6 +48,7 @@ type Client struct {
 	ice.Hash
 	proto
 	important string `data:"true"`
+	export    string `data:"true"`
 	short     string `data:"username"`
 	field     string `data:"time,username,password,imap,smtp"`
 	login     string `name:"login username* password* imap* smtp*"`
