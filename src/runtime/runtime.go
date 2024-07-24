@@ -11,7 +11,7 @@ import (
 )
 
 type runtime struct {
-	list string `name:"list path name auto"`
+	list string `name:"list path name auto" help:"模块"`
 }
 
 func (s runtime) List(m *ice.Message, arg ...string) {
@@ -26,6 +26,7 @@ func (s runtime) List(m *ice.Message, arg ...string) {
 func init() { ice.CodeModCmd(runtime{}) }
 
 func (s runtime) split(m *ice.Message, res string) *ice.Message {
+	m.SetAppend()
 	kit.For(kit.SplitLine(res), func(text string) {
 		ls := kit.Split(text, " =()[]{}", "=")
 		if len(ls) < 2 {
