@@ -34,8 +34,9 @@ type creds struct {
 }
 
 func (s creds) Create(m *ice.Message, arg ...string) {
-	s.maddy(m, CREDS, m.ActionKey(), "-p", m.Option(aaa.PASSWORD), m.Option(aaa.EMAIL))
-	s.maddy(m, IMAP_ACCT, m.ActionKey(), m.Option(aaa.EMAIL))
+	if s.maddy(m, CREDS, m.ActionKey(), "-p", m.Option(aaa.PASSWORD), m.Option(aaa.EMAIL)); !m.IsErr() {
+		s.maddy(m, IMAP_ACCT, m.ActionKey(), m.Option(aaa.EMAIL))
+	}
 }
 func (s creds) Remove(m *ice.Message, arg ...string) {
 	s.maddy(m, CREDS, m.ActionKey(), "-y", m.Option(aaa.EMAIL))
@@ -88,3 +89,7 @@ func init() { ice.Cmd(prefix(), creds{}) }
 func (s creds) maddy(m *ice.Message, arg ...string) string {
 	return m.System("sudo", MADDY, arg).Result()
 }
+
+type Creds struct{ creds }
+
+func init() { ice.Cmd(prefix(), Creds{}) }
