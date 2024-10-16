@@ -3,8 +3,8 @@ module shylinux.com/x/golang-story
 go 1.15
 
 require (
-	shylinux.com/x/ice v1.5.45
-	shylinux.com/x/icebergs v1.9.45
+	shylinux.com/x/ice v1.5.48
+	shylinux.com/x/icebergs v1.9.48
 	shylinux.com/x/toolkits v1.0.15
 )
 
