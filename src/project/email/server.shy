@@ -37,6 +37,10 @@ shell `
 maddy creds create shy@shylinux.com
 maddy imap-acct create shy@shylinux.com
 `
+section "平台配置"
+order `
+25,143,587,465,993
+`
 
 section "相关文件"
 order `
